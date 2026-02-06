@@ -21,7 +21,8 @@ export function CartPanel({ offers }: CartPanelProps) {
   const total = subtotal + tax - discount;
 
   return (
-    <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 bg-white rounded-[2rem] flex flex-col shadow-sm border border-gray-100 overflow-hidden h-[calc(100vh-100px)] sticky top-0">
+    <div className="w-full lg:w-[320px] xl:w-95 shrink-0 bg-white rounded-[2rem] flex flex-col shadow-sm border border-gray-100 overflow-hidden h-100vh sticky top-0">
+      {/* [calc(100vh-100px)] */}
       <div className="p-5 pb-3 flex items-center justify-between shrink-0">
         <h2 className="text-xl font-black text-gray-900">Current Sale</h2>
         {cart.length > 0 && (
@@ -76,7 +77,7 @@ export function CartPanel({ offers }: CartPanelProps) {
                   <Plus size={12} />
                 </button>
               </div>
-              <div className="text-right min-w-[50px]">
+              <div className="text-right min-w-12.5">
                 <p className="text-xs font-black text-gray-900">
                   ${(item.sellingPrice * item.quantity).toFixed(2)}
                 </p>

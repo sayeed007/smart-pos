@@ -1,8 +1,10 @@
 "use client";
 
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { cn } from "@/lib/utils";
 import { Product, Category } from "@/types";
 import { Scan } from "lucide-react";
+import { ProductCard } from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
@@ -50,17 +52,23 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
         <input
           type="text"
           placeholder="Scan barcode or search product.."
-          className="w-full pl-16 pr-6 py-5 bg-white rounded-3xl border-transparent focus:border-[#f87171] focus:ring-0 focus:outline-none shadow-sm text-lg placeholder:text-gray-400 transition-all font-medium"
+          className="w-full pl-16 pr-6 py-3 bg-[#F3F3F5] rounded-lg border-transparent focus:border-[#f87171] focus:ring-0 focus:outline-none shadow-sm placeholder:text-gray-400 transition-all text-semibold-14"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Categories */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide shrink-0">
+      <div className="flex flex-wrap gap-2 pb-2 shrink-0">
         <button
           onClick={() => setCategory("all")}
-          className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${selectedCategory === "all" ? "bg-[#f87171] text-white shadow-lg shadow-red-100" : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"}`}
+          className={cn(
+            "px-4 py-2 rounded-xl transition-all",
+            selectedCategory === "all"
+              ? "bg-[#f87171] text-white shadow-lg shadow-red-100"
+              : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100",
+            "text-regular-12",
+          )}
         >
           All
         </button>
@@ -68,7 +76,13 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
           <button
             key={cat.id}
             onClick={() => setCategory(cat.id)}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${selectedCategory === cat.id ? "bg-[#f87171] text-white shadow-lg shadow-red-100" : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"}`}
+            className={cn(
+              "px-4 py-2 rounded-xl transition-all whitespace-nowrap",
+              selectedCategory === cat.id
+                ? "bg-[#f87171] text-white shadow-lg shadow-red-100"
+                : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100",
+              "text-regular-12",
+            )}
           >
             <span className="mr-2">{cat.icon}</span>
             {cat.name}
@@ -79,40 +93,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
       {/* Products Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-4 overflow-y-auto pr-2 pb-20">
         {filteredProducts.map((p) => (
-          <div
-            key={p.id}
-            onClick={() => handleProductClick(p)}
-            className="bg-white rounded-[2rem] p-4 border border-gray-100 hover:border-[#f87171] transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-red-50 h-[280px]"
-          >
-            <div className="aspect-square rounded-[1.5rem] overflow-hidden mb-4 bg-gray-50">
-              {/* Use real image or placeholder */}
-              {p.image ? (
-                <img
-                  src={p.image}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  alt={p.name}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                  No Image
-                </div>
-              )}
-            </div>
-            <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1 line-clamp-1">
-              {p.name}
-            </h3>
-            <p className="text-[10px] text-gray-400 font-bold mb-3 uppercase tracking-tighter">
-              {p.sku}
-            </p>
-            <div className="mt-auto flex justify-between items-center">
-              <p className="text-[#f87171] text-lg font-bold">
-                ${p.sellingPrice.toFixed(2)}
-              </p>
-              <p className="text-[10px] text-gray-400 font-medium uppercase">
-                Stock: {p.stockQuantity}
-              </p>
-            </div>
-          </div>
+          <ProductCard key={p.id} product={p} onClick={handleProductClick} />
         ))}
       </div>
     </div>

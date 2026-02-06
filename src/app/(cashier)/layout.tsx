@@ -2,26 +2,20 @@
 
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import {
-  ShoppingCart,
-  Package,
-  Users,
-  User,
-  Menu,
-  AlertCircle,
-} from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CashierHeader } from "@/components/layout/CashierHeader";
+import { ShoppingCart, Package, Users, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const cashierNavItems = [
-  { name: "New Sale", icon: <ShoppingCart size={20} />, path: "/cashier/pos" },
-  { name: "Products", icon: <Package size={20} />, path: "/cashier/products" },
-  { name: "Customers", icon: <Users size={20} />, path: "/cashier/customers" },
-  { name: "Profile", icon: <User size={20} />, path: "/cashier/profile" },
+  { name: "New Sale", icon: <ShoppingCart size={24} />, path: "/cashier/pos" },
+  { name: "Products", icon: <Package size={24} />, path: "/cashier/products" },
+  { name: "Customers", icon: <Users size={24} />, path: "/cashier/customers" },
+  { name: "Profile", icon: <User size={24} />, path: "/cashier/profile" },
 ];
 
 export default function CashierLayout({
@@ -29,7 +23,8 @@ export default function CashierLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -50,44 +45,36 @@ export default function CashierLayout({
 
   return (
     <div className="flex min-h-screen bg-[#fcfdfe]">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-72 h-screen fixed inset-y-0 z-50">
-        <Sidebar items={cashierNavItems} title="Cashier" />
+      {/* Desktop Sidebar - Collapsible */}
+      <aside
+        className={cn(
+          "hidden lg:flex flex-col h-screen fixed inset-y-0 z-50 transition-all duration-300",
+          isDesktopCollapsed ? "w-20" : "w-72",
+        )}
+      >
+        <Sidebar
+          items={cashierNavItems}
+          title="Cashier"
+          collapsed={isDesktopCollapsed}
+          onToggleCollapse={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
+        />
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-72 flex flex-col min-h-screen overflow-x-hidden">
-        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-100 z-40 px-8 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-              <SheetTrigger asChild>
-                <button className="lg:hidden p-2 text-gray-600 bg-gray-50 rounded-xl">
-                  <Menu size={20} />
-                </button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 border-r-0">
-                <Sidebar
-                  items={cashierNavItems}
-                  title="Cashier"
-                  onClose={() => setIsMobileOpen(false)}
-                />
-              </SheetContent>
-            </Sheet>
-            <h2 className="text-xl font-black text-gray-900 tracking-tight leading-none">
-              {currentTitle}
-            </h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
-              Live Terminal #01
-            </div>
-            <button className="p-2.5 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-[#f87171] rounded-2xl transition-all border border-gray-100">
-              <AlertCircle size={20} />
-            </button>
-          </div>
-        </header>
+      <main
+        className={cn(
+          "flex-1 flex flex-col min-h-screen overflow-x-hidden transition-all duration-300",
+          isDesktopCollapsed ? "lg:ml-20" : "lg:ml-72",
+        )}
+      >
+        {/* <CashierHeader
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          currentTitle={currentTitle}
+          navItems={cashierNavItems}
+        /> */}
 
-        <div className="p-4 lg:p-6 w-full max-w-[1600px] mx-auto animate-in fade-in duration-500">
+        <div className="p-4 lg:p-6 w-full max-w-400 mx-auto animate-in fade-in duration-500">
           {children}
         </div>
       </main>
