@@ -13,9 +13,9 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       onClick={() => onClick(product)}
-      className="rounded-2xl p-4 border-gray-100 hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
+      className="rounded-[14px] p-3 border-border hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
     >
-      <div className="relative aspect-square rounded-[1.5rem] overflow-hidden mb-2 bg-gray-50">
+      <div className="relative aspect-square rounded-[10px] overflow-hidden mb-2 bg-muted">
         {product.image ? (
           <Image
             src={product.image}
@@ -25,24 +25,24 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
             alt={product.name}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/50">
             No Image
           </div>
         )}
       </div>
-      <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-1">
+      <h3 className=" text-foreground text-semibold-14 mb-1 line-clamp-1">
         {product.name}
       </h3>
-      <p className="text-xs text-gray-400 font-semibold mb-1 uppercase tracking-wide">
+      <p className="text-regular-12 text-muted-foreground mb-1 uppercase tracking-wide">
         {product.sku}
       </p>
-      <div className="mt-auto flex justify-between items-end">
-        <p className="text-primary text-2xl font-black">
+      <div className="mt-2 flex justify-between items-center">
+        <div className="text-chart-1 text-bold-18">
           ${product.sellingPrice.toFixed(2)}
-        </p>
-        <p className="text-xs text-gray-400 font-medium mb-1">
+        </div>
+        <div className="text-regular-12 text-muted-foreground">
           Stock: {product.stockQuantity}
-        </p>
+        </div>
       </div>
     </Card>
   );

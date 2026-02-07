@@ -33,7 +33,7 @@ export default function POSFeature() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-[95vh]">
+    <div className="flex flex-col lg:flex-row h-screen">
       <ProductGrid products={products || []} categories={categories || []} />
       <CartPanel offers={offers} />
       <POSModals />

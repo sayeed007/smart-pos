@@ -3,7 +3,7 @@
   "productSearch": "পণ্য খুঁজুন...",
   "categoryAll": "সব পণ্য",
   "cart": {
-    "title": "কার্ট",
+    "title": "বর্তমান অর্ডার",
     "empty": "আপনার কার্ট খালি",
     "addItems": "শুরু করতে পণ্য যোগ করুন",
     "items": "{{count}} আইটেম",
@@ -13,7 +13,11 @@
     "tax": "কর",
     "total": "মোট",
     "clearCart": "কার্ট খালি করুন",
-    "checkout": "চেকআউট"
+    "checkout": "চেকআউট",
+    "applyOffers": "অফার প্রয়োগ করুন",
+    "appliedOffers": "প্রয়োগকৃত অফারসমূহ",
+    "completeSale": "বিক্রয় সম্পূর্ণ করুন",
+    "each": "প্রতিটি"
   },
   "product": {
     "outOfStock": "স্টকে নেই",
@@ -28,6 +32,7 @@
     "paymentMethod": "পেমেন্ট পদ্ধতি",
     "cash": "নগদ",
     "card": "কার্ড",
+    "wallet": "ওয়ালেট",
     "mobile": "মোবাইল পেমেন্ট",
     "customerInfo": "গ্রাহক তথ্য",
     "customerName": "গ্রাহকের নাম",

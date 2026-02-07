@@ -58,7 +58,7 @@
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
   --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted-foreground: rgba(106, 114, 130, 1);
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
   --destructive: #ef4444;
@@ -132,13 +132,32 @@
       scrollbar-width: none;
   }
 
+
+  .text-bold-18 {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 100%;
+    letter-spacing: 0px;
+  }
+
+   .text-bold-16 {
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: 0px;
+  }
+
   /* 14px Size - Line Height 24px */
   .text-bold-14 {
     font-family: var(--font-inter), sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 14px;
-    line-height: 24px;
+    line-height: 100%;
     letter-spacing: 0px;
   }
   .text-semibold-14 {
@@ -146,7 +165,7 @@
     font-weight: 600;
     font-style: normal;
     font-size: 14px;
-    line-height: 24px;
+    line-height: 100%;
     letter-spacing: 0px;
   }
   .text-regular-14 {
@@ -154,7 +173,7 @@
     font-weight: 400;
     font-style: normal;
     font-size: 14px;
-    line-height: 24px;
+    line-height: 100%;
     letter-spacing: 0px;
   }
 

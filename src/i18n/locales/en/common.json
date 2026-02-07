@@ -49,5 +49,17 @@
   "category": "Category",
   "noData": "No data available",
   "noResults": "No results found",
-  "searchPlaceholder": "Search..."
+  "searchPlaceholder": "Search...",
+  "role": "Role",
+  "panel": "Panel",
+  "newSale": "New Sale",
+  "products": "Products",
+  "customers": "Customers",
+  "dashboard": "Dashboard",
+  "pos": "POS",
+  "sales": "Sales",
+  "reports": "Reports",
+  "offers": "Offers",
+  "returns": "Returns",
+  "users": "Users"
 }

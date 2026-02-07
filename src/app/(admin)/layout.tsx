@@ -1,42 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
-  Users,
-  Settings,
-  FileText,
-  Tag,
-  RotateCcw,
-  Menu,
-  AlertCircle,
-} from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { usePathname } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import {
+  FileText,
+  LayoutDashboard,
+  Package,
+  RotateCcw,
+  Settings,
+  ShoppingCart,
+  Tag,
+  Users,
+} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const adminNavItems = [
-  {
-    name: "Dashboard",
-    icon: <LayoutDashboard size={20} />,
-    path: "/admin/dashboard",
-  },
-  { name: "POS", icon: <ShoppingCart size={20} />, path: "/admin/pos" },
-  { name: "Sales", icon: <FileText size={20} />, path: "/admin/sales" },
-  { name: "Products", icon: <Package size={20} />, path: "/admin/products" },
-  { name: "Customers", icon: <Users size={20} />, path: "/admin/customers" },
-  { name: "Reports", icon: <FileText size={20} />, path: "/admin/reports" },
-  { name: "Offers", icon: <Tag size={20} />, path: "/admin/offers" },
-  { name: "Returns", icon: <RotateCcw size={20} />, path: "/admin/returns" },
-  { name: "Users", icon: <Users size={20} />, path: "/admin/users" },
-  { name: "Settings", icon: <Settings size={20} />, path: "/admin/settings" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function AdminLayout({
   children,
@@ -47,6 +27,44 @@ export default function AdminLayout({
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation("common");
+
+  const adminNavItems = [
+    {
+      name: t("dashboard"),
+      icon: <LayoutDashboard size={20} />,
+      path: "/admin/dashboard",
+    },
+    { name: t("pos"), icon: <ShoppingCart size={20} />, path: "/admin/pos" },
+    { name: t("sales"), icon: <FileText size={20} />, path: "/admin/sales" },
+    {
+      name: t("products"),
+      icon: <Package size={20} />,
+      path: "/admin/products",
+    },
+    {
+      name: t("customers"),
+      icon: <Users size={20} />,
+      path: "/admin/customers",
+    },
+    {
+      name: t("reports"),
+      icon: <FileText size={20} />,
+      path: "/admin/reports",
+    },
+    { name: t("offers"), icon: <Tag size={20} />, path: "/admin/offers" },
+    {
+      name: t("returns"),
+      icon: <RotateCcw size={20} />,
+      path: "/admin/returns",
+    },
+    { name: t("users"), icon: <Users size={20} />, path: "/admin/users" },
+    {
+      name: t("settings"),
+      icon: <Settings size={20} />,
+      path: "/admin/settings",
+    },
+  ];
 
   useEffect(() => {
     if (!isLoading && (!user || user.role !== UserRole.ADMIN)) {

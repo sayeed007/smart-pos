@@ -8,6 +8,7 @@ import { Scan } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 interface ProductGridProps {
   products: Product[];
@@ -24,6 +25,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
     setModal,
     selectProduct,
   } = usePOSStore();
+  const { t } = useTranslation("pos");
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -85,7 +87,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
           />
           <Input
             type="text"
-            placeholder="Scan barcode or search product.."
+            placeholder={t("productSearch")}
             className="bg-background w-full pl-10 pr-4 h-10 rounded-lg border-transparent focus-visible:ring-1 focus-visible:ring-primary shadow-sm placeholder:text-muted-foreground transition-all text-sm font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -112,7 +114,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
               "text-xs",
             )}
           >
-            All
+            {t("categoryAll")}
           </Button>
           {[...categories, ...categories].map((cat, index) => (
             <Button
@@ -135,7 +137,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-4 overflow-y-auto pr-2 pb-20">
+      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-4 overflow-y-auto p-4">
         {filteredProducts.map((p) => (
           <ProductCard key={p.id} product={p} onClick={handleProductClick} />
         ))}

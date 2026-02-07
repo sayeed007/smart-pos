@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 interface NavItem {
   name: string;
@@ -36,6 +37,7 @@ export function Sidebar({
   const { user, logout } = useAuth();
   const router = useRouter();
   const { instance } = useInstance();
+  const { t } = useTranslation("common");
 
   const handlePageChange = (path: string) => {
     router.push(path);
@@ -75,7 +77,7 @@ export function Sidebar({
                 {instance.companyName}
               </h1>
               <p className="text-regular-11 text-muted-foreground uppercase whitespace-nowrap">
-                {title} Panel
+                {title} {t("panel")}
               </p>
             </div>
           )}
@@ -160,7 +162,7 @@ export function Sidebar({
                 {user?.name || "User"}
               </p>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate leading-none">
-                {user?.role || "Role"}
+                {user?.role || t("role")}
               </p>
             </div>
           )}
@@ -191,7 +193,7 @@ export function Sidebar({
               "h-9 border border-border bg-card hover:bg-destructive/10 text-muted-foreground hover:text-destructive hover:border-destructive/30 rounded-lg shadow-sm transition-all",
               collapsed ? "w-full" : "flex-1 w-full",
             )}
-            title="Logout"
+            title={t("logout")}
           >
             <LogOut size={18} />
           </Button>

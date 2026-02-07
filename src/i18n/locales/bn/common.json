@@ -49,5 +49,17 @@
   "category": "বিভাগ",
   "noData": "কোন তথ্য নেই",
   "noResults": "কোন ফলাফল পাওয়া যায়নি",
-  "searchPlaceholder": "অনুসন্ধান করুন..."
+  "searchPlaceholder": "অনুসন্ধান করুন...",
+  "role": "ভূমিকা",
+  "panel": "প্যানেল",
+  "newSale": "নতুন বিক্রয়",
+  "products": "পণ্যসমূহ",
+  "customers": "গ্রাহকবৃন্দ",
+  "dashboard": "ড্যাশবোর্ড",
+  "pos": "পিওএস",
+  "sales": "বিক্রয়",
+  "reports": "রিপোর্ট",
+  "offers": "অফার",
+  "returns": "ফেরত",
+  "users": "ব্যবহারকারী"
 }

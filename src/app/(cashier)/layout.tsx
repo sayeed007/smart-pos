@@ -10,12 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-const cashierNavItems = [
-  { name: "New Sale", icon: <ShoppingCart size={24} />, path: "/cashier/pos" },
-  { name: "Products", icon: <Package size={24} />, path: "/cashier/products" },
-  { name: "Customers", icon: <Users size={24} />, path: "/cashier/customers" },
-  { name: "Profile", icon: <User size={24} />, path: "/cashier/profile" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function CashierLayout({
   children,
@@ -23,6 +18,26 @@ export default function CashierLayout({
   children: React.ReactNode;
 }) {
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
+  const { t } = useTranslation("common");
+
+  const cashierNavItems = [
+    {
+      name: t("newSale"),
+      icon: <ShoppingCart size={24} />,
+      path: "/cashier/pos",
+    },
+    {
+      name: t("products"),
+      icon: <Package size={24} />,
+      path: "/cashier/products",
+    },
+    {
+      name: t("customers"),
+      icon: <Users size={24} />,
+      path: "/cashier/customers",
+    },
+    { name: t("profile"), icon: <User size={24} />, path: "/cashier/profile" },
+  ];
 
   const { user, isLoading } = useAuth();
   const router = useRouter();

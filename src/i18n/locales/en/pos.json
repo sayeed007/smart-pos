@@ -3,8 +3,8 @@
   "productSearch": "Search products...",
   "categoryAll": "All Products",
   "cart": {
-    "title": "Cart",
-    "empty": "Your cart is empty",
+    "title": "Current Order",
+    "empty": "Cart is empty",
     "addItems": "Add items to get started",
     "items": "{{count}} item",
     "items_plural": "{{count}} items",
@@ -13,7 +13,11 @@
     "tax": "Tax",
     "total": "Total",
     "clearCart": "Clear Cart",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "applyOffers": "Apply Offers",
+    "appliedOffers": "Applied Offers",
+    "completeSale": "Complete Sale",
+    "each": "each"
   },
   "product": {
     "outOfStock": "Out of Stock",
@@ -28,6 +32,7 @@
     "paymentMethod": "Payment Method",
     "cash": "Cash",
     "card": "Card",
+    "wallet": "Wallet",
     "mobile": "Mobile Payment",
     "customerInfo": "Customer Information",
     "customerName": "Customer Name",
