@@ -13,7 +13,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       onClick={() => onClick(product)}
-      className="rounded-2xl p-4 border-gray-100 hover:border-[#f87171] transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-red-50 gap-0 h-full"
+      className="rounded-2xl p-4 border-gray-100 hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
     >
       <div className="relative aspect-square rounded-[1.5rem] overflow-hidden mb-2 bg-gray-50">
         {product.image ? (
@@ -37,7 +37,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
         {product.sku}
       </p>
       <div className="mt-auto flex justify-between items-end">
-        <p className="text-[#f87171] text-2xl font-black">
+        <p className="text-primary text-2xl font-black">
           ${product.sellingPrice.toFixed(2)}
         </p>
         <p className="text-xs text-gray-400 font-medium mb-1">

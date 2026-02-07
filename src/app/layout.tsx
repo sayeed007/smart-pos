@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { CustomThemeProvider } from "@/providers/custom-theme-provider";
+import { InstanceProvider } from "@/providers/instance-provider";
+import { I18nProvider } from "@/providers/i18n-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -27,19 +29,18 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased overflow-x-hidden`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <CustomThemeProvider>
           <QueryProvider>
-            <AuthProvider>
-              {children}
-              <Toaster />
-            </AuthProvider>
+            <InstanceProvider>
+              <I18nProvider>
+                <AuthProvider>
+                  {children}
+                  <Toaster />
+                </AuthProvider>
+              </I18nProvider>
+            </InstanceProvider>
           </QueryProvider>
-        </ThemeProvider>
+        </CustomThemeProvider>
       </body>
     </html>
   );

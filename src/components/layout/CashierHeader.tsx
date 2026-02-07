@@ -34,7 +34,7 @@ export function CashierHeader({
                 <Menu size={20} />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-72 border-r-0">
+            <SheetContent side="left" className="p-0 w-58 border-r-0">
               <Sidebar
                 items={navItems}
                 title="Cashier"

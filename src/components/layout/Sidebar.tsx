@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
+import { useInstance } from "@/providers/instance-provider";
+import { ThemeSelector } from "@/components/theme/ThemeSelector";
+import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -32,6 +35,7 @@ export function Sidebar({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { instance } = useInstance();
 
   const handlePageChange = (path: string) => {
     router.push(path);
@@ -41,7 +45,7 @@ export function Sidebar({
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-white border-r border-gray-100 shadow-sm transition-all duration-300",
+        "flex flex-col h-full bg-card border-r border-sidebar-border shadow-sm transition-all duration-300 overflow-hidden",
         collapsed ? "w-20" : "w-full",
       )}
     >
@@ -54,12 +58,12 @@ export function Sidebar({
         <div
           className={cn(
             "flex items-center transition-all",
-            collapsed ? "flex-col gap-4" : "gap-3",
+            collapsed ? "flex-col gap-2" : "gap-0",
           )}
         >
           <Image
-            src="/logo.png"
-            alt="Logo"
+            src={instance.logoUrl}
+            alt={instance.companyName}
             width={48}
             height={48}
             className={"object-contain transition-all w-16 h-16"}
@@ -67,10 +71,10 @@ export function Sidebar({
 
           {!collapsed && (
             <div className="flex-1 min-w-0 animate-in fade-in duration-300">
-              <h1 className="text-semibold-14 text-gray-900 whitespace-nowrap">
-                POS System
+              <h1 className="text-semibold-14 text-foreground whitespace-nowrap">
+                {instance.companyName}
               </h1>
-              <p className="text-regular-11 text-gray-400 uppercase whitespace-nowrap">
+              <p className="text-regular-11 text-muted-foreground uppercase whitespace-nowrap">
                 {title} Panel
               </p>
             </div>
@@ -82,7 +86,7 @@ export function Sidebar({
               size="icon"
               onClick={onToggleCollapse}
               className={cn(
-                "cursor-pointer text-gray-400 hover:text-gray-600 transition-colors h-auto w-auto",
+                "cursor-pointer text-muted-foreground hover:text-foreground transition-colors h-auto w-auto",
                 collapsed ? "p-0" : "p-1",
               )}
             >
@@ -101,74 +105,97 @@ export function Sidebar({
               variant="ghost"
               onClick={() => handlePageChange(item.path)}
               className={cn(
-                "cursor-pointer w-full flex items-center transition-all duration-200 h-auto justify-start",
+                "w-full justify-start",
                 collapsed
-                  ? "justify-center px-0 py-3 rounded-xl"
-                  : "gap-4 px-5 py-4 rounded-2xl",
+                  ? "justify-center w-12 h-12 mx-auto rounded-md"
+                  : "gap-3 px-4 py-3 rounded-md mx-2",
                 isActive
-                  ? "bg-[#fff1f2] text-[#f87171] font-black hover:bg-[#fff1f2] hover:text-[#f87171]"
-                  : "text-gray-500 hover:bg-gray-50 font-bold",
+                  ? "bg-primary/10 text-primary font-bold shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium",
               )}
               title={collapsed ? item.name : undefined}
             >
               <span
                 className={cn(
-                  "h-5 w-5 [&_svg]:size-5!",
-                  isActive ? "text-[#f87171]" : "text-gray-400",
+                  "h-5 w-5 [&_svg]:size-5! transition-colors shrink-0",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground group-hover:text-foreground",
                 )}
               >
                 {item.icon}
               </span>
               {!collapsed && (
-                <span className="text-regular-14 animate-in fade-in duration-300 whitespace-nowrap">
+                <span className="text-sm animate-in fade-in duration-300 whitespace-nowrap">
                   {item.name}
                 </span>
               )}
               {!collapsed && isActive && (
-                <div className="ml-auto w-1.5 h-6 bg-[#f87171] rounded-full"></div>
+                <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full" />
               )}
             </Button>
           );
         })}
       </nav>
 
-      <div className={cn("border-t bg-gray-50/20", collapsed ? "p-3" : "p-6")}>
-        {!collapsed ? (
-          <div className="flex items-center gap-3 p-2 bg-white border border-gray-100 rounded-2xl mb-4 shadow-sm animate-in fade-in duration-300">
-            <div className="w-10 h-10 rounded-full bg-[#fff1f2] flex items-center justify-center text-[#f87171] font-black text-sm shrink-0">
-              {user?.name?.charAt(0) || "U"}
-            </div>
+      {/* USER AND LOG OUT */}
+      <div
+        className={cn(
+          "border-t border-sidebar-border bg-muted/20",
+          collapsed ? "p-2" : "p-3",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-3 mb-3",
+            collapsed ? "justify-center" : "px-2",
+          )}
+        >
+          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs shrink-0 border border-primary/20 shadow-sm">
+            {user?.name?.charAt(0) || "U"}
+          </div>
+          {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-regular-14  text-gray-900 truncate">
+              <p className="text-sm font-bold text-foreground truncate leading-none mb-1">
                 {user?.name || "User"}
               </p>
-              <p className="text-regular-11 text-gray-400  uppercase truncate">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate leading-none">
                 {user?.role || "Role"}
               </p>
             </div>
-          </div>
-        ) : (
-          <div className="w-10 h-10 mx-auto rounded-full bg-[#fff1f2] flex items-center justify-center text-[#f87171] font-black text-sm mb-4">
-            {user?.name?.charAt(0) || "U"}
-          </div>
-        )}
+          )}
+        </div>
 
-        <Button
-          variant="ghost"
-          onClick={logout}
-          className={cn(
-            "cursor-pointer w-full flex items-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all text-semibold-14 h-auto justify-start",
-            collapsed
-              ? "justify-center py-3 rounded-xl"
-              : "gap-4 px-5 py-4 rounded-2xl",
-          )}
-          title={collapsed ? "Logout" : undefined}
+        <div
+          className={cn("flex items-center gap-2", collapsed ? "flex-col" : "")}
         >
-          <LogOut size={18} />
-          {!collapsed && (
-            <span className="animate-in fade-in duration-300">Logout</span>
-          )}
-        </Button>
+          <LanguageSwitcher
+            className={cn(
+              "h-9 border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg shadow-sm transition-all",
+              collapsed ? "w-full" : "flex-1 w-full",
+            )}
+          />
+
+          <ThemeSelector
+            className={cn(
+              "h-9 border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg shadow-sm transition-all",
+              collapsed ? "w-full" : "flex-1 w-full",
+            )}
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            className={cn(
+              "h-9 border border-border bg-card hover:bg-destructive/10 text-muted-foreground hover:text-destructive hover:border-destructive/30 rounded-lg shadow-sm transition-all",
+              collapsed ? "w-full" : "flex-1 w-full",
+            )}
+            title="Logout"
+          >
+            <LogOut size={18} />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,47 @@
+{
+  "title": "পয়েন্ট অফ সেল",
+  "productSearch": "পণ্য খুঁজুন...",
+  "categoryAll": "সব পণ্য",
+  "cart": {
+    "title": "কার্ট",
+    "empty": "আপনার কার্ট খালি",
+    "addItems": "শুরু করতে পণ্য যোগ করুন",
+    "items": "{{count}} আইটেম",
+    "items_plural": "{{count}} আইটেম",
+    "subtotal": "উপমোট",
+    "discount": "ছাড়",
+    "tax": "কর",
+    "total": "মোট",
+    "clearCart": "কার্ট খালি করুন",
+    "checkout": "চেকআউট"
+  },
+  "product": {
+    "outOfStock": "স্টকে নেই",
+    "lowStock": "কম স্টক",
+    "inStock": "স্টকে আছে",
+    "addToCart": "কার্টে যোগ করুন",
+    "removeFromCart": "কার্ট থেকে সরান",
+    "stock": "স্টক"
+  },
+  "checkout": {
+    "title": "চেকআউট",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "cash": "নগদ",
+    "card": "কার্ড",
+    "mobile": "মোবাইল পেমেন্ট",
+    "customerInfo": "গ্রাহক তথ্য",
+    "customerName": "গ্রাহকের নাম",
+    "customerPhone": "ফোন নম্বর",
+    "amountReceived": "প্রাপ্ত পরিমাণ",
+    "change": "ফেরত",
+    "completePayment": "পেমেন্ট সম্পন্ন করুন",
+    "printReceipt": "রসিদ প্রিন্ট করুন",
+    "success": "পেমেন্ট সফল হয়েছে!",
+    "error": "পেমেন্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
+  },
+  "offers": {
+    "title": "সক্রিয় অফার",
+    "applied": "অফার প্রয়োগ করা হয়েছে",
+    "viewOffers": "অফার দেখুন"
+  }
+}

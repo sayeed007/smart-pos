@@ -3,16 +3,7 @@
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  TicketPercent,
-  Package,
-  CheckCircle2,
-  Wallet,
-  CreditCard,
-  Smartphone,
-  CreditCard as ChipIcon,
-  Minus,
-} from "lucide-react";
+import { CheckCircle2, Wallet, CreditCard, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/axios";
 
@@ -41,7 +32,7 @@ export function POSModals() {
         setModal("success");
         clearCart();
       }, 1500);
-    } catch (e) {
+    } catch {
       toast.error("Sale failed");
       setModal("none");
     }
@@ -76,10 +67,10 @@ export function POSModals() {
                       addToCart(selectedProduct, size.label);
                       setModal("none");
                     }}
-                    className="p-3 bg-white border border-gray-100 rounded-2xl hover:border-[#f87171] hover:bg-red-50 transition-all text-center group flex flex-col items-center justify-center min-h-[90px]"
+                    className="p-3 bg-white border border-gray-100 rounded-2xl hover:border-primary hover:bg-primary/10 transition-all text-center group flex flex-col items-center justify-center min-h-[90px]"
                   >
                     <div
-                      className={`w-8 h-8 rounded-lg mb-2 flex items-center justify-center font-black text-[10px] ${size.stock > 0 ? "bg-red-50 text-[#f87171]" : "bg-gray-100 text-gray-400"}`}
+                      className={`w-8 h-8 rounded-lg mb-2 flex items-center justify-center font-black text-[10px] ${size.stock > 0 ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"}`}
                     >
                       {size.label.charAt(0).toUpperCase()}
                       {size.label.includes("XL") ? "L" : ""}
@@ -108,9 +99,9 @@ export function POSModals() {
                     onClick={() =>
                       setModal(m === "Cash" ? "cash-detail" : "card-detail")
                     }
-                    className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-transparent hover:border-[#f87171] hover:bg-red-50 rounded-2xl transition-all gap-3 group"
+                    className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
                   >
-                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 group-hover:text-[#f87171]">
+                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 group-hover:text-primary">
                       {m === "Card" ? (
                         <CreditCard size={24} />
                       ) : m === "Cash" ? (
@@ -119,7 +110,7 @@ export function POSModals() {
                         <Smartphone size={24} />
                       )}
                     </div>
-                    <span className="font-bold text-[10px] uppercase tracking-wider text-gray-400 group-hover:text-[#f87171]">
+                    <span className="font-bold text-[10px] uppercase tracking-wider text-gray-400 group-hover:text-primary">
                       {m}
                     </span>
                   </button>
@@ -162,7 +153,7 @@ export function POSModals() {
                 </span>
               </div>
               <Button
-                className="w-full py-5 rounded-xl bg-[#f87171] hover:bg-[#ef4444]"
+                className="w-full py-5 rounded-xl bg-primary hover:bg-primary/90"
                 onClick={() => handleCheckout("Card")}
               >
                 Process Payment
@@ -173,8 +164,8 @@ export function POSModals() {
           {activeModal === "processing" && (
             <div className="bg-white rounded-3xl p-8 shadow-2xl text-center">
               <div className="relative mx-auto w-20 h-20 mb-6">
-                <div className="w-20 h-20 border-8 border-gray-50 border-t-[#f87171] rounded-full animate-spin"></div>
-                <div className="absolute inset-0 m-auto w-8 h-8 flex items-center justify-center text-[#f87171]">
+                <div className="w-20 h-20 border-8 border-gray-50 border-t-primary rounded-full animate-spin"></div>
+                <div className="absolute inset-0 m-auto w-8 h-8 flex items-center justify-center text-primary">
                   <CreditCard size={20} />
                 </div>
               </div>

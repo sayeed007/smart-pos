@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { CashierHeader } from "@/components/layout/CashierHeader";
 import { ShoppingCart, Package, Users, User } from "lucide-react";
-import { usePathname } from "next/navigation";
+
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
 import { useRouter } from "next/navigation";
@@ -23,9 +22,8 @@ export default function CashierLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
-  const pathname = usePathname();
+
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
@@ -39,17 +37,13 @@ export default function CashierLayout({
     return null;
   }
 
-  const currentTitle =
-    cashierNavItems.find((item) => pathname.startsWith(item.path))?.name ||
-    "Cashier";
-
   return (
-    <div className="flex min-h-screen bg-[#fcfdfe]">
+    <div className="flex min-h-screen bg-muted/20">
       {/* Desktop Sidebar - Collapsible */}
       <aside
         className={cn(
           "hidden lg:flex flex-col h-screen fixed inset-y-0 z-50 transition-all duration-300",
-          isDesktopCollapsed ? "w-20" : "w-72",
+          isDesktopCollapsed ? "w-20" : "w-58",
         )}
       >
         <Sidebar
@@ -64,17 +58,10 @@ export default function CashierLayout({
       <main
         className={cn(
           "flex-1 flex flex-col min-h-screen overflow-x-hidden transition-all duration-300",
-          isDesktopCollapsed ? "lg:ml-20" : "lg:ml-72",
+          isDesktopCollapsed ? "lg:ml-20" : "lg:ml-58",
         )}
       >
-        {/* <CashierHeader
-          isMobileMenuOpen={isMobileMenuOpen}
-          setIsMobileMenuOpen={setIsMobileMenuOpen}
-          currentTitle={currentTitle}
-          navItems={cashierNavItems}
-        /> */}
-
-        <div className="p-4 lg:p-6 w-full max-w-400 mx-auto animate-in fade-in duration-500">
+        <div className="w-full max-w-400 mx-auto animate-in fade-in duration-500">
           {children}
         </div>
       </main>

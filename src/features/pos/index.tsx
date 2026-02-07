@@ -34,7 +34,6 @@ export default function POSFeature() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 h-[95vh]">
-      {/* [calc(100vh-90px)] */}
       <ProductGrid products={products || []} categories={categories || []} />
       <CartPanel offers={offers} />
       <POSModals />

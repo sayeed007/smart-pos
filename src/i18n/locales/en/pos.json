@@ -1,0 +1,47 @@
+{
+  "title": "Point of Sale",
+  "productSearch": "Search products...",
+  "categoryAll": "All Products",
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "addItems": "Add items to get started",
+    "items": "{{count}} item",
+    "items_plural": "{{count}} items",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "tax": "Tax",
+    "total": "Total",
+    "clearCart": "Clear Cart",
+    "checkout": "Checkout"
+  },
+  "product": {
+    "outOfStock": "Out of Stock",
+    "lowStock": "Low Stock",
+    "inStock": "In Stock",
+    "addToCart": "Add to Cart",
+    "removeFromCart": "Remove from Cart",
+    "stock": "Stock"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "paymentMethod": "Payment Method",
+    "cash": "Cash",
+    "card": "Card",
+    "mobile": "Mobile Payment",
+    "customerInfo": "Customer Information",
+    "customerName": "Customer Name",
+    "customerPhone": "Phone Number",
+    "amountReceived": "Amount Received",
+    "change": "Change",
+    "completePayment": "Complete Payment",
+    "printReceipt": "Print Receipt",
+    "success": "Payment successful!",
+    "error": "Payment failed. Please try again."
+  },
+  "offers": {
+    "title": "Active Offers",
+    "applied": "Offer Applied",
+    "viewOffers": "View Offers"
+  }
+}
