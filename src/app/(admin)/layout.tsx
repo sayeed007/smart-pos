@@ -77,7 +77,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#fcfdfe]">
+    <div className="flex min-h-screen bg-muted/20">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-58 h-screen fixed inset-y-0 z-50">
         <Sidebar items={adminNavItems} title="Admin" />

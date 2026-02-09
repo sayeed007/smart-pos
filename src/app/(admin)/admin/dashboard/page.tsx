@@ -4,13 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { Sale, Product } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DollarSign,
-  ShoppingBag,
-  Package,
-  TrendingUp,
-  Loader2,
-} from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import {
   BarChart,
   Bar,
@@ -20,8 +15,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
+  const { t } = useTranslation("dashboard");
+
   const { data: sales, isLoading: salesLoading } = useQuery<Sale[]>({
     queryKey: ["sales"],
     queryFn: async () => (await api.get("/sales")).data,
@@ -37,7 +35,7 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/50" />
       </div>
     );
   }
@@ -47,7 +45,7 @@ export default function DashboardPage() {
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
   const totalProducts = products?.length || 0;
 
-  // Prepare chart data (Revenue by Day)
+  // Prepare chart data (Revenue by Day) - Last 7 days
   const chartData = sales
     ?.reduce((acc: any[], sale) => {
       const existing = acc.find((d) => d.date === sale.date);
@@ -61,121 +59,174 @@ export default function DashboardPage() {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-7); // Last 7 days
 
+  // Stats cards configuration matching the reference design
+  const statsCards = [
+    {
+      title: t("stats.totalSales"),
+      value: `$${totalRevenue.toFixed(2)}`,
+      icon: "/icons/TotalSales.png",
+      iconBg: "bg-[#FF6B6B]", // Red/coral
+    },
+    {
+      title: t("stats.totalProducts"),
+      value: totalProducts.toString(),
+      icon: "/icons/TotalProducts.png",
+      iconBg: "bg-[#00D68F]", // Green
+    },
+    {
+      title: t("stats.customers"),
+      value: "2", // Placeholder - update with actual customer count
+      icon: "/icons/Customers.png",
+      iconBg: "bg-[#A855F7]", // Purple
+    },
+    {
+      title: t("stats.lowStock"),
+      value: "0", // Placeholder - update with actual low stock count
+      icon: "/icons/LowStock.png",
+      iconBg: "bg-[#FF8A00]", // Orange
+    },
+  ];
+
   return (
-    <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-[2rem] border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[2rem] border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Orders</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalOrders}</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[2rem] border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-muted-foreground">+19 New this week</p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-[2rem] border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Avg. Order Value
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${averageOrderValue.toFixed(2)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
-          </CardContent>
-        </Card>
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div>
+        <h1 className="typo-bold-18 text-foreground tracking-tight">
+          {t("page.title")}
+        </h1>
+        <p className="typo-regular-14 text-muted-foreground mt-1">
+          {t("page.subtitle")}
+        </p>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {statsCards.map((stat, index) => (
+          <Card
+            key={index}
+            className="bg-card rounded-lg border-0 shadow-sm overflow-hidden gap-0 py-0"
+          >
+            <CardContent className="p-2">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="typo-regular-12 text-muted-foreground mb-2">
+                    {stat.title}
+                  </p>
+                  <h3 className="typo-bold-18 text-foreground">{stat.value}</h3>
+                </div>
+                <div
+                  className={`w-8 h-8 rounded-2xl ${stat.iconBg} flex items-center justify-center shrink-0`}
+                >
+                  <Image
+                    src={stat.icon}
+                    alt={stat.title}
+                    width={32}
+                    height={32}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 rounded-[2rem] border-0 shadow-sm">
+        {/* Revenue Chart */}
+        <Card className="col-span-4 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
           <CardHeader>
-            <CardTitle>Recent Revenue</CardTitle>
+            <CardTitle className="typo-bold-16 text-foreground">
+              {t("charts.recentRevenue")}
+            </CardTitle>
+            <p className="typo-regular-12 text-muted-foreground mt-1">
+              {t("charts.last7Days")}
+            </p>
           </CardHeader>
           <CardContent className="pl-2">
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--sidebar-border))"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `$${value}`}
                 />
                 <Tooltip
-                  cursor={{ fill: "#f4f4f5" }}
+                  cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
                   contentStyle={{
                     borderRadius: "12px",
-                    border: "none",
+                    border: "1px solid hsl(var(--sidebar-border))",
+                    backgroundColor: "hsl(var(--card))",
                     boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   }}
+                  labelStyle={{
+                    color: "hsl(var(--foreground))",
+                    fontWeight: 600,
+                  }}
+                  itemStyle={{
+                    color: "hsl(var(--chart-1))",
+                  }}
                 />
-                <Bar dataKey="revenue" fill="#f87171" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="revenue"
+                  fill="hsl(var(--chart-1))"
+                  radius={[8, 8, 0, 0]}
+                  maxBarSize={60}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="col-span-3 rounded-[2rem] border-0 shadow-sm">
+        {/* Recent Sales */}
+        <Card className="col-span-3 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
           <CardHeader>
-            <CardTitle>Recent Sales</CardTitle>
+            <CardTitle className="typo-bold-16 text-foreground">
+              {t("charts.recentSales")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-8">
+            <div className="space-y-6">
               {sales?.slice(0, 5).map((sale) => (
                 <div key={sale.id} className="flex items-center">
-                  <div className="h-9 w-9 rounded-full bg-red-50 flex items-center justify-center text-xs font-bold text-red-500">
+                  <div className="h-10 w-10 rounded-full bg-chart-1/10 flex items-center justify-center typo-semibold-14 text-chart-1 border border-chart-1/20">
                     {sale.customerName?.charAt(0) || "G"}
                   </div>
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                  <div className="ml-4 space-y-1 flex-1">
+                    <p className="typo-semibold-14 text-foreground leading-none">
                       {sale.invoiceNo}
                     </p>
-                    <p className="text-sm text-muted-foreground">
-                      {sale.items.length} items
+                    <p className="typo-regular-12 text-muted-foreground">
+                      {sale.items.length} {t("sales.items")}
                     </p>
                   </div>
-                  <div className="ml-auto font-medium">
+                  <div className="typo-bold-14 text-chart-1">
                     +${sale.total.toFixed(2)}
                   </div>
                 </div>
               ))}
+              {(!sales || sales.length === 0) && (
+                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                  <ShoppingBag
+                    size={48}
+                    className="mb-4 text-muted-foreground/30"
+                  />
+                  <p className="typo-semibold-14">{t("sales.noSales")}</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

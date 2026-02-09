@@ -1,0 +1,22 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to your POS system"
+  },
+  "stats": {
+    "totalSales": "Total Sales",
+    "totalProducts": "Total Products",
+    "customers": "Customers",
+    "lowStock": "Low Stock"
+  },
+  "charts": {
+    "recentRevenue": "Revenue Overview",
+    "recentSales": "Recent Sales",
+    "last7Days": "Last 7 days performance"
+  },
+  "sales": {
+    "items": "items",
+    "noSales": "No sales yet",
+    "viewAll": "View All"
+  }
+}

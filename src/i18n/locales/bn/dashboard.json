@@ -1,0 +1,22 @@
+{
+  "page": {
+    "title": "ড্যাশবোর্ড",
+    "subtitle": "আপনার POS সিস্টেমে স্বাগতম"
+  },
+  "stats": {
+    "totalSales": "মোট বিক্রয়",
+    "totalProducts": "মোট পণ্য",
+    "customers": "গ্রাহকগণ",
+    "lowStock": "কম স্টক"
+  },
+  "charts": {
+    "recentRevenue": "আয়ের সারসংক্ষেপ",
+    "recentSales": "সাম্প্রতিক বিক্রয়",
+    "last7Days": "গত ৭ দিনের কর্মক্ষমতা"
+  },
+  "sales": {
+    "items": "আইটেম",
+    "noSales": "এখনও কোনো বিক্রয় নেই",
+    "viewAll": "সব দেখুন"
+  }
+}
