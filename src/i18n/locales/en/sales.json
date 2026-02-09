@@ -1,0 +1,46 @@
+{
+  "title": "Sales",
+  "subtitle": "View recent sales here",
+  "filters": {
+    "pickDate": "Pick a date"
+  },
+  "stats": {
+    "totalRevenue": "Total Revenue",
+    "totalProfit": "Total Profit",
+    "totalSales": "Total Sales"
+  },
+  "table": {
+    "title": "Recent Sales",
+    "headers": {
+      "sl": "SL",
+      "invoiceNo": "Invoice No",
+      "product": "Product",
+      "category": "Category",
+      "price": "Price",
+      "time": "Time",
+      "payment": "Payment",
+      "return": "Return",
+      "status": "Status",
+      "invoice": "Invoice",
+      "actions": "Actions"
+    },
+    "empty": "No sales records found"
+  },
+  "modal": {
+    "title": "Process Return",
+    "subtitle": "Select items to return and provide a reason",
+    "reasonLabel": "Reason for Return *",
+    "reasonPlaceholder": "e.g., Wrong size, Defective item, Customer changed mind",
+    "totalRefund": "Total Refund:",
+    "itemsToReturn": "Items to Return:",
+    "processReturn": "Process Return",
+    "cancel": "Cancel",
+    "refund": "Refund",
+    "max": "Max"
+  },
+  "status": {
+    "completed": "Completed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  }
+}

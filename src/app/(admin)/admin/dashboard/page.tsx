@@ -109,7 +109,7 @@ export default function DashboardPage() {
             key={index}
             className="bg-card rounded-lg border-0 shadow-sm overflow-hidden gap-0 py-0"
           >
-            <CardContent className="p-2">
+            <CardContent className="px-4 py-2">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <p className="typo-regular-12 text-muted-foreground mb-2">

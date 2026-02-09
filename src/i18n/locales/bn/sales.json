@@ -1,0 +1,34 @@
+{
+  "title": "বিক্রয়",
+  "subtitle": "এখানে সাম্প্রতিক বিক্রয় দেখুন",
+  "filters": {
+    "pickDate": "একটি তারিখ নির্বাচন করুন"
+  },
+  "stats": {
+    "totalRevenue": "মোট আয়",
+    "totalProfit": "মোট লাভ",
+    "totalSales": "মোট বিক্রয়"
+  },
+  "table": {
+    "title": "সাম্প্রতিক বিক্রয়",
+    "headers": {
+      "sl": "ক্রমিক",
+      "invoiceNo": "চালান নং",
+      "product": "পণ্য",
+      "category": "বিভাগ",
+      "price": "মূল্য",
+      "time": "সময়",
+      "payment": "পেমেন্ট",
+      "return": "ফেরত",
+      "status": "অবস্থা",
+      "invoice": "চালান",
+      "actions": "কর্ম"
+    },
+    "empty": "কোনো বিক্রয় রেকর্ড পাওয়া যায়নি"
+  },
+  "status": {
+    "completed": "সম্পন্ন",
+    "pending": "অপেক্ষমাণ",
+    "cancelled": "বাতিল"
+  }
+}
