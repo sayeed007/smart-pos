@@ -73,15 +73,16 @@ export function Sidebar({
 
           {!collapsed && (
             <div className="flex-1 min-w-0 animate-in fade-in duration-300">
-              <h1 className="text-semibold-14 text-foreground whitespace-nowrap">
+              <h1 className="typo-semibold-14 text-foreground whitespace-nowrap">
                 {instance.companyName}
               </h1>
-              <p className="text-regular-11 text-muted-foreground uppercase whitespace-nowrap">
+              <p className="typo-regular-11 text-muted-foreground uppercase whitespace-nowrap">
                 {title} {t("panel")}
               </p>
             </div>
           )}
 
+          {/* Desktop collapse button */}
           {onToggleCollapse && (
             <Button
               variant="ghost"
@@ -93,6 +94,18 @@ export function Sidebar({
               )}
             >
               <Menu className="size-6" />
+            </Button>
+          )}
+
+          {/* Mobile close button */}
+          {onClose && !collapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="lg:hidden cursor-pointer text-muted-foreground hover:text-foreground transition-colors h-auto w-auto p-1"
+            >
+              <X className="size-6" />
             </Button>
           )}
         </div>

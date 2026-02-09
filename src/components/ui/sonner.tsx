@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   CircleCheckIcon,
@@ -6,12 +6,12 @@ import {
   Loader2Icon,
   OctagonXIcon,
   TriangleAlertIcon,
-} from "lucide-react"
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
 
   return (
     <Sonner
@@ -30,11 +30,27 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          // Success toast - Green
+          "--success-bg": "#10b981",
+          "--success-text": "#ffffff",
+          "--success-border": "#059669",
+          // Error toast - Red
+          "--error-bg": "#ef4444",
+          "--error-text": "#ffffff",
+          "--error-border": "#dc2626",
+          // Warning toast - Yellow/Amber
+          "--warning-bg": "#f59e0b",
+          "--warning-text": "#ffffff",
+          "--warning-border": "#d97706",
+          // Info toast - Blue
+          "--info-bg": "#3b82f6",
+          "--info-text": "#ffffff",
+          "--info-border": "#2563eb",
         } as React.CSSProperties
       }
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

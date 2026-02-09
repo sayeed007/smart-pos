@@ -111,16 +111,16 @@ export default function CashierProductsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-bold-18 text-foreground tracking-tight">
+          <h1 className="typo-bold-18 text-foreground tracking-tight">
             {t("page.title")}
           </h1>
-          <p className="text-regular-14 text-muted-foreground mt-1">
+          <p className="typo-regular-14 text-muted-foreground mt-1">
             {t("page.subtitle")}
           </p>
         </div>
         <Button
           onClick={handleAddClick}
-          className="bg-chart-1 hover:bg-chart-1/90 text-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all"
+          className="bg-chart-1 hover:bg-chart-1/90 typo-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all"
         >
           <Plus className="w-4 h-4 mr-2" />
           {t("page.addProduct")}
@@ -146,8 +146,8 @@ export default function CashierProductsPage() {
           </div>
         ) : (
           <Table className="">
-            <TableHeader className="bg-card border-0">
-              <TableRow className="text-semibold-14 border-b border-sidebar-border p-2">
+            <TableHeader className="bg-muted border-0">
+              <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
                 <TableHead className="w-75">
                   {t("page.headers.product")}
                 </TableHead>
@@ -165,7 +165,7 @@ export default function CashierProductsPage() {
               {filteredProducts?.map((product) => (
                 <TableRow
                   key={product.id}
-                  className="border-sidebar-border p-2 even:bg-muted/20 hover:bg-muted/50 transition-colors"
+                  className="border-sidebar-border p-2 odd:bg-card even:bg-muted hover:bg-muted/60 transition-colors"
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -183,10 +183,10 @@ export default function CashierProductsPage() {
                         )}
                       </div>
                       <div className="flex flex-col align-center">
-                        <p className="text-semibold-14 text-foreground">
+                        <p className="typo-semibold-14 text-foreground">
                           {product.name}
                         </p>
-                        <p className="text-regular-12 mt-1 text-muted-foreground">
+                        <p className="typo-regular-12 mt-1 text-muted-foreground">
                           {product.id
                             ? product.id.substring(0, 8).toUpperCase()
                             : "N/A"}
@@ -194,24 +194,24 @@ export default function CashierProductsPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-regular-14">
+                  <TableCell className="text-muted-foreground typo-regular-14">
                     {product.sku}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-foreground text-regular-14">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-foreground typo-regular-14">
                       {categories?.find((c) => c.id === product.categoryId)
                         ?.name || t("fields.uncategorized", "Uncategorized")}
                     </span>
                   </TableCell>
-                  <TableCell className="text-foreground text-bold-14">
+                  <TableCell className="text-foreground typo-bold-14">
                     ${product.sellingPrice.toFixed(2)}
                   </TableCell>
                   <TableCell>
                     <span
                       className={
                         product.stockQuantity < 10
-                          ? "text-bold-14 text-destructive"
-                          : "text-muted-foreground text-regular-14"
+                          ? "typo-bold-14 text-destructive"
+                          : "text-muted-foreground typo-regular-14"
                       }
                     >
                       {product.stockQuantity}
@@ -235,7 +235,7 @@ export default function CashierProductsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        className="cursor-pointer h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
                         onClick={() => handleEdit(product)}
                       >
                         <SquarePen className="w-4 h-4" />
@@ -249,7 +249,7 @@ export default function CashierProductsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            className="cursor-pointer h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           >
                             <Trash2 className="w-4 h-4" color="red" />
                           </Button>

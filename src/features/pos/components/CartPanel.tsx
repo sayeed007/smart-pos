@@ -43,12 +43,12 @@ export function CartPanel({ offers }: CartPanelProps) {
       {/* Header Section */}
       <div className="p-4 pb-2 shrink-0 bg-background z-10">
         <div className="flex items-center justify-between mb-4 border-b border-border pb-2">
-          <h2 className="text-bold-18 text-foreground">{t("cart.title")}</h2>
+          <h2 className="typo-bold-18 text-foreground">{t("cart.title")}</h2>
 
           {cart.length > 0 && (
             <Button
               variant="outline"
-              className="h-9 text-semibold-14! uppercase tracking-wide text-muted-foreground hover:text-destructive hover:border-destructive/30"
+              className="h-9 typo-semibold-14! uppercase tracking-wide text-muted-foreground hover:text-destructive hover:border-destructive/30"
               onClick={clearCart}
             >
               {t("cart.clearCart")}
@@ -113,7 +113,7 @@ export function CartPanel({ offers }: CartPanelProps) {
           ) : (
             <Button
               variant="outline"
-              className="w-full text-semibold-14 text-[#00A63E] border-[#00A63E] hover:bg-[#00A63E] hover:text-white h-10 border-dashed"
+              className="w-full typo-semibold-14 text-[#00A63E] border-[#00A63E] hover:bg-[#00A63E] hover:text-white h-10 border-dashed"
               onClick={() => setIsOfferApplied(true)}
             >
               <TicketPercent size={16} className="mr-2" />
@@ -125,30 +125,30 @@ export function CartPanel({ offers }: CartPanelProps) {
         {/* Totals Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between text-muted-foreground">
-            <span className="text-regular-14">{t("cart.subtotal")}</span>
-            <span className="text-semibold-14 text-foreground">
+            <span className="typo-regular-14">{t("cart.subtotal")}</span>
+            <span className="typo-semibold-14 text-foreground">
               ${subtotal.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground items-center">
-            <span className="text-regular-14">{t("cart.discount")}</span>
-            <span className="text-semibold-14 text-foreground">
+            <span className="typo-regular-14">{t("cart.discount")}</span>
+            <span className="typo-semibold-14 text-foreground">
               {discount > 0 ? `-$${discount.toFixed(2)}` : "$0.00"}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground">
-            <span className="text-regular-14">{t("cart.tax")} (8%)</span>
-            <span className="text-semibold-14 text-foreground">
+            <span className="typo-regular-14">{t("cart.tax")} (8%)</span>
+            <span className="typo-semibold-14 text-foreground">
               ${tax.toFixed(2)}
             </span>
           </div>
         </div>
 
         <div className="flex justify-between items-end pt-2 border-t border-dashed border-border">
-          <span className="text-bold-18 text-foreground">
+          <span className="typo-bold-18 text-foreground">
             {t("cart.total")}
           </span>
-          <span className="text-bold-18 text-chart-1">${total.toFixed(2)}</span>
+          <span className="typo-bold-18 text-chart-1">${total.toFixed(2)}</span>
         </div>
 
         {/* Payment Methods */}
@@ -156,7 +156,7 @@ export function CartPanel({ offers }: CartPanelProps) {
           <Button
             variant={paymentMethod === "card" ? "default" : "outline"}
             className={cn(
-              "h-10 text-semibold-12 gap-2 border-border", // Added border-border for outline
+              "h-10 typo-semibold-12 gap-2 border-border", // Added border-border for outline
               paymentMethod === "card"
                 ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
                 : "text-foreground bg-transparent hover:bg-muted",
@@ -169,7 +169,7 @@ export function CartPanel({ offers }: CartPanelProps) {
           <Button
             variant={paymentMethod === "cash" ? "default" : "outline"}
             className={cn(
-              "h-10 text-semibold-12 gap-2 border-border",
+              "h-10 typo-semibold-12 gap-2 border-border",
               paymentMethod === "cash"
                 ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
                 : "text-foreground bg-transparent hover:bg-muted",
@@ -182,7 +182,7 @@ export function CartPanel({ offers }: CartPanelProps) {
           <Button
             variant={paymentMethod === "wallet" ? "default" : "outline"}
             className={cn(
-              "h-10 text-semibold-12 gap-2 px-1 border-border", // px-1 for tight space
+              "h-10 typo-semibold-12 gap-2 px-1 border-border", // px-1 for tight space
               paymentMethod === "wallet"
                 ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
                 : "text-foreground bg-transparent hover:bg-muted",
@@ -197,7 +197,7 @@ export function CartPanel({ offers }: CartPanelProps) {
         {/* Complete Sale */}
         <Button
           size="lg"
-          className="w-full text-semibold-14 bg-chart-1 hover:bg-chart-1/90 text-white shadow-lg shadow-chart-1/20"
+          className="w-full typo-semibold-14 bg-chart-1 hover:bg-chart-1/90 text-white shadow-lg shadow-chart-1/20"
           onClick={() => setModal("processing")}
         >
           {t("cart.completeSale")}

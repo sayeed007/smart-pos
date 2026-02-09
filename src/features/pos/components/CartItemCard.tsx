@@ -23,10 +23,10 @@ export function CartItemCard({
     <Card className="p-3 shadow-sm border-border bg-card relative group gap-2">
       <div className="flex justify-between items-start mb-1">
         <div className="pr-6">
-          <h4 className="text-semibold-14 text-foreground line-clamp-2">
+          <h4 className="typo-semibold-14 text-foreground line-clamp-2">
             {item.name}
           </h4>
-          <p className="text-regular-12 text-muted-foreground mt-0.5">
+          <p className="typo-regular-12 text-muted-foreground mt-0.5">
             ${item.sellingPrice.toFixed(2)} {t("cart.each")}
           </p>
         </div>
@@ -49,7 +49,7 @@ export function CartItemCard({
           >
             <Minus size={14} />
           </Button>
-          <span className="text-semibold-14 w-4 text-center text-foreground">
+          <span className="typo-semibold-14 w-4 text-center text-foreground">
             {item.quantity}
           </span>
           <Button
@@ -64,7 +64,7 @@ export function CartItemCard({
 
         {/* Item Total */}
         <div className="text-right">
-          <span className="text-bold-16 text-foreground">
+          <span className="typo-bold-16 text-foreground">
             ${(item.sellingPrice * item.quantity).toFixed(2)}
           </span>
         </div>

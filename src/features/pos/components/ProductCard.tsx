@@ -30,17 +30,17 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
           </div>
         )}
       </div>
-      <h3 className=" text-foreground text-semibold-14 mb-1 line-clamp-1">
+      <h3 className=" text-foreground typo-semibold-14 mb-1 line-clamp-1">
         {product.name}
       </h3>
-      <p className="text-regular-12 text-muted-foreground mb-1 uppercase tracking-wide">
+      <p className="typo-regular-12 text-muted-foreground mb-1 uppercase tracking-wide">
         {product.sku}
       </p>
       <div className="mt-2 flex justify-between items-center">
-        <div className="text-chart-1 text-bold-18">
+        <div className="text-chart-1 typo-bold-18">
           ${product.sellingPrice.toFixed(2)}
         </div>
-        <div className="text-regular-12 text-muted-foreground">
+        <div className="typo-regular-12 text-muted-foreground">
           Stock: {product.stockQuantity}
         </div>
       </div>

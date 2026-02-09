@@ -1,0 +1,50 @@
+{
+  "page": {
+    "title": "Customers",
+    "subtitle": "Manage your customer database and loyalty members"
+  },
+  "addCustomer": "Add Customer",
+  "editCustomer": "Edit Customer",
+  "searchPlaceholder": "Search by name, phone, or email...",
+  "headers": {
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "totalSpent": "Total Spent",
+    "loyaltyPoints": "Loyalty Points",
+    "actions": "Actions"
+  },
+  "fields": {
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "emailAddress": "Email Address",
+    "enterName": "Enter customer name",
+    "enterPhone": "Enter phone number",
+    "enterEmail": "Enter email address"
+  },
+  "actions": {
+    "save": "Save",
+    "update": "Update",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "delete": "Delete"
+  },
+  "dialog": {
+    "addTitle": "Add Customer",
+    "addDescription": "Add a new customer to your database",
+    "editTitle": "Edit Customer",
+    "editDescription": "Update customer information"
+  },
+  "empty": {
+    "title": "No customers found",
+    "description": "Add your first customer to get started"
+  },
+  "toasts": {
+    "customerCreated": "Customer added successfully",
+    "customerUpdated": "Customer updated successfully",
+    "customerDeleted": "Customer deleted successfully",
+    "customerError": "Failed to save customer",
+    "deleteError": "Failed to delete customer"
+  },
+  "confirmDelete": "Are you sure you want to delete {{name}}?"
+}

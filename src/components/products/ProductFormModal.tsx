@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import Image from "next/image";
 
 export interface ProductFormData {
   id?: string;
@@ -111,6 +112,7 @@ export function ProductFormModal({
       await onSave(formData);
       onOpenChange(false);
     } catch (error) {
+      console.error("Error saving product:", error);
       // Error handled by parent or toast here if needed
     } finally {
       setIsSaving(false);
@@ -121,10 +123,10 @@ export function ProductFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="typo-bold-18">
             {productToEdit ? t("title.edit") : t("title.add")}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="typo-regular-14">
             {productToEdit ? t("description.edit") : t("description.add")}
           </DialogDescription>
         </DialogHeader>
@@ -132,7 +134,9 @@ export function ProductFormModal({
         <div className="grid gap-6 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">{t("fields.name")} *</Label>
+              <Label htmlFor="name" className="typo-semibold-14">
+                {t("fields.name")} *
+              </Label>
               <Input
                 id="name"
                 placeholder={t("fields.namePlaceholder")}
@@ -143,7 +147,9 @@ export function ProductFormModal({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">{t("fields.category")} *</Label>
+              <Label htmlFor="category" className="typo-semibold-14">
+                {t("fields.category")} *
+              </Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(val) =>
@@ -181,7 +187,9 @@ export function ProductFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="sku">{t("fields.sku")} *</Label>
+              <Label htmlFor="sku" className="typo-semibold-14">
+                {t("fields.sku")} *
+              </Label>
               <Input
                 id="sku"
                 placeholder={t("fields.skuPlaceholder")}
@@ -192,7 +200,9 @@ export function ProductFormModal({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="barcode">{t("fields.barcode")}</Label>
+              <Label htmlFor="barcode" className="typo-semibold-14">
+                {t("fields.barcode")}
+              </Label>
               <Input
                 id="barcode"
                 placeholder={t("fields.barcodePlaceholder")}
@@ -206,7 +216,9 @@ export function ProductFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="costPrice">{t("fields.costPrice")}</Label>
+              <Label htmlFor="costPrice" className="typo-semibold-14">
+                {t("fields.costPrice")}
+              </Label>
               <Input
                 id="costPrice"
                 type="number"
@@ -221,7 +233,9 @@ export function ProductFormModal({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sellingPrice">{t("fields.sellingPrice")} *</Label>
+              <Label htmlFor="sellingPrice" className="typo-semibold-14">
+                {t("fields.sellingPrice")} *
+              </Label>
               <Input
                 id="sellingPrice"
                 type="number"
@@ -239,7 +253,9 @@ export function ProductFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tax">{t("fields.tax")}</Label>
+              <Label htmlFor="tax" className="typo-semibold-14">
+                {t("fields.tax")}
+              </Label>
               <Input
                 id="tax"
                 type="number"
@@ -254,7 +270,9 @@ export function ProductFormModal({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="stock">{t("fields.stockQuantity")}</Label>
+              <Label htmlFor="stock" className="typo-semibold-14">
+                {t("fields.stockQuantity")}
+              </Label>
               <Input
                 id="stock"
                 type="number"
@@ -272,7 +290,9 @@ export function ProductFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="lowStock">{t("fields.lowStock")}</Label>
+              <Label htmlFor="lowStock" className="typo-semibold-14">
+                {t("fields.lowStock")}
+              </Label>
               <Input
                 id="lowStock"
                 type="number"
@@ -286,16 +306,17 @@ export function ProductFormModal({
                 }
               />
             </div>
-            <div className="space-y-2"></div>
             <div className="space-y-2">
-              <Label htmlFor="status">{t("fields.status")}</Label>
+              <Label htmlFor="status" className="typo-semibold-14">
+                {t("fields.status")}
+              </Label>
               <Select
                 value={formData.status}
                 onValueChange={(val: "active" | "inactive") =>
                   setFormData({ ...formData, status: val })
                 }
               >
-                <SelectTrigger id="status">
+                <SelectTrigger id="status" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -308,31 +329,134 @@ export function ProductFormModal({
             </div>
           </div>
 
-          {/* Image Upload Placeholder */}
-          <div className="border-2 border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-muted/30 transition-colors cursor-pointer group">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <Upload className="w-5 h-5 text-muted-foreground" />
+          {/* Image Upload with Drag & Drop */}
+          <div className="space-y-2">
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${
+                formData.image
+                  ? "border-chart-1 bg-chart-1/5"
+                  : "border-border hover:bg-muted/30 hover:border-chart-1/50"
+              }`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add(
+                  "border-chart-1",
+                  "bg-chart-1/10",
+                );
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                if (!formData.image) {
+                  e.currentTarget.classList.remove(
+                    "border-chart-1",
+                    "bg-chart-1/10",
+                  );
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove(
+                  "border-chart-1",
+                  "bg-chart-1/10",
+                );
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith("image/")) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setFormData({
+                      ...formData,
+                      image: reader.result as string,
+                    });
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  toast.error(
+                    t(
+                      "validation.invalidImageFormat",
+                      "Please upload a valid image file",
+                    ),
+                  );
+                }
+              }}
+              onClick={() => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = "image/*";
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setFormData({
+                        ...formData,
+                        image: reader.result as string,
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                };
+                input.click();
+              }}
+            >
+              {formData.image ? (
+                <div className="relative w-full">
+                  <Image
+                    src={formData.image}
+                    alt="Product preview"
+                    width={400}
+                    height={192}
+                    className="max-h-48 mx-auto rounded-lg object-cover"
+                    unoptimized
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFormData({ ...formData, image: undefined });
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <p className="typo-semibold-14 text-foreground">
+                    {t("fields.imageDrag", "Drag & drop your image here")}
+                  </p>
+                  <p className="typo-regular-12 text-muted-foreground mt-1">
+                    {t("fields.imageClick", "or click to browse")}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {t("fields.browse", "Browse Files")}
+                  </Button>
+                </>
+              )}
             </div>
-            <p className="text-sm font-medium text-foreground">
-              {t("fields.imageDrag")}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {t("fields.imageClick")}
-            </p>
-            <Button variant="outline" size="sm" className="mt-4">
-              {t("fields.browse")}
-            </Button>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="typo-semibold-14"
+          >
             {t("actions.cancel")}
           </Button>
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-chart-1 hover:bg-chart-1/90 text-primary-foreground"
+            className=" bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
           >
             {isSaving ? t("actions.saving") : t("actions.save")}
           </Button>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { ShoppingCart, Package, Users, User } from "lucide-react";
+import { ShoppingCart, Package, Users, User, Menu } from "lucide-react";
 
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
@@ -17,6 +17,7 @@ export default function CashierLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const { t } = useTranslation("common");
 
@@ -36,7 +37,7 @@ export default function CashierLayout({
       icon: <Users size={24} />,
       path: "/cashier/customers",
     },
-    { name: t("profile"), icon: <User size={24} />, path: "/cashier/profile" },
+    // { name: t("profile"), icon: <User size={24} />, path: "/cashier/profile" },
   ];
 
   const { user, isLoading } = useAuth();
@@ -54,6 +55,37 @@ export default function CashierLayout({
 
   return (
     <div className="flex min-h-screen bg-muted/20">
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-card border border-sidebar-border shadow-lg hover:bg-muted transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu className="w-6 h-6 text-foreground" />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside
+        className={cn(
+          "lg:hidden fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <Sidebar
+          items={cashierNavItems}
+          title="Cashier"
+          onClose={() => setIsMobileOpen(false)}
+        />
+      </aside>
+
       {/* Desktop Sidebar - Collapsible */}
       <aside
         className={cn(
