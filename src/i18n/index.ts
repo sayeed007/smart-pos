@@ -16,6 +16,8 @@ import enCommon from './locales/en/common.json';
 import enPos from './locales/en/pos.json';
 import bnCommon from './locales/bn/common.json';
 import bnPos from './locales/bn/pos.json';
+import enProducts from './locales/en/products.json';
+import bnProducts from './locales/bn/products.json';
 
 // Initialize i18next
 i18n
@@ -25,16 +27,18 @@ i18n
             en: {
                 [I18N_NAMESPACES.common]: enCommon,
                 [I18N_NAMESPACES.pos]: enPos,
+                [I18N_NAMESPACES.products]: enProducts,
             },
             bn: {
                 [I18N_NAMESPACES.common]: bnCommon,
                 [I18N_NAMESPACES.pos]: bnPos,
+                [I18N_NAMESPACES.products]: bnProducts,
             },
         },
         lng: DEFAULT_LANGUAGE,
         fallbackLng: FALLBACK_LANGUAGE,
         defaultNS: I18N_NAMESPACES.common,
-        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos],
+        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos, I18N_NAMESPACES.products],
 
         interpolation: {
             escapeValue: false, // React already escapes values

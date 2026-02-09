@@ -1,0 +1,69 @@
+{
+  "title": {
+    "add": "Add New Product",
+    "edit": "Edit Product",
+    "delete": "Confirm Deletion"
+  },
+  "description": {
+    "add": "Enter the product details below.",
+    "edit": "Update product details.",
+    "delete": "Are you sure you want to delete <1>{{name}}</1>? This action cannot be undone."
+  },
+  "fields": {
+    "name": "Product Name",
+    "namePlaceholder": "Enter product name",
+    "category": "Category",
+    "categoryPlaceholder": "Select Category",
+    "categoryCreate": "Create New Category",
+    "sku": "SKU",
+    "skuPlaceholder": "Product SKU",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "Product barcode",
+    "costPrice": "Cost Price",
+    "sellingPrice": "Selling Price",
+    "tax": "Tax (%)",
+    "stockQuantity": "Stock Quantity",
+    "lowStock": "Low Stock Threshold",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "imageDrag": "Drag & drop files here",
+    "imageClick": "Or click to browse (up to 2MB)",
+    "browse": "Browse files"
+  },
+  "actions": {
+    "save": "Save Product",
+    "saving": "Saving...",
+    "delete": "Delete Product",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "createCategoryComingSoon": "Create Category feature coming soon!"
+  },
+  "validation": {
+    "required": "Please fill in all required fields (*)"
+  },
+  "page": {
+    "title": "Products",
+    "subtitle": "Manage your product catalog",
+    "addProduct": "Add Product",
+    "searchPlaceholder": "Search products...",
+    "headers": {
+      "product": "Product",
+      "sku": "SKU",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "noProducts": {
+      "title": "No products found",
+      "description": "No products found matching your search."
+    }
+  },
+  "toasts": {
+    "createSuccess": "Product created successfully",
+    "updateSuccess": "Product updated successfully",
+    "deleteSuccess": "Product deleted successfully"
+  }
+}

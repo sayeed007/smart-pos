@@ -1,0 +1,69 @@
+{
+  "title": {
+    "add": "নতুন পণ্য যোগ করুন",
+    "edit": "পণ্য সম্পাদনা করুন",
+    "delete": "মুছে ফেলার সম্মতি দিন"
+  },
+  "description": {
+    "add": "নিচের পণ্যের বিবরণ লিখুন।",
+    "edit": "পণ্যের বিবরণ আপডেট করুন।",
+    "delete": "আপনি কি নিশ্চিত যে আপনি <1>{{name}}</1> মুছতে চান? এই কাজটি পূর্বাবস্থায় ফিরিয়ে আনা যাবে না।"
+  },
+  "fields": {
+    "name": "পণ্যের নাম",
+    "namePlaceholder": "পণ্যের নাম লিখুন",
+    "category": "বিভাগ",
+    "categoryPlaceholder": "বিভাগ নির্বাচন করুন",
+    "categoryCreate": "নতুন বিভাগ তৈরি করুন",
+    "sku": "SKU",
+    "skuPlaceholder": "পণ্যের SKU",
+    "barcode": "বারকোড",
+    "barcodePlaceholder": "পণ্যের বারকোড",
+    "costPrice": "ক্রয় মূল্য",
+    "sellingPrice": "বিক্রয় মূল্য",
+    "tax": "কর (%)",
+    "stockQuantity": "স্টক পরিমাণ",
+    "lowStock": "স্বল্প স্টক সতর্কতা",
+    "status": "অবস্থা",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "imageDrag": "এখানে ফাইল ড্র্যাগ করুন",
+    "imageClick": "অথবা ব্রাউজ করতে ক্লিক করুন (2MB পর্যন্ত)",
+    "browse": "ফাইল খুঁজুন"
+  },
+  "actions": {
+    "save": "সংরক্ষণ করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "delete": "মুছুন",
+    "deleting": "মুছে ফেলা হচ্ছে...",
+    "cancel": "বাতিল",
+    "createCategoryComingSoon": "বিভাগ তৈরির সুবিধা শীঘ্রই আসছে!"
+  },
+  "validation": {
+    "required": "অনুগ্রহ করে সকল প্রয়োজনীয় তথ্য পূরণ করুন (*)"
+  },
+  "page": {
+    "title": "পণ্য",
+    "subtitle": "আপনার পণ্য ক্যাটালগ পরিচালনা করুন",
+    "addProduct": "পণ্য যোগ করুন",
+    "searchPlaceholder": "পণ্য খুঁজুন...",
+    "headers": {
+      "product": "পণ্য",
+      "sku": "SKU",
+      "category": "বিভাগ",
+      "price": "মূল্য",
+      "stock": "স্টক",
+      "status": "অবস্থা",
+      "actions": "কার্যক্রম"
+    },
+    "noProducts": {
+      "title": "কোনো পণ্য পাওয়া যায়নি",
+      "description": "আপনার সার্চের সাথে কোনো পণ্য পাওয়া যায়নি।"
+    }
+  },
+  "toasts": {
+    "createSuccess": "পণ্য সফলভাবে তৈরি হয়েছে",
+    "updateSuccess": "পণ্য সফলভাবে আপডেট হয়েছে",
+    "deleteSuccess": "পণ্য সফলভাবে মুছে ফেলা হয়েছে"
+  }
+}

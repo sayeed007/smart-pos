@@ -80,6 +80,7 @@ export const I18N_NAMESPACES = {
     reports: 'reports',
     settings: 'settings',
     auth: 'auth',
+    products: 'products',
 } as const;
 
 export type I18nNamespace = (typeof I18N_NAMESPACES)[keyof typeof I18N_NAMESPACES];

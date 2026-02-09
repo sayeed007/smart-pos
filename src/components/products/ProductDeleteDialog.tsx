@@ -1,0 +1,90 @@
+"use client";
+
+import { useState } from "react";
+import { Product } from "@/types";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Trash2 } from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
+
+interface ProductDeleteDialogProps {
+  product: Product;
+  onConfirm: (product: Product) => Promise<void>;
+  trigger?: React.ReactNode;
+}
+
+export function ProductDeleteDialog({
+  product,
+  onConfirm,
+  trigger,
+}: ProductDeleteDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { t } = useTranslation("products");
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await onConfirm(product);
+      setOpen(false);
+    } catch (error) {
+      console.error("Failed to delete", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("title.delete")}</DialogTitle>
+          <DialogDescription>
+            <Trans
+              i18nKey="description.delete"
+              ns="products"
+              values={{ name: product.name }}
+              components={{ 1: <span className="font-bold text-foreground" /> }}
+            />
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="mt-4">
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={isDeleting}
+          >
+            {t("actions.cancel")}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="bg-destructive text-white hover:bg-destructive/90"
+          >
+            {isDeleting ? t("actions.deleting") : t("actions.delete")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
