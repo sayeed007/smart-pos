@@ -53,3 +53,138 @@ export const MOCK_USERS: User[] = [
     { id: 'u2', name: 'John Manager', email: 'manager@pos.com', role: UserRole.MANAGER, status: 'active' },
     { id: 'u3', name: 'Jane Watson', email: 'cashier@pos.com', role: UserRole.CASHIER, status: 'active' },
 ];
+
+// --- Dashboard Specific Mocks ---
+
+export const MOCK_RECENT_SALES_DASHBOARD = [
+    {
+        id: "1",
+        invoiceNo: "INV-2024-0342",
+        date: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 mins ago
+        total: 127.50,
+        status: "Completed",
+        items: [{ image: "/placeholder-product.jpg" }]
+    },
+    {
+        id: "2",
+        invoiceNo: "INV-2024-0341",
+        date: new Date(Date.now() - 8 * 60 * 1000).toISOString(), // 8 mins ago
+        total: 89.25,
+        status: "Completed",
+        items: [{ image: "/placeholder-product.jpg" }]
+    },
+    {
+        id: "3",
+        invoiceNo: "INV-2024-0340",
+        date: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 mins ago
+        total: 245.80,
+        status: "Completed",
+        items: [{ image: "/placeholder-product.jpg" }]
+    },
+    {
+        id: "4",
+        invoiceNo: "INV-2024-0339",
+        date: new Date(Date.now() - 22 * 60 * 1000).toISOString(), // 22 mins ago
+        total: 56.40,
+        status: "Completed",
+        items: [{ image: "/placeholder-product.jpg" }]
+    }
+];
+
+export const MOCK_TOP_CATEGORIES_STATS = [
+    { name: "Dresses", value: 8420, percent: 75 },
+    { name: "Tops & Blouses", value: 6230, percent: 55 },
+    { name: "Outwear", value: 6230, percent: 55 },
+    { name: "Bottoms", value: 5180, percent: 45 },
+    { name: "Accessories", value: 4750, percent: 25 },
+];
+
+export const MOCK_LOW_STOCK_ITEMS = [
+    {
+        id: "1",
+        name: "Dresses",
+        sku: "BEV-001",
+        stockQuantity: 5,
+        minStockLevel: 20,
+        image: "/placeholder-product.jpg"
+    },
+    {
+        id: "2",
+        name: "Tops & Blouses",
+        sku: "DAI-012",
+        stockQuantity: 8,
+        minStockLevel: 15,
+        image: "/placeholder-product.jpg"
+    },
+    {
+        id: "3",
+        name: "Bottoms",
+        sku: "BAK-005",
+        stockQuantity: 12,
+        minStockLevel: 25,
+        image: "/placeholder-product.jpg"
+    },
+    {
+        id: "4",
+        name: "Outwear",
+        sku: "DAI-012",
+        stockQuantity: 8,
+        minStockLevel: 15,
+        image: "/placeholder-product.jpg"
+    }
+];
+
+export const MOCK_PAYMENT_STATS = [
+    { name: "Cash Payments", value: 12546.0 },
+    { name: "Card Payments", value: 145.0 },
+    { name: "Digital Wallet", value: 89.20 }
+];
+
+export const generateMockDailyRevenue = (days = 30) => {
+    const data = [];
+    const today = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        // Generate random revenue between 15000 and 25000 with some "trend"
+        const baseRevenue = 20000;
+        // Using sin/cos based on index to create deterministic "random-looking" variation
+        const randomVariation = (Math.sin(i * 1234) * 0.5 + 0.5) * 5000 - 2500;
+        const trend = Math.sin(i / 5) * 2000; // distinct curve
+        const amount = Math.max(0, baseRevenue + randomVariation + trend);
+        data.push({
+            date: date.toISOString().split("T")[0],
+            total: amount,
+        });
+    }
+    return data;
+};
+
+export const MOCK_STATS_CARDS = [
+    {
+        key: "totalSales",
+        translationKey: "stats.totalSales",
+        icon: "/icons/TotalSales.png",
+        iconBg: "bg-[#FF6B6B]",
+    },
+    {
+        key: "totalProducts",
+        translationKey: "stats.totalProducts",
+        icon: "/icons/TotalProducts.png",
+        iconBg: "bg-[#00D68F]",
+    },
+    {
+        key: "customers",
+        translationKey: "stats.customers",
+        value: "2",
+        icon: "/icons/Customers.png",
+        iconBg: "bg-[#A855F7]",
+    },
+    {
+        key: "lowStock",
+        translationKey: "stats.lowStock",
+        value: "0",
+        icon: "/icons/LowStock.png",
+        iconBg: "bg-[#FF8A00]",
+    },
+];

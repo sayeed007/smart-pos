@@ -3,12 +3,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { Sale, Product } from "@/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
+import { TopCategories } from "@/components/dashboard/TopCategories";
+import { RecentSales } from "@/components/dashboard/RecentSales";
+import { LowStockAlert } from "@/components/dashboard/LowStockAlert";
+import { PaymentMethods } from "@/components/dashboard/PaymentMethods";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
+
+import { generateMockDailyRevenue, MOCK_STATS_CARDS } from "@/lib/mock-data";
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
@@ -23,26 +29,8 @@ export default function DashboardPage() {
     queryFn: async () => (await api.get("/products")).data,
   });
 
-  const dummySales = useMemo(() => {
-    const data = [];
-    const today = new Date();
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      // Generate random revenue between 15000 and 25000 with some "trend"
-      const baseRevenue = 20000;
-      // Use a consistent seed-like variation to avoid "impure" random in render
-      // Using sin/cos based on index to create deterministic "random-looking" variation
-      const randomVariation = (Math.sin(i * 1234) * 0.5 + 0.5) * 5000 - 2500;
-      const trend = Math.sin(i / 5) * 2000; // distinct curve
-      const amount = Math.max(0, baseRevenue + randomVariation + trend);
-      data.push({
-        date: date.toISOString().split("T")[0],
-        total: amount,
-      });
-    }
-    return data;
-  }, []);
+  // Generate realistic dummy data for the last 30 days for better visualization
+  const dummySales = useMemo(() => generateMockDailyRevenue(30), []);
 
   const isLoading = salesLoading || productsLoading;
 
@@ -61,44 +49,46 @@ export default function DashboardPage() {
 
   // Prepare chart data (Revenue by Day)
   const chartData = displayData
-    .reduce((acc: { date: string; revenue: number }[], sale: any) => {
-      const existing = acc.find((d) => d.date === sale.date);
-      if (existing) {
-        existing.revenue += sale.total;
-      } else {
-        acc.push({ date: sale.date, revenue: sale.total });
-      }
-      return acc;
-    }, [])
+    .reduce(
+      (
+        acc: { date: string; revenue: number }[],
+        sale: { date: string; total: number },
+      ) => {
+        const existing = acc.find((d) => d.date === sale.date);
+        if (existing) {
+          existing.revenue += sale.total;
+        } else {
+          acc.push({ date: sale.date, revenue: sale.total });
+        }
+        return acc;
+      },
+      [],
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Stats cards configuration matching the reference design
-  const statsCards = [
-    {
-      title: t("stats.totalSales"),
-      value: `$${totalRevenue.toFixed(2)}`,
-      icon: "/icons/TotalSales.png",
-      iconBg: "bg-[#FF6B6B]", // Red/coral
-    },
-    {
-      title: t("stats.totalProducts"),
-      value: totalProducts.toString(),
-      icon: "/icons/TotalProducts.png",
-      iconBg: "bg-[#00D68F]", // Green
-    },
-    {
-      title: t("stats.customers"),
-      value: "2", // Placeholder - update with actual customer count
-      icon: "/icons/Customers.png",
-      iconBg: "bg-[#A855F7]", // Purple
-    },
-    {
-      title: t("stats.lowStock"),
-      value: "0", // Placeholder - update with actual low stock count
-      icon: "/icons/LowStock.png",
-      iconBg: "bg-[#FF8A00]", // Orange
-    },
-  ];
+  // Stats cards configuration using centralized mock data
+  const lowStockCount = products?.filter(
+    (p) => p.stockQuantity <= (p.minStockLevel || 10),
+  ).length;
+
+  const statsCards = MOCK_STATS_CARDS.map((stat) => {
+    let value = stat.value;
+
+    if (stat.key === "totalSales") {
+      value = `$${totalRevenue.toFixed(2)}`;
+    } else if (stat.key === "totalProducts") {
+      value = totalProducts.toString();
+    } else if (stat.key === "lowStock" && typeof lowStockCount === "number") {
+      value = lowStockCount.toString();
+    }
+
+    return {
+      title: t(stat.translationKey),
+      value: value,
+      icon: stat.icon,
+      iconBg: stat.iconBg,
+    };
+  });
 
   return (
     <div className="space-y-6 p-6">
@@ -144,49 +134,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 h-full">
         {/* Revenue Chart */}
         <RevenueChart data={chartData} />
 
-        {/* Recent Sales */}
-        <Card className="col-span-3 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
-          <CardHeader>
-            <CardTitle className="typo-bold-16 text-foreground">
-              {t("charts.recentSales")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {sales?.slice(0, 5).map((sale) => (
-                <div key={sale.id} className="flex items-center">
-                  <div className="h-10 w-10 rounded-full bg-chart-1/10 flex items-center justify-center typo-semibold-14 text-chart-1 border border-chart-1/20">
-                    {sale.customerName?.charAt(0) || "G"}
-                  </div>
-                  <div className="ml-4 space-y-1 flex-1">
-                    <p className="typo-semibold-14 text-foreground leading-none">
-                      {sale.invoiceNo}
-                    </p>
-                    <p className="typo-regular-12 text-muted-foreground">
-                      {sale.items.length} {t("sales.items")}
-                    </p>
-                  </div>
-                  <div className="typo-bold-14 text-chart-1">
-                    +${sale.total.toFixed(2)}
-                  </div>
-                </div>
-              ))}
-              {(!sales || sales.length === 0) && (
-                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                  <ShoppingBag
-                    size={48}
-                    className="mb-4 text-muted-foreground/30"
-                  />
-                  <p className="typo-semibold-14">{t("sales.noSales")}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Top Categories */}
+        <TopCategories sales={sales || []} />
+      </div>
+
+      {/* Recent Sales & Stats Section */}
+      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+        <RecentSales sales={sales || []} />
+        <LowStockAlert products={products || []} />
+        <PaymentMethods sales={sales || []} />
       </div>
     </div>
   );

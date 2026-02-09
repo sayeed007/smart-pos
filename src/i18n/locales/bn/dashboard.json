@@ -15,8 +15,12 @@
     "last7Days": "গত ৭ দিনের কর্মক্ষমতা",
     "last7days": "গত ৭ দিন",
     "last14days": "গত ১৪ দিন",
-    "last30days": "গত ৩০ দিন"
+    "last30days": "গত ৩০ দিন",
+    "topCategories": "শীর্ষ বিভাগ",
+    "lowStockAlert": "স্বল্প স্টক সতর্কতা",
+    "paymentMethods": "পেমেন্ট পদ্ধতি"
   },
+  "units": "ইউনিট",
   "sales": {
     "items": "আইটেম",
     "noSales": "এখনও কোনো বিক্রয় নেই",

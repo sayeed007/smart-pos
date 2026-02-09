@@ -15,8 +15,12 @@
     "last7Days": "Last 7 days performance",
     "last7days": "Last 7 days",
     "last14days": "Last 14 days",
-    "last30days": "Last 30 days"
+    "last30days": "Last 30 days",
+    "topCategories": "Top Categories",
+    "lowStockAlert": "Low Stock Alert",
+    "paymentMethods": "Payment Methods"
   },
+  "units": "units",
   "sales": {
     "items": "items",
     "noSales": "No sales yet",
