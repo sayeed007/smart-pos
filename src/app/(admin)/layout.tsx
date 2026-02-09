@@ -3,9 +3,11 @@
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
+import { cn } from "@/lib/utils";
 import {
   FileText,
   LayoutDashboard,
+  Menu,
   Package,
   RotateCcw,
   Settings,
@@ -13,7 +15,7 @@ import {
   Tag,
   Users,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
@@ -24,7 +26,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const pathname = usePathname();
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation("common");
@@ -35,7 +37,6 @@ export default function AdminLayout({
       icon: <LayoutDashboard size={20} />,
       path: "/admin/dashboard",
     },
-    { name: t("pos"), icon: <ShoppingCart size={20} />, path: "/admin/pos" },
     { name: t("sales"), icon: <FileText size={20} />, path: "/admin/sales" },
     {
       name: t("products"),
@@ -78,13 +79,59 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-58 h-screen fixed inset-y-0 z-50">
-        <Sidebar items={adminNavItems} title="Admin" />
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-card border border-sidebar-border shadow-lg hover:bg-muted transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu className="w-6 h-6 text-foreground" />
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 animate-in fade-in duration-200"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside
+        className={cn(
+          "lg:hidden fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <Sidebar
+          items={adminNavItems}
+          title="Admin"
+          onClose={() => setIsMobileOpen(false)}
+        />
+      </aside>
+
+      {/* Desktop Sidebar - Collapsible */}
+      <aside
+        className={cn(
+          "hidden lg:flex flex-col h-screen fixed inset-y-0 z-50 transition-all duration-300",
+          isDesktopCollapsed ? "w-20" : "w-58",
+        )}
+      >
+        <Sidebar
+          items={adminNavItems}
+          title="Admin"
+          collapsed={isDesktopCollapsed}
+          onToggleCollapse={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
+        />
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-58 flex flex-col min-h-screen overflow-x-hidden">
+      <main
+        className={cn(
+          "flex-1 flex flex-col min-h-screen overflow-x-hidden transition-all duration-300",
+          isDesktopCollapsed ? "lg:ml-20" : "lg:ml-58",
+        )}
+      >
         <div className="w-full max-w-400 mx-auto animate-in fade-in duration-500">
           {children}
         </div>
