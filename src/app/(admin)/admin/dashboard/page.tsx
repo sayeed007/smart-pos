@@ -6,16 +6,9 @@ import { Sale, Product } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
@@ -30,6 +23,27 @@ export default function DashboardPage() {
     queryFn: async () => (await api.get("/products")).data,
   });
 
+  const dummySales = useMemo(() => {
+    const data = [];
+    const today = new Date();
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      // Generate random revenue between 15000 and 25000 with some "trend"
+      const baseRevenue = 20000;
+      // Use a consistent seed-like variation to avoid "impure" random in render
+      // Using sin/cos based on index to create deterministic "random-looking" variation
+      const randomVariation = (Math.sin(i * 1234) * 0.5 + 0.5) * 5000 - 2500;
+      const trend = Math.sin(i / 5) * 2000; // distinct curve
+      const amount = Math.max(0, baseRevenue + randomVariation + trend);
+      data.push({
+        date: date.toISOString().split("T")[0],
+        total: amount,
+      });
+    }
+    return data;
+  }, []);
+
   const isLoading = salesLoading || productsLoading;
 
   if (isLoading) {
@@ -41,13 +55,13 @@ export default function DashboardPage() {
   }
 
   const totalRevenue = sales?.reduce((acc, sale) => acc + sale.total, 0) || 0;
-  const totalOrders = sales?.length || 0;
-  const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
   const totalProducts = products?.length || 0;
 
-  // Prepare chart data (Revenue by Day) - Last 7 days
-  const chartData = sales
-    ?.reduce((acc: any[], sale) => {
+  const displayData = sales?.length && sales.length > 7 ? sales : dummySales;
+
+  // Prepare chart data (Revenue by Day)
+  const chartData = displayData
+    .reduce((acc: { date: string; revenue: number }[], sale: any) => {
       const existing = acc.find((d) => d.date === sale.date);
       if (existing) {
         existing.revenue += sale.total;
@@ -56,8 +70,7 @@ export default function DashboardPage() {
       }
       return acc;
     }, [])
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(-7); // Last 7 days
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Stats cards configuration matching the reference design
   const statsCards = [
@@ -133,63 +146,7 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         {/* Revenue Chart */}
-        <Card className="col-span-4 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
-          <CardHeader>
-            <CardTitle className="typo-bold-16 text-foreground">
-              {t("charts.recentRevenue")}
-            </CardTitle>
-            <p className="typo-regular-12 text-muted-foreground mt-1">
-              {t("charts.last7Days")}
-            </p>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--sidebar-border))"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="date"
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `$${value}`}
-                />
-                <Tooltip
-                  cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "1px solid hsl(var(--sidebar-border))",
-                    backgroundColor: "hsl(var(--card))",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                  labelStyle={{
-                    color: "hsl(var(--foreground))",
-                    fontWeight: 600,
-                  }}
-                  itemStyle={{
-                    color: "hsl(var(--chart-1))",
-                  }}
-                />
-                <Bar
-                  dataKey="revenue"
-                  fill="hsl(var(--chart-1))"
-                  radius={[8, 8, 0, 0]}
-                  maxBarSize={60}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <RevenueChart data={chartData} />
 
         {/* Recent Sales */}
         <Card className="col-span-3 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">

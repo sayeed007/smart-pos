@@ -10,9 +10,12 @@
     "lowStock": "Low Stock"
   },
   "charts": {
-    "recentRevenue": "Revenue Overview",
+    "revenueOverview": "Revenue Overview",
     "recentSales": "Recent Sales",
-    "last7Days": "Last 7 days performance"
+    "last7Days": "Last 7 days performance",
+    "last7days": "Last 7 days",
+    "last14days": "Last 14 days",
+    "last30days": "Last 30 days"
   },
   "sales": {
     "items": "items",

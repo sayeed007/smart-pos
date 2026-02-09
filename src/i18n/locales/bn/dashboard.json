@@ -10,9 +10,12 @@
     "lowStock": "কম স্টক"
   },
   "charts": {
-    "recentRevenue": "আয়ের সারসংক্ষেপ",
+    "revenueOverview": "আয়ের সারসংক্ষেপ",
     "recentSales": "সাম্প্রতিক বিক্রয়",
-    "last7Days": "গত ৭ দিনের কর্মক্ষমতা"
+    "last7Days": "গত ৭ দিনের কর্মক্ষমতা",
+    "last7days": "গত ৭ দিন",
+    "last14days": "গত ১৪ দিন",
+    "last30days": "গত ৩০ দিন"
   },
   "sales": {
     "items": "আইটেম",
