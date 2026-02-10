@@ -81,3 +81,16 @@ export interface Customer {
     loyaltyPoints: number;
     history: string[];
 }
+
+export interface Return {
+    id: string;
+    saleId: string;
+    invoiceNo: string;
+    date: string;
+    items: CartItem[];
+    refundAmount: number;
+    reason: string;
+    status: 'Pending' | 'Approved' | 'Rejected' | 'Completed';
+    processedBy: string;
+    customerName?: string;
+}

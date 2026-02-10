@@ -1,5 +1,5 @@
 
-import { User, UserRole, Category, Product, Offer, Customer, Sale } from "@/types";
+import { User, UserRole, Category, Product, Offer, Customer, Sale, Return } from "@/types";
 
 export const MOCK_CATEGORIES: Category[] = [
     { id: '1', name: 'Dresses', productCount: 3, totalValue: 6579.03, icon: '👗' },
@@ -242,4 +242,31 @@ export const MOCK_STATS_CARDS = [
         icon: "/icons/LowStock.png",
         iconBg: "bg-[#FF8A00]",
     },
+];
+
+export const MOCK_RETURNS: Return[] = [
+    {
+        id: 'r1',
+        saleId: 's1',
+        invoiceNo: '#INV-2025-0342',
+        date: '2025-01-21',
+        items: [{ ...MOCK_PRODUCTS[0], quantity: 1 }],
+        refundAmount: 64.79, // Price + Tax approx
+        reason: 'Wrong size',
+        status: 'Completed',
+        processedBy: 'u1',
+        customerName: 'John Doe'
+    },
+    {
+        id: 'r2',
+        saleId: 's2',
+        invoiceNo: '#INV-2025-0341',
+        date: '2025-01-22',
+        items: [{ ...MOCK_PRODUCTS[1], quantity: 1 }],
+        refundAmount: 35.99,
+        reason: 'Defective',
+        status: 'Pending',
+        processedBy: 'u2',
+        customerName: 'Jane Smith'
+    }
 ];
