@@ -1,0 +1,50 @@
+{
+  "title": "অফার",
+  "subtitle": "বিশেষ অফার এবং ডিসকাউন্ট পরিচালনা করুন",
+  "createOffer": "নতুন অফার তৈরি করুন",
+  "modal": {
+    "title": "নতুন অফার তৈরি করুন",
+    "subtitle": "গ্রাহকদের আকর্ষণ করতে একটি নতুন অফার তৈরি করুন।"
+  },
+  "fields": {
+    "name": "অফারের নাম",
+    "description": "বিবরণ",
+    "type": "অফারের ধরন",
+    "applicableOn": "প্রযোজ্য",
+    "discountValue": "ডিসকাউন্ট মান (%)",
+    "discountAmount": "ডিসকাউন্ট পরিমাণ ($)",
+    "minPurchase": "ন্যূনতম ক্রয় ($)",
+    "maxDiscount": "সর্বোচ্চ ডিসকাউন্ট ($)",
+    "startDate": "শুরুর তারিখ",
+    "endDate": "শেষ তারিখ",
+    "status": "অবস্থা",
+    "selectProducts": "পণ্য নির্বাচন করুন",
+    "selectCategory": "বিভাগ"
+  },
+  "types": {
+    "percentage": "শকরা ডিসকাউন্ট",
+    "fixed": "নির্দিষ্ট পরিমাণ ছাড়",
+    "buy_x_get_y": "X কিনলে Y ফ্রি",
+    "bundle": "বান্ডেল অফার",
+    "category_discount": "ক্যাটেগরি ডিসকাউন্ট"
+  },
+  "applicableOn": {
+    "all": "পুরো কার্ট",
+    "category": "বিভাগ",
+    "product": "নির্দিষ্ট পণ্য"
+  },
+  "status": {
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়"
+  },
+  "placeholders": {
+    "name": "যেমন, গ্রীষ্মকালীন অফার ২০২৪",
+    "description": "অফারের বিবরণ দিন...",
+    "value": "০",
+    "minPurchase": "০",
+    "maxDiscount": "০ (আনলিমিটেড)"
+  },
+  "createSuccess": "অফার সফলভাবে তৈরি হয়েছে",
+  "updateSuccess": "অফার সফলভাবে আপডেট হয়েছে",
+  "noOffers": "কোন অফার পাওয়া যায়নি"
+}

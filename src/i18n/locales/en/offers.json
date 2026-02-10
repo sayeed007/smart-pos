@@ -1,0 +1,50 @@
+{
+  "title": "Offers",
+  "subtitle": "Manage special offers and discounts",
+  "createOffer": "Create New Offer",
+  "modal": {
+    "title": "Create New Offer",
+    "subtitle": "Create a new offer to attract more customers."
+  },
+  "fields": {
+    "name": "Offer Name",
+    "description": "Description",
+    "type": "Offer Type",
+    "applicableOn": "Applicable On",
+    "discountValue": "Discount Value (%)",
+    "discountAmount": "Discount Amount ($)",
+    "minPurchase": "Minimum Purchase ($)",
+    "maxDiscount": "Maximum Discount ($)",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "status": "Status",
+    "selectProducts": "Select Products",
+    "selectCategory": "Category"
+  },
+  "types": {
+    "percentage": "Percentage Discount",
+    "fixed": "Fixed Amount Off",
+    "buy_x_get_y": "Buy X Get Y",
+    "bundle": "Bundle Offer",
+    "category_discount": "Category Discount"
+  },
+  "applicableOn": {
+    "all": "Entire Cart",
+    "category": "Category",
+    "product": "Specific Product"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "placeholders": {
+    "name": "e.g., Summer Sale 2024",
+    "description": "Describe the offer...",
+    "value": "0",
+    "minPurchase": "0",
+    "maxDiscount": "0 (unlimited)"
+  },
+  "createSuccess": "Offer created successfully",
+  "updateSuccess": "Offer updated successfully",
+  "noOffers": "No offers found"
+}

@@ -28,6 +28,8 @@ import enInventory from './locales/en/inventory.json';
 import bnInventory from './locales/bn/inventory.json';
 import enCategories from './locales/en/categories.json';
 import bnCategories from './locales/bn/categories.json';
+import enOffers from './locales/en/offers.json';
+import bnOffers from './locales/bn/offers.json';
 
 // Initialize i18next
 i18n
@@ -42,6 +44,7 @@ i18n
                 [I18N_NAMESPACES.sales]: enSales,
                 [I18N_NAMESPACES.inventory]: enInventory,
                 [I18N_NAMESPACES.categories]: enCategories,
+                [I18N_NAMESPACES.offers]: enOffers,
                 dashboard: enDashboard,
             },
             bn: {
@@ -52,13 +55,15 @@ i18n
                 [I18N_NAMESPACES.sales]: bnSales,
                 [I18N_NAMESPACES.inventory]: bnInventory,
                 [I18N_NAMESPACES.categories]: bnCategories,
+                [I18N_NAMESPACES.offers]: bnOffers,
                 dashboard: bnDashboard,
             },
         },
         lng: DEFAULT_LANGUAGE,
         fallbackLng: FALLBACK_LANGUAGE,
         defaultNS: I18N_NAMESPACES.common,
-        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos, I18N_NAMESPACES.products, I18N_NAMESPACES.customers, I18N_NAMESPACES.sales, I18N_NAMESPACES.inventory, I18N_NAMESPACES.categories, 'dashboard'],
+        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos, I18N_NAMESPACES.products, I18N_NAMESPACES.customers, I18N_NAMESPACES.sales, I18N_NAMESPACES.inventory, I18N_NAMESPACES.categories, I18N_NAMESPACES.offers, 'dashboard'],
+
 
 
         interpolation: {

@@ -44,13 +44,15 @@ export interface Offer {
     id: string;
     name: string;
     description: string;
-    type: 'percentage' | 'fixed' | 'bogo';
+    type: 'percentage' | 'fixed' | 'buy_x_get_y' | 'bundle' | 'category_discount';
     value: number;
     minPurchase?: number;
+    maxDiscount?: number;
     applicableOn: 'all' | 'category' | 'product';
     categoryId?: string;
-    productId?: string;
-    expiryDate: string;
+    productIds?: string[];
+    startDate: string;
+    endDate: string;
     status: 'active' | 'inactive';
 }
 
