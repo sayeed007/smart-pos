@@ -1,0 +1,22 @@
+{
+  "title": "Categories",
+  "subtitle": "Product categories overview",
+  "products": "products",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
+  "fields": {
+    "name": "Category Name",
+    "description": "Description",
+    "icon": "Icon"
+  },
+  "placeholders": {
+    "name": "e.g. Dresses",
+    "description": "Short description of the category",
+    "icon": "Icon Name"
+  },
+  "noCategories": "No categories found",
+  "createSuccess": "Category created successfully",
+  "updateSuccess": "Category updated successfully",
+  "deleteSuccess": "Category deleted successfully"
+}

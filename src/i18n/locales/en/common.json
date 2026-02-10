@@ -47,6 +47,7 @@
   "price": "Price",
   "quantity": "Quantity",
   "category": "Category",
+  "categories": "Categories",
   "noData": "No data available",
   "noResults": "No results found",
   "searchPlaceholder": "Search...",

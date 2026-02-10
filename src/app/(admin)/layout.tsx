@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Settings,
   Tag,
+  Layers,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,11 @@ export default function AdminLayout({
       icon: <LayoutDashboard size={20} />,
       path: "/admin/dashboard",
     },
-    { name: t("sales"), icon: <FileText size={20} />, path: "/admin/sales" },
+    {
+      name: t("sales"),
+      icon: <FileText size={20} />,
+      path: "/admin/sales",
+    },
     {
       name: t("products"),
       icon: <Package size={20} />,
@@ -49,6 +54,16 @@ export default function AdminLayout({
       path: "/admin/inventory",
     },
     {
+      name: t("categories"),
+      icon: <Layers size={20} />,
+      path: "/admin/categories",
+    },
+    {
+      name: t("offers"),
+      icon: <Tag size={20} />,
+      path: "/admin/offers",
+    },
+    {
       name: t("customers"),
       icon: <Users size={20} />,
       path: "/admin/customers",
@@ -58,7 +73,6 @@ export default function AdminLayout({
       icon: <FileText size={20} />,
       path: "/admin/reports",
     },
-    { name: t("offers"), icon: <Tag size={20} />, path: "/admin/offers" },
     {
       name: t("returns"),
       icon: <RotateCcw size={20} />,

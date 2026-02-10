@@ -47,6 +47,7 @@
   "price": "মূল্য",
   "quantity": "পরিমাণ",
   "category": "বিভাগ",
+  "categories": "ক্যাটেগরি",
   "noData": "কোন তথ্য নেই",
   "noResults": "কোন ফলাফল পাওয়া যায়নি",
   "searchPlaceholder": "অনুসন্ধান করুন...",
