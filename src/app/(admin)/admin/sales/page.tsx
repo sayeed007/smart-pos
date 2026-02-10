@@ -184,8 +184,8 @@ export default function SalesHistoryPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-xl border-none shadow-sm bg-white gap-0 p-0">
-          <CardContent className="px-4 py-2">
+        <Card className="rounded-xl border-none shadow-sm bg-white">
+          <CardContent>
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalRevenue")}
             </p>
@@ -194,8 +194,8 @@ export default function SalesHistoryPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-none shadow-sm bg-white gap-0 p-0">
-          <CardContent className="px-4 py-2">
+        <Card className="rounded-xl border-none shadow-sm bg-white">
+          <CardContent>
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalProfit")}
             </p>
@@ -204,8 +204,8 @@ export default function SalesHistoryPage() {
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-none shadow-sm bg-white gap-0 p-0">
-          <CardContent className="px-4 py-2">
+        <Card className="rounded-xl border-none shadow-sm bg-white">
+          <CardContent>
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalSales")}
             </p>
@@ -215,7 +215,7 @@ export default function SalesHistoryPage() {
       </div>
 
       {/* Recent Sales Table */}
-      <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-white gap-0 p-0">
+      <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-white">
         <div className="px-6 pt-2">
           <h2 className="text-lg font-bold text-foreground mb-4">
             {t("table.title")}

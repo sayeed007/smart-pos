@@ -13,9 +13,9 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       onClick={() => onClick(product)}
-      className="rounded-[14px] p-3 border-border hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
+      className="rounded-xl p-3 border-border hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
     >
-      <div className="relative aspect-square rounded-[10px] overflow-hidden mb-2 bg-muted">
+      <div className="relative aspect-square rounded-lg overflow-hidden mb-2 bg-muted">
         {product.image ? (
           <Image
             src={product.image}

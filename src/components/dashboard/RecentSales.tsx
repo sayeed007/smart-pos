@@ -28,7 +28,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
 
   return (
     <Card className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="typo-bold-18 text-foreground">
           {t("charts.recentSales", "Recent Sales")}
         </CardTitle>

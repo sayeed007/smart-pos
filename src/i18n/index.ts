@@ -24,6 +24,8 @@ import enDashboard from './locales/en/dashboard.json';
 import bnDashboard from './locales/bn/dashboard.json';
 import enSales from './locales/en/sales.json';
 import bnSales from './locales/bn/sales.json';
+import enInventory from './locales/en/inventory.json';
+import bnInventory from './locales/bn/inventory.json';
 
 // Initialize i18next
 i18n
@@ -36,6 +38,7 @@ i18n
                 [I18N_NAMESPACES.products]: enProducts,
                 [I18N_NAMESPACES.customers]: enCustomers,
                 [I18N_NAMESPACES.sales]: enSales,
+                [I18N_NAMESPACES.inventory]: enInventory,
                 dashboard: enDashboard,
             },
             bn: {
@@ -44,13 +47,14 @@ i18n
                 [I18N_NAMESPACES.products]: bnProducts,
                 [I18N_NAMESPACES.customers]: bnCustomers,
                 [I18N_NAMESPACES.sales]: bnSales,
+                [I18N_NAMESPACES.inventory]: bnInventory,
                 dashboard: bnDashboard,
             },
         },
         lng: DEFAULT_LANGUAGE,
         fallbackLng: FALLBACK_LANGUAGE,
         defaultNS: I18N_NAMESPACES.common,
-        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos, I18N_NAMESPACES.products, I18N_NAMESPACES.customers, I18N_NAMESPACES.sales, 'dashboard'],
+        ns: [I18N_NAMESPACES.common, I18N_NAMESPACES.pos, I18N_NAMESPACES.products, I18N_NAMESPACES.customers, I18N_NAMESPACES.sales, I18N_NAMESPACES.inventory, 'dashboard'],
 
         interpolation: {
             escapeValue: false, // React already escapes values

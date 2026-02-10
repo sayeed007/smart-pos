@@ -42,7 +42,7 @@ export function PaymentMethods({ sales }: PaymentMethodsProps) {
 
   return (
     <Card className="col-span-1 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <CardTitle className="typo-bold-18 text-foreground">
           {t("charts.paymentMethods", "Payment Methods")}
         </CardTitle>

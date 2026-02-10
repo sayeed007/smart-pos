@@ -1,17 +1,17 @@
 "use client";
 
 import { Sidebar } from "@/components/layout/Sidebar";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
-import { cn } from "@/lib/utils";
 import {
+  Box,
   FileText,
   LayoutDashboard,
   Menu,
   Package,
   RotateCcw,
   Settings,
-  ShoppingCart,
   Tag,
   Users,
 } from "lucide-react";
@@ -42,6 +42,11 @@ export default function AdminLayout({
       name: t("products"),
       icon: <Package size={20} />,
       path: "/admin/products",
+    },
+    {
+      name: t("inventory"),
+      icon: <Box size={20} />,
+      path: "/admin/inventory",
     },
     {
       name: t("customers"),

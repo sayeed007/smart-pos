@@ -1,0 +1,56 @@
+{
+  "title": "ইনভেন্টরি ম্যানেজমেন্ট",
+  "subtitle": "আপনার স্টক মনিটর এবং পরিচালনা করুন",
+  "stats": {
+    "totalProducts": "মোট পণ্য",
+    "inStock": "স্টকে আছে",
+    "lowStock": "স্বল্প স্টক",
+    "outOfStock": "স্টক শেষ",
+    "inventoryValue": "ইনভেন্টরি মূল্য",
+    "requiresAttention": "মনোযোগ প্রয়োজন",
+    "immediateRestock": "তাৎক্ষণিক রিস্টক প্রয়োজন"
+  },
+  "sections": {
+    "stockByCategory": "বিভাগ অনুযায়ী স্টক",
+    "criticalAlerts": "সতর্কতা",
+    "viewAll": "সব সতর্কতা দেখুন"
+  },
+  "alerts": {
+    "units": "ইউনিট",
+    "min": "মিনিমাম",
+    "restock": "রিস্টক"
+  },
+  "table": {
+    "searchPlaceholder": "পণ্য খুঁজুন",
+    "headers": {
+      "product": "পণ্য",
+      "sku": "SKU",
+      "category": "ক্যাটাগরি",
+      "price": "দাম",
+      "stock": "স্টক",
+      "status": "স্ট্যাটাস",
+      "actions": "অ্যাকশন"
+    },
+    "empty": "কোন পণ্য পাওয়া যায়নি"
+  },
+  "modal": {
+    "title": "পণ্য রিস্টক করুন",
+    "alert": {
+      "title": "স্বল্প স্টক সতর্কতা",
+      "message": "বর্তমান: {{current}} ইউনিট • মিনিমাম: {{min}} ইউনিট"
+    },
+    "sku": "SKU",
+    "category": "ক্যাটাগরি",
+    "currentStock": "বর্তমান স্টক",
+    "restockQuantity": "রিস্টক পরিমাণ *",
+    "recommended": "সুপারিশকৃত: {{amount}} ইউনিট মিনিমাম স্টক পূর্ণ করতে",
+    "cost": "খরচ:",
+    "cancel": "বাতিল",
+    "addStock": "স্টক যোগ করুন"
+  },
+  "categories": {
+    "dresses": "পোশাক",
+    "tops": "টপস",
+    "general": "সাধারণ"
+  }
+}

@@ -107,9 +107,9 @@ export default function DashboardPage() {
         {statsCards.map((stat, index) => (
           <Card
             key={index}
-            className="bg-card rounded-lg border-0 shadow-sm overflow-hidden gap-0 py-0"
+            className="bg-card rounded-lg border-0 shadow-sm overflow-hidden"
           >
-            <CardContent className="px-4 py-2">
+            <CardContent>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <p className="typo-regular-12 text-muted-foreground mb-2">

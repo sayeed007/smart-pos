@@ -73,7 +73,7 @@ export function RevenueChart({ data = [] }: RevenueChartProps) {
           </Select>
         </div>
       </CardHeader>
-      <CardContent className="px-2 pb-4">
+      <CardContent>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={chartData}>
             <defs>

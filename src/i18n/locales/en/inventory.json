@@ -1,0 +1,56 @@
+{
+  "title": "Inventory Management",
+  "subtitle": "Monitor and manage your stock",
+  "stats": {
+    "totalProducts": "Total Products",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "inventoryValue": "Inventory Value",
+    "requiresAttention": "Requires attention",
+    "immediateRestock": "Immediate restock needed"
+  },
+  "sections": {
+    "stockByCategory": "Stock by Category",
+    "criticalAlerts": "Critical Stock Alerts",
+    "viewAll": "View All Alerts"
+  },
+  "alerts": {
+    "units": "units",
+    "min": "Min",
+    "restock": "Restock"
+  },
+  "table": {
+    "searchPlaceholder": "Search Product",
+    "headers": {
+      "product": "Product",
+      "sku": "SKU",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": "No products found"
+  },
+  "modal": {
+    "title": "Restock Product",
+    "alert": {
+      "title": "Low Stock Alert",
+      "message": "Current: {{current}} units • Minimum: {{min}} units"
+    },
+    "sku": "SKU",
+    "category": "Category",
+    "currentStock": "Current Stock",
+    "restockQuantity": "Restock Quantity *",
+    "recommended": "Recommended: {{amount}} units to reach minimum stock",
+    "cost": "Cost:",
+    "cancel": "Cancel",
+    "addStock": "Add Stock"
+  },
+  "categories": {
+    "dresses": "Dresses",
+    "tops": "Tops",
+    "general": "General"
+  }
+}
