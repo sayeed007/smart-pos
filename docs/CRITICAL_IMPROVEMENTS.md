@@ -1,138 +1,107 @@
-# Critical Improvements & Implementation Roadmap
+# Critical Improvements & Implementation Roadmap (v2)
 
 **Objective:** Elevate the current frontend MVP (4/10) to a production-grade SaaS product (10/10) by addressing complex business logic, scalability, and handling real-world retail scenarios.
+**Status:** Validated by Senior Architect & Product Manager.
 
 ---
 
-## 🏗️ 1. Advanced Product & Inventory Management (Critical Priority)
+## 🚨 P0: Blocking (The Foundation)
+*Must be completed before any real pilot.*
 
-The current product model is too simple (Name, Price, Stock). Different industries (Grocery, Fashion, Electronics) require vastly different structures.
-
-### 🧩 Product Variants (The "Matrix" Problem)
-- **Current State:** Single flat product.
-- **Requirement:** Dynamic Variant System.
+### 1. Advanced Product & Inventory (Data Model)
+- **Current Gap:** Flat product structure; Simple stock counters.
+- **Requirement:** Enterprise-grade data integrity.
 - **Tasks:**
-  - [ ] **Variant Builder UI:** Create a "Matrix" generator where user defines Options (Size, Color, Material) and Values (S, M, L / Red, Blue).
-  - [ ] **SKU Generation:** Auto-generate SKUs for combinations (e.g., `SHOE-NIKE-RED-42`).
-  - [ ] **Individual Tracking:** Ability to track stock, set prices, and upload images *per variant*.
-  - [ ] **Frontend Logic:**
-    - Update `ProductForm` to handle "Simple" vs "Variable" product types.
-    - Update `POS` grid to show a "Select Variant" modal when a variable product is clicked.
+  - [ ] **Variant Matrix:** Dynamic builder for Size/Color/Material (SKU families).
+  - [ ] **Inventory Ledger:** Move from "Stock Count" to "Transaction Ledger" (In/Out/Transfer/Adjust events). *Crucial for audit.*
+  - [ ] **Barcodes:** Support multiple barcodes per SKU (Manufacturer, Store, Carton).
+  - [ ] **UOM:** Support Decimal quantities (Kg, M) and Weighing Scale embedded codes.
 
-### ⚖️ Units of Measure (UOM)
-- **Current State:** Assumes "per piece" (Quantity is integer).
-- **Requirement:** Support for Weight, Length, Volume.
+### 2. Transaction Integrity & Checkout
+- **Current Gap:** Simple "Happy Path"; No partial states.
+- **Requirement:** Atomic, reversible, and auditable financial flows.
 - **Tasks:**
-  - [ ] **Decimal Quantities:** Allow purchasing `1.5` kg or `0.75` meters.
-  - [ ] **Scale Integration:** UI to input weight from a connected scale or manual entry.
-  - [ ] **Pricing Display:** Show price per unit (e.g., "$5.00 / kg") on tiles and receipts.
+  - [ ] **Atomic Checkout:** Ensure inventory deduction and sales recording happen transactionally.
+  - [ ] **Split Payments:** Handle mix of Cash, Card, and Voucher in one sale.
+  - [ ] **Tax Profiles:** Line-item tax calculation (Inclusive/Exclusive) and stacking rules.
 
-### 🔢 Barcode Strategy
-- **Current State:** One simple barcode field.
-- **Requirement:** Robust scanning support.
+### 3. Security & Auth Architecture
+- **Current Gap:** Client-side role checks.
+- **Requirement:** Server-enforced security.
 - **Tasks:**
-  - [ ] **Multiple Barcodes:** Allow multiple codes for one item (Manufacturer code + Store code + Box code).
-  - [ ] **Embedded Barcodes:** Logic to parse `20202...` codes from deli scales (contains Item ID + Price/Weight).
+  - [ ] **RBAC Enforcement:** "Permission Matrix" checking on every route and button (e.g., `<Can do="refund">`).
+  - [ ] **Session Intelligence:** Auto-lock screen after inactivity; Supervisor PIN for sensitive overrides.
 
 ---
 
-## 💳 2. Complex Sales & Checkout Logic
+## 🛠️ P1: Core Retail Readiness
+*Required for day-to-day store operations.*
 
-The "Happy Path" checkout is built, but real retail is messy.
-
-### 💸 Split Payments
-- **Current State:** Single payment method selection.
-- **Requirement:** Ability to combine payment types.
+### 1. Hardware & Offline Resilience
+- **Current Gap:** Web-only; No hardware status.
+- **Requirement:** operate in poor network; Manage devices.
 - **Tasks:**
-  - [ ] **Split Logic:** UI to enter partial amount for "Cash", showing "Remaining Balance" to pay via "Card".
-  - [ ] **Validation:** Ensure total payments >= total due.
-  - [ ] **Receipt:** Display breakdown (Cash: $10, Visa: $40).
+  - [ ] **Offline Mode:** Sales queue in IndexedDB; Auto-sync on reconnect with **Conflict Resolution** strategies.
+  - [ ] **Hardware UI:** Dashboard to manage Printers/Scanners and view connection status/diagnostics.
 
-### ⏸️ Suspend & Resume (Park Sale)
-- **Current State:** Cart clears if page refreshes or user leaves.
-- **Requirement:** Hold a transaction for a customer who forgot their wallet.
+### 2. Advanced POS Workflows
+- **Current Gap:** Linear sales only.
 - **Tasks:**
-  - [ ] **Park Action:** "Hold" button to save cart state to LocalStorage/DB with a reference note.
-  - [ ] **Recall UI:** A list of "Parked Sales" to retrieve and restore to the active cart.
+  - [ ] **Suspend & Resume:** "Park" sales for later completion (queue management).
+  - [ ] **Refund Workflow:** Structured return process with "Restock" toggle and Approval step.
+  - [ ] **Cash Management:** Track Float (Opening/Closing cash) and petty cash drops.
 
-### 🎁 Offers & Discounts Engine
-- **Current State:** Basic line item discount.
-- **Requirement:** Automated rule-based discounts.
+### 3. Audit & Compliance
 - **Tasks:**
-  - [ ] **Global Discount:** Apply % or Fixed Off to entire cart.
-  - [ ] **Coupon Code:** Input field to validate codes.
-  - [ ] **Auto-Rules:** Logic to check:
-    - "Buy X Get Y" (Add free item automatically).
-    - "Spend $100 get $10 off" (Apply automatically).
+  - [ ] **Audit Logs:** UI to view "Who changed what" (Price changes, Stock adjustments).
+  - [ ] **Shift Reports:** Z-Report generation (End of Day reconciliation).
 
 ---
 
-## 💎 3. Loyalty & Customer Engagement
+## 🚀 P2: Scale & Multi-Tenancy
+*Required for expanding to chains and franchises.*
 
-Turning a transaction into a relationship.
-
-### 🏆 Points System
-- **Current State:** Static customer display.
-- **Requirement:** Earn and Burn mechanics.
+### 1. Multi-Location Architecture
 - **Tasks:**
-  - [ ] **Earning Rule:** Define logic (e.g., 1 Point per $10 spent). Display "Points to Earn" in Cart.
-  - [ ] **Redemption:** "Pay with Points" option in checkout. Convert points to currency value dynamically.
-  - [ ] **Tier System:** Frontend indicators for memberships (Gold/Platinum) which might trigger auto-discounts.
+  - [ ] **Location Context:** User session tied to specific "Store" or "Register".
+  - [ ] **Stock Transfers:** Workflow for moving inventory between locations (Transit status).
+  - [ ] **Centralized Pricing:** Option for "Regional Price Books".
+
+### 2. Performance Engineering
+- **Current Gap:** Client-side filtering.
+- **Requirement:** Support 10,000+ SKUs.
+- **Tasks:**
+  - [ ] **Virtualization:** Use `react-window` for large product/sales grids.
+  - [ ] **Server-Side Operations:** Debounced search; Async sorting and pagination.
 
 ---
 
-## 🏢 4. SaaS/Multi-Tenancy Frontend Architecture
+## 🌟 P3: Growth & Integrations
+*Differentiators for market expansion.*
 
-Critical for evaluating "Platform" vs "Single Shop".
+### 1. Loyalty & CRM
+- [ ] **Points Engine:** Earn/Burn logic with Tiered memberships.
+- [ ] **Targeted Offers:** "Buy X Get Y", "Happy Hour" auto-discounts.
 
-### 🌍 Onboarding & Store Configuration
-- **Current State:** Manual "Settings" page.
-- **Requirement:** Self-service setup.
-- **Tasks:**
-  - [ ] **Setup Wizard:** Step-by-step guide after signup (Store Name -> Currency/Tax -> Add first product).
-  - [ ] **Tax Rules:** Complex tax setup (Inclusive/Exclusive tax, Multi-tax groups).
-
-### 🔒 Roles & Permissions (Granular)
-- **Current State:** Fixed Admin/Manager/Cashier roles.
-- **Requirement:** Custom permission sets.
-- **Tasks:**
-  - [ ] **Permission Matrix UI:** Admin screen to toggle capabilities (e.g., `can_delete_items`, `can_view_reports`, `can_give_discount`).
-  - [ ] **Gate Components:** Wrap buttons/routes with a `<Can permission="delete_product">` HOC.
-
-### 📶 Offline Mode (PWA)
-- **Current State:** Web-only.
-- **Requirement:** Internet resilience.
-- **Tasks:**
-  - [ ] **Service Worker:** Cache static assets.
-  - [ ] **Offline Queue:** Store sales in IndexedDB when offline; sync to server when online.
+### 2. External Integrations
+- [ ] **Accounting:** QuickBooks/Xero sync.
+- [ ] **E-commerce:** Stock sync with Shopify/WooCommerce.
 
 ---
 
-## ⚡ 5. Technical Performance & UX
+## 📅 Architecture: Data Model Specs
+*Core entities required for backend implementation.*
 
-Preparing for scale (10,000+ products).
-
-### 🔍 Server-Side Search & Pagination
-- **Current State:** Client-side filtering (`.filter()`).
-- **Requirement:** handle large datasets.
-- **Tasks:**
-  - [ ] **Debounced Inputs:** Search inputs should wait 300ms before triggering API calls.
-  - [ ] **Async Selects:** Dropdowns (e.g., Customer Select) must fetch data asynchronously as user types.
-  - [ ] **Infinite Scroll / Pagination:** Store tables and POS grid must load data in chunks.
-
-### ⌨️ Keyboard Navigation
-- **Current State:** Mouse-heavy.
-- **Requirement:** Speed for power users.
-- **Tasks:**
-  - [ ] **Shortcuts:** Global listeners for `F9` (Checkout), `F2` (Search), `Esc` (Cancel).
-  - [ ] **Focus Management:** Auto-focus search bar on load.
+- **Tenant (Org)** -> **Location (Store)** -> **Register (Device)**
+- **Product** -> **Variant** -> **InventoryLedger**
+- **Sale** -> **SaleLine** -> **Payment** -> **TaxEntry**
+- **Customer** -> **LoyaltyLog**
+- **User** -> **Role** -> **Permission**
 
 ---
 
-## 📅 Summary of Next Steps
-
-1.  **Stop building new pages.**
-2.  **Refactor Product Module:** Build the Variant/Matrix system. This dictates the data structure for everything else.
-3.  **Refactor POS Cart:** Add Split Payment and Suspended Sale logic.
-4.  **Refactor Customers:** Add Loyalty Points logic.
-5.  **Refactor Search:** Implement debouncing and async loading patterns.
+## 📝 Summary of Changes (v2)
+- **Prioritized Roadmap:** Split into P0 (Blocking), P1 (Core), P2 (Scale).
+- **Inventory Ledger:** Shifted focus from simple count to ledger-based tracking.
+- **Hardware UI:** Added requirement for device status/diagnostics.
+- **Performance:** Explicitly requested Virtualization for large lists.
