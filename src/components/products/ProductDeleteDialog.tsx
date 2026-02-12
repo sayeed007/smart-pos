@@ -17,7 +17,7 @@ import { useTranslation, Trans } from "react-i18next";
 
 interface ProductDeleteDialogProps {
   product: Product;
-  onConfirm: (product: Product) => Promise<void>;
+  onConfirm: (product: Product) => Promise<void> | void;
   trigger?: React.ReactNode;
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, MouseEvent } from "react";
+import { useState, useRef, MouseEvent, useEffect } from "react";
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { cn } from "@/lib/utils";
 import { Product, Category } from "@/types";
@@ -14,6 +14,11 @@ interface ProductGridProps {
   products: Product[];
   categories: Category[];
 }
+
+// ... imports
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+// ... interface
 
 export function ProductGrid({ products, categories }: ProductGridProps) {
   const {
@@ -37,16 +42,15 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   });
 
   const handleProductClick = (product: Product) => {
-    // If category is dresses or tops, show size modal (simulated requirement)
-    if (["1", "2"].includes(product.categoryId)) {
+    if (product.type === "variable") {
       selectProduct(product);
-      setModal("size");
+      setModal("variant-selector");
     } else {
       addToCart(product);
     }
   };
 
-  // Drag to scroll logic
+  // Drag Scroll Logic (Search/Cats)
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -58,28 +62,63 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
     setStartX(e.pageX - scrollRef.current.offsetLeft);
     setScrollLeftState(scrollRef.current.scrollLeft);
   };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging || !scrollRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // scroll-fast
+    const walk = (x - startX) * 2;
     scrollRef.current.scrollLeft = scrollLeftState - walk;
   };
+
+  // Virtualization Logic
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!parentRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    ro.observe(parentRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  // Columns: <1280(xl)=2, >=1280=3, >=1536(2xl)=4
+  const getColumns = (width: number) => {
+    if (width >= 1536) return 4; // 2xl
+    if (width >= 1280) return 3; // xl
+    return 2; // Default (grid-cols-2)
+  };
+
+  const columns = getColumns(containerWidth);
+  const rows = Math.ceil(filteredProducts.length / columns);
+
+  // Estimate Row Height:
+  // Card Width = (ContainerWidth - (Gap * (Columns - 1))) / Columns
+  // Card Height = Card Width (Image Aspect Square) + Approx 120px (Content)
+  // Gap = 16px (gap-4)
+  const GAP = 16;
+  const cardWidth = (containerWidth - GAP * (columns - 1)) / columns;
+  const estimateRowHeight = cardWidth + 120; // 120px for text/price content
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => estimateRowHeight || 350,
+    overscan: 2,
+    measureElement:
+      typeof window !== "undefined" &&
+      navigator.userAgent.indexOf("Firefox") === -1
+        ? (element) => element?.getBoundingClientRect().height
+        : undefined,
+  });
 
   return (
     <div className="flex-1 min-w-0 max-w-full flex flex-col h-full overflow-hidden space-y-4">
       {/* Search & Categories */}
-      <div className="flex flex-col gap-3 p-3 bg-card shadow-sm">
-        {/* Search Bar */}
+      <div className="flex flex-col gap-3 p-3 bg-card shadow-sm shrink-0">
         <div className="relative group shrink-0">
           <Scan
             className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary"
@@ -94,7 +133,6 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
           />
         </div>
 
-        {/* Categories */}
         <div
           ref={scrollRef}
           className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 shrink-0 mask-fade-right cursor-grab active:cursor-grabbing select-none"
@@ -136,11 +174,54 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-4 overflow-y-auto p-4">
-        {filteredProducts.map((p) => (
-          <ProductCard key={p.id} product={p} onClick={handleProductClick} />
-        ))}
+      {/* Virtualized Products Grid */}
+      <div
+        ref={parentRef}
+        className="flex-1 w-full overflow-y-auto p-4"
+        style={{ contain: "strict" }}
+      >
+        <div
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const startIndex = virtualRow.index * columns;
+            const endIndex = Math.min(
+              startIndex + columns,
+              filteredProducts.length,
+            );
+            const rowProducts = filteredProducts.slice(startIndex, endIndex);
+
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
+                className="absolute top-0 left-0 w-full grid gap-4"
+                style={{
+                  transform: `translateY(${virtualRow.start}px)`,
+                  gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                }}
+              >
+                {rowProducts.map((p) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    onClick={handleProductClick}
+                  />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+        {filteredProducts.length === 0 && (
+          <div className="flex h-full items-center justify-center text-muted-foreground">
+            No products found
+          </div>
+        )}
       </div>
     </div>
   );

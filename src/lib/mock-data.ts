@@ -1,5 +1,5 @@
 
-import { User, UserRole, Category, Product, Offer, Customer, Sale, Return } from "@/types";
+import { User, UserRole, Category, Product, Offer, Customer, Sale, Return, InventoryTransaction, Location } from "@/types";
 
 export const MOCK_CATEGORIES: Category[] = [
     { id: '1', name: 'Dresses', productCount: 3, totalValue: 6579.03, icon: '👗' },
@@ -10,15 +10,54 @@ export const MOCK_CATEGORIES: Category[] = [
 ];
 
 export const MOCK_PRODUCTS: Product[] = [
-    { id: 'p1', name: 'Floral Summer Dress', sku: 'WCL-DR-001', barcode: '1234567890001', categoryId: '1', costPrice: 40, sellingPrice: 59.99, taxRate: 8, stockQuantity: 44, minStockLevel: 20, status: 'active', image: 'https://picsum.photos/seed/dress1/400/400' },
-    { id: 'p2', name: 'White Cotton Blouse', sku: 'WCL-TP-001', barcode: '1234567890002', categoryId: '2', costPrice: 20, sellingPrice: 35.99, taxRate: 8, stockQuantity: 59, minStockLevel: 15, status: 'active', image: 'https://picsum.photos/seed/top1/400/400' },
-    { id: 'p3', name: 'High-Waist Blue Jeans', sku: 'WCL-BT-001', barcode: '1234567890003', categoryId: '3', costPrice: 30, sellingPrice: 49.99, taxRate: 8, stockQuantity: 35, minStockLevel: 25, status: 'active', image: 'https://picsum.photos/seed/jean1/400/400' },
-    { id: 'p4', name: 'Leather Crossbody Bag', sku: 'WCL-AC-001', barcode: '1234567890004', categoryId: '5', costPrice: 50, sellingPrice: 79.99, taxRate: 8, stockQuantity: 25, minStockLevel: 10, status: 'active', image: 'https://picsum.photos/seed/bag1/400/400' },
-    { id: 'p5', name: 'Black Evening Dress', sku: 'WCL-DR-002', barcode: '1234567890005', categoryId: '1', costPrice: 60, sellingPrice: 89.99, taxRate: 8, stockQuantity: 20, minStockLevel: 10, status: 'active', image: 'https://picsum.photos/seed/dress2/400/400' },
-    { id: 'p6', name: 'Striped T-Shirt', sku: 'WCL-TP-002', barcode: '1234567890006', categoryId: '2', costPrice: 10, sellingPrice: 19.99, taxRate: 8, stockQuantity: 80, minStockLevel: 30, status: 'active', image: 'https://picsum.photos/seed/top2/400/400' },
-    { id: 'p7', name: 'Daydreamer Tunic', sku: 'BEV-001', barcode: '1234567890007', categoryId: '2', costPrice: 25, sellingPrice: 45.00, taxRate: 8, stockQuantity: 5, minStockLevel: 20, status: 'active', image: 'https://picsum.photos/seed/top3/400/400' },
-    { id: 'p8', name: 'Freesia Flow Skirt', sku: 'DAI-012', barcode: '1234567890008', categoryId: '3', costPrice: 28, sellingPrice: 42.00, taxRate: 8, stockQuantity: 8, minStockLevel: 15, status: 'active', image: 'https://picsum.photos/seed/skirt1/400/400' },
-    { id: 'p9', name: 'Golden Hour Shorts', sku: 'BAK-005', barcode: '1234567890009', categoryId: '3', costPrice: 15, sellingPrice: 32.00, taxRate: 8, stockQuantity: 12, minStockLevel: 25, status: 'active', image: 'https://picsum.photos/seed/shorts1/400/400' },
+    { id: 'p1', type: 'simple', name: 'Floral Summer Dress', sku: 'WCL-DR-001', barcode: '1234567890001', categoryId: '1', costPrice: 40, sellingPrice: 59.99, taxRate: 8, stockQuantity: 44, minStockLevel: 20, status: 'active', image: 'https://picsum.photos/seed/dress1/400/400' },
+    { id: 'p2', type: 'simple', name: 'White Cotton Blouse', sku: 'WCL-TP-001', barcode: '1234567890002', categoryId: '2', costPrice: 20, sellingPrice: 35.99, taxRate: 8, stockQuantity: 59, minStockLevel: 15, status: 'active', image: 'https://picsum.photos/seed/top1/400/400' },
+    { id: 'p3', type: 'simple', name: 'High-Waist Blue Jeans', sku: 'WCL-BT-001', barcode: '1234567890003', categoryId: '3', costPrice: 30, sellingPrice: 49.99, taxRate: 8, stockQuantity: 35, minStockLevel: 25, status: 'active', image: 'https://picsum.photos/seed/jean1/400/400' },
+    { id: 'p4', type: 'simple', name: 'Leather Crossbody Bag', sku: 'WCL-AC-001', barcode: '1234567890004', categoryId: '5', costPrice: 50, sellingPrice: 79.99, taxRate: 8, stockQuantity: 25, minStockLevel: 10, status: 'active', image: 'https://picsum.photos/seed/bag1/400/400' },
+    { id: 'p5', type: 'simple', name: 'Black Evening Dress', sku: 'WCL-DR-002', barcode: '1234567890005', categoryId: '1', costPrice: 60, sellingPrice: 89.99, taxRate: 8, stockQuantity: 20, minStockLevel: 10, status: 'active', image: 'https://picsum.photos/seed/dress2/400/400' },
+    {
+        id: 'p6',
+        type: 'variable',
+        name: 'Striped T-Shirt',
+        sku: 'WCL-TP-002',
+        barcode: '1234567890006',
+        uom: 'pcs',
+        barcodes: ['1234567890006', 'STORE-TP-002'],
+        categoryId: '2',
+        costPrice: 10,
+        sellingPrice: 19.99,
+        taxRate: 8,
+        stockQuantity: 80,
+        minStockLevel: 30,
+        status: 'active',
+        image: 'https://picsum.photos/seed/top2/400/400',
+        variants: [
+            { id: 'v1', productId: 'p6', sku: 'WCL-TP-002-S', name: 'Small', price: 19.99, stockQuantity: 30, attributes: { Size: 'S' }, barcodes: ['BAR-S-001'] },
+            { id: 'v2', productId: 'p6', sku: 'WCL-TP-002-M', name: 'Medium', price: 21.99, stockQuantity: 30, attributes: { Size: 'M' }, barcodes: ['BAR-M-002'] },
+            { id: 'v3', productId: 'p6', sku: 'WCL-TP-002-L', name: 'Large', price: 21.99, stockQuantity: 20, attributes: { Size: 'L' }, barcodes: ['BAR-L-003'] }
+        ]
+    },
+    {
+        id: 'p10',
+        type: 'simple',
+        name: 'Fresh Fuji Apples',
+        sku: 'FRT-APL-001',
+        barcode: '99001',
+        uom: 'kg',
+        allowDecimals: true,
+        barcodes: ['99001'],
+        categoryId: '1', // Just putting in category 1 for now
+        costPrice: 2.50,
+        sellingPrice: 4.99,
+        taxRate: 0,
+        stockQuantity: 150.5, // Decimal stock
+        minStockLevel: 20,
+        status: 'active',
+        image: 'https://picsum.photos/seed/apple1/400/400'
+    },
+    { id: 'p7', type: 'simple', name: 'Daydreamer Tunic', sku: 'BEV-001', barcode: '1234567890007', categoryId: '2', costPrice: 25, sellingPrice: 45.00, taxRate: 8, stockQuantity: 5, minStockLevel: 20, status: 'active', image: 'https://picsum.photos/seed/top3/400/400' },
+    { id: 'p8', type: 'simple', name: 'Freesia Flow Skirt', sku: 'DAI-012', barcode: '1234567890008', categoryId: '3', costPrice: 28, sellingPrice: 42.00, taxRate: 8, stockQuantity: 8, minStockLevel: 15, status: 'active', image: 'https://picsum.photos/seed/skirt1/400/400' },
+    { id: 'p9', type: 'simple', name: 'Golden Hour Shorts', sku: 'BAK-005', barcode: '1234567890009', categoryId: '3', costPrice: 15, sellingPrice: 32.00, taxRate: 8, stockQuantity: 12, minStockLevel: 25, status: 'active', image: 'https://picsum.photos/seed/shorts1/400/400' },
 ];
 
 export const MOCK_OFFERS: Offer[] = [
@@ -268,5 +307,35 @@ export const MOCK_RETURNS: Return[] = [
         status: 'Pending',
         processedBy: 'u2',
         customerName: 'Jane Smith'
+    }
+];
+
+export const MOCK_LOCATIONS: Location[] = [
+    { id: 'loc1', name: 'Main Store', address: '123 Main St', type: 'store', status: 'active' },
+    { id: 'loc2', name: 'Downtown Branch', address: '456 Market St', type: 'store', status: 'active', priceBookId: 'pb-downtown' },
+    { id: 'wh1', name: 'Central Warehouse', address: '789 Industrial Park', type: 'warehouse', status: 'active' },
+];
+
+export const MOCK_INVENTORY_TRANSACTIONS: InventoryTransaction[] = [
+    {
+        id: 'tx1',
+        productId: 'p1',
+        type: 'IN',
+        quantity: 50,
+        reason: 'Initial Stock',
+        performedBy: 'u1',
+        timestamp: '2024-01-01T10:00:00Z',
+        locationId: 'loc1'
+    },
+    {
+        id: 'tx2',
+        productId: 'p1',
+        type: 'OUT',
+        quantity: 2,
+        reason: 'Sale #INV-2025-0342',
+        referenceId: 's1',
+        performedBy: 'u3',
+        timestamp: '2025-01-20T20:30:00Z',
+        locationId: 'loc1'
     }
 ];

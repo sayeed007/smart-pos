@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/axios";
-import { MOCK_OFFERS } from "@/lib/mock-data";
+import { db } from "@/lib/db";
 import { Offer } from "@/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -33,8 +32,7 @@ export default function OffersPage() {
 
   const { data: offers, isLoading } = useQuery<Offer[]>({
     queryKey: ["offers"],
-    queryFn: async () => (await api.get("/offers")).data,
-    initialData: MOCK_OFFERS,
+    queryFn: async () => await db.offers.toArray(),
   });
 
   const handleEdit = (offer: Offer) => {
@@ -50,10 +48,17 @@ export default function OffersPage() {
   const handleSave = async (offerData: Partial<Offer>) => {
     try {
       if (offerData.id) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await db.offers.update(offerData.id, offerData);
         toast.success(t("updateSuccess"));
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const newOffer = {
+          ...offerData,
+          id: crypto.randomUUID(),
+          status: offerData.status || "active",
+          startDate: offerData.startDate || new Date().toISOString(),
+          endDate: offerData.endDate || new Date().toISOString(),
+        } as Offer;
+        await db.offers.add(newOffer);
         toast.success(t("createSuccess"));
       }
       queryClient.invalidateQueries({ queryKey: ["offers"] });
@@ -67,8 +72,7 @@ export default function OffersPage() {
   const handleDelete = async (id: string) => {
     if (confirm(t("common:confirmDelete", "Are you sure?"))) {
       try {
-        console.log("Deleting offer", id);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await db.offers.delete(id);
         toast.success(t("deleteSuccess", "Offer deleted successfully"));
         queryClient.invalidateQueries({ queryKey: ["offers"] });
       } catch (error) {

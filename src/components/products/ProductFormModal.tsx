@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Product, Category } from "@/types";
+import { Product, Category, Variant } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, Plus } from "lucide-react";
+import { Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface ProductFormData {
   id?: string;
@@ -38,6 +41,18 @@ export interface ProductFormData {
   minStockLevel?: number;
   status: "active" | "inactive";
   image?: string;
+  type: "simple" | "variable";
+  variants: Variant[];
+  uom: string;
+  allowDecimals: boolean;
+  barcodes: string; // specific for form handling (string vs array)
+}
+
+export interface ProductSubmissionData extends Omit<
+  ProductFormData,
+  "barcodes"
+> {
+  barcodes: string[];
 }
 
 const defaultFormData: ProductFormData = {
@@ -51,6 +66,11 @@ const defaultFormData: ProductFormData = {
   stockQuantity: 0,
   minStockLevel: 10,
   status: "active",
+  type: "simple",
+  variants: [],
+  uom: "pcs",
+  allowDecimals: false,
+  barcodes: "",
 };
 
 interface ProductFormModalProps {
@@ -58,7 +78,7 @@ interface ProductFormModalProps {
   onOpenChange: (open: boolean) => void;
   productToEdit: Product | null;
   categories: Category[];
-  onSave: (data: ProductFormData) => Promise<void>;
+  onSave: (data: ProductSubmissionData) => Promise<void>;
 }
 
 export function ProductFormModal({
@@ -71,6 +91,14 @@ export function ProductFormModal({
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation("products");
+
+  // Variant temporary state
+  const [newVariant, setNewVariant] = useState<Partial<Variant>>({
+    name: "",
+    sku: "",
+    price: 0,
+    stockQuantity: 0,
+  });
 
   useEffect(() => {
     if (open) {
@@ -88,6 +116,11 @@ export function ProductFormModal({
           minStockLevel: productToEdit.minStockLevel || 10,
           status: (productToEdit.status as "active" | "inactive") || "active",
           image: productToEdit.image,
+          type: productToEdit.type || "simple",
+          variants: productToEdit.variants || [],
+          uom: productToEdit.uom || "pcs",
+          allowDecimals: productToEdit.allowDecimals || false,
+          barcodes: productToEdit.barcodes?.join("\n") || "",
         });
       } else {
         setFormData(defaultFormData);
@@ -97,26 +130,75 @@ export function ProductFormModal({
 
   const handleSave = async () => {
     // Validation
-    if (
-      !formData.name ||
-      !formData.categoryId ||
-      !formData.sku ||
-      !formData.sellingPrice
-    ) {
-      toast.error(t("validation.required"));
+    if (!formData.name || !formData.categoryId || !formData.sku) {
+      toast.error(
+        t("validation.required", "Name, Category and SKU are required"),
+      );
+      return;
+    }
+
+    if (formData.type === "simple" && !formData.sellingPrice) {
+      toast.error(
+        t(
+          "validation.priceRequired",
+          "Selling price is required for simple products",
+        ),
+      );
+      return;
+    }
+
+    if (formData.type === "variable" && formData.variants.length === 0) {
+      toast.error(
+        t(
+          "validation.variantsRequired",
+          "At least one variant is required for variable products",
+        ),
+      );
       return;
     }
 
     setIsSaving(true);
     try {
-      await onSave(formData);
+      const submissionData = {
+        ...formData,
+        barcodes: formData.barcodes.split("\n").filter((b) => b.trim() !== ""),
+      };
+      await onSave(submissionData);
       onOpenChange(false);
     } catch (error) {
       console.error("Error saving product:", error);
-      // Error handled by parent or toast here if needed
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const addVariant = () => {
+    if (!newVariant.name || !newVariant.sku) {
+      toast.error("Variant Name and SKU are required");
+      return;
+    }
+    const variant: Variant = {
+      id: Math.random().toString(36).substr(2, 9), // Temp ID
+      productId: formData.id || "",
+      name: newVariant.name,
+      sku: newVariant.sku,
+      price: newVariant.price || 0,
+      stockQuantity: newVariant.stockQuantity || 0,
+      attributes: {},
+    };
+
+    setFormData({
+      ...formData,
+      variants: [...formData.variants, variant],
+    });
+    setNewVariant({ name: "", sku: "", price: 0, stockQuantity: 0 });
+  };
+
+  const removeVariant = (id: string) => {
+    setFormData({
+      ...formData,
+      variants: formData.variants.filter((v) => v.id !== id),
+    });
   };
 
   return (
@@ -132,6 +214,7 @@ export function ProductFormModal({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
+          {/* Main Info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name" className="typo-semibold-14">
@@ -165,147 +248,276 @@ export function ProductFormModal({
                       {c.name}
                     </SelectItem>
                   ))}
-                  {/* Custom Button for adding category */}
-                  <div className="p-1 mt-1 border-t border-border">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-primary font-medium hover:bg-primary/10 h-8"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toast.info(t("actions.createCategoryComingSoon"));
-                      }}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      {t("fields.categoryCreate")}
-                    </Button>
-                  </div>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="typo-semibold-14">Product Type</Label>
+            <RadioGroup
+              value={formData.type}
+              onValueChange={(val: "simple" | "variable") =>
+                setFormData({ ...formData, type: val })
+              }
+              className="flex gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="simple" id="simple" />
+                <Label htmlFor="simple">Simple Product</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="variable" id="variable" />
+                <Label htmlFor="variable">
+                  Variable Product (with Variants)
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Simple Product Fields */}
+          {formData.type === "simple" && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sku" className="typo-semibold-14">
+                    {t("fields.sku")} *
+                  </Label>
+                  <Input
+                    id="sku"
+                    placeholder={t("fields.skuPlaceholder")}
+                    value={formData.sku}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sku: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="barcode" className="typo-semibold-14">
+                    {t("fields.barcode")}
+                  </Label>
+                  <Input
+                    id="barcode"
+                    placeholder={t("fields.barcodePlaceholder")}
+                    value={formData.barcode}
+                    onChange={(e) =>
+                      setFormData({ ...formData, barcode: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="costPrice" className="typo-semibold-14">
+                    {t("fields.costPrice")}
+                  </Label>
+                  <Input
+                    id="costPrice"
+                    type="number"
+                    placeholder="0.00"
+                    value={formData.costPrice}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        costPrice: parseFloat(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sellingPrice" className="typo-semibold-14">
+                    {t("fields.sellingPrice")} *
+                  </Label>
+                  <Input
+                    id="sellingPrice"
+                    type="number"
+                    placeholder="0.00"
+                    value={formData.sellingPrice}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        sellingPrice: parseFloat(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="stock" className="typo-semibold-14">
+                    {t("fields.stockQuantity")}
+                  </Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    placeholder="0"
+                    value={formData.stockQuantity}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        stockQuantity: parseFloat(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* UOM and Barcodes (Common) */}
+          <div className="grid grid-cols-2 gap-4 border-t pt-4">
             <div className="space-y-2">
-              <Label htmlFor="sku" className="typo-semibold-14">
-                {t("fields.sku")} *
-              </Label>
-              <Input
-                id="sku"
-                placeholder={t("fields.skuPlaceholder")}
-                value={formData.sku}
-                onChange={(e) =>
-                  setFormData({ ...formData, sku: e.target.value })
-                }
-              />
+              <Label>Unit of Measure</Label>
+              <Select
+                value={formData.uom}
+                onValueChange={(v) => setFormData({ ...formData, uom: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pcs">Pieces (pcs)</SelectItem>
+                  <SelectItem value="kg">Kilograms (kg)</SelectItem>
+                  <SelectItem value="m">Meters (m)</SelectItem>
+                  <SelectItem value="l">Liters (l)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="barcode" className="typo-semibold-14">
-                {t("fields.barcode")}
-              </Label>
-              <Input
-                id="barcode"
-                placeholder={t("fields.barcodePlaceholder")}
-                value={formData.barcode}
-                onChange={(e) =>
-                  setFormData({ ...formData, barcode: e.target.value })
-                }
-              />
+            <div className="flex items-end pb-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="decimals"
+                  checked={formData.allowDecimals}
+                  onCheckedChange={(checked) =>
+                    setFormData({
+                      ...formData,
+                      allowDecimals: checked as boolean,
+                    })
+                  }
+                />
+                <Label htmlFor="decimals">Allow Decimal Quantities</Label>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="costPrice" className="typo-semibold-14">
-                {t("fields.costPrice")}
-              </Label>
-              <Input
-                id="costPrice"
-                type="number"
-                placeholder="0.00"
-                value={formData.costPrice}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    costPrice: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sellingPrice" className="typo-semibold-14">
-                {t("fields.sellingPrice")} *
-              </Label>
-              <Input
-                id="sellingPrice"
-                type="number"
-                placeholder="0.00"
-                value={formData.sellingPrice}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    sellingPrice: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
+          <div className="space-y-2">
+            <Label>Additional Barcodes (One per line)</Label>
+            <Textarea
+              value={formData.barcodes}
+              onChange={(e) =>
+                setFormData({ ...formData, barcodes: e.target.value })
+              }
+              placeholder="e.g. STORE-123&#10;MFR-456"
+              className="font-mono text-sm"
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tax" className="typo-semibold-14">
-                {t("fields.tax")}
-              </Label>
-              <Input
-                id="tax"
-                type="number"
-                placeholder="0"
-                value={formData.taxRate}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    taxRate: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stock" className="typo-semibold-14">
-                {t("fields.stockQuantity")}
-              </Label>
-              <Input
-                id="stock"
-                type="number"
-                placeholder="0"
-                value={formData.stockQuantity}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    stockQuantity: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-          </div>
+          {/* Variable Product Fields */}
+          {formData.type === "variable" && (
+            <div className="space-y-4 border p-4 rounded-lg bg-muted/20">
+              <h3 className="font-semibold text-sm">Variants</h3>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="lowStock" className="typo-semibold-14">
-                {t("fields.lowStock")}
-              </Label>
-              <Input
-                id="lowStock"
-                type="number"
-                placeholder="10"
-                value={formData.minStockLevel}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    minStockLevel: parseFloat(e.target.value),
-                  })
-                }
-              />
+              {/* Add Variant Inline Form */}
+              <div className="grid grid-cols-5 gap-2 items-end">
+                <div className="col-span-1 space-y-1">
+                  <Label className="text-xs">Variant Name (e.g. Red/L)</Label>
+                  <Input
+                    value={newVariant.name}
+                    onChange={(e) =>
+                      setNewVariant({ ...newVariant, name: e.target.value })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="col-span-1 space-y-1">
+                  <Label className="text-xs">SKU</Label>
+                  <Input
+                    value={newVariant.sku}
+                    onChange={(e) =>
+                      setNewVariant({ ...newVariant, sku: e.target.value })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="col-span-1 space-y-1">
+                  <Label className="text-xs">Price</Label>
+                  <Input
+                    type="number"
+                    value={newVariant.price}
+                    onChange={(e) =>
+                      setNewVariant({
+                        ...newVariant,
+                        price: parseFloat(e.target.value),
+                      })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="col-span-1 space-y-1">
+                  <Label className="text-xs">Stock</Label>
+                  <Input
+                    type="number"
+                    value={newVariant.stockQuantity}
+                    onChange={(e) =>
+                      setNewVariant({
+                        ...newVariant,
+                        stockQuantity: parseFloat(e.target.value),
+                      })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="col-span-1">
+                  <Button
+                    onClick={addVariant}
+                    size="sm"
+                    className="w-full h-8 bg-primary"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+
+              {/* Variants List */}
+              <div className="space-y-2">
+                {formData.variants.length === 0 && (
+                  <p className="text-muted-foreground text-xs italic">
+                    No variants added.
+                  </p>
+                )}
+                {formData.variants.map((variant) => (
+                  <div
+                    key={variant.id}
+                    className="flex items-center justify-between p-2 bg-card border rounded text-sm"
+                  >
+                    <div className="grid grid-cols-4 gap-4 flex-1">
+                      <span className="font-medium truncate">
+                        {variant.name}
+                      </span>
+                      <span className="text-muted-foreground truncate">
+                        {variant.sku}
+                      </span>
+                      <span>${variant.price}</span>
+                      <span>Qty: {variant.stockQuantity}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-destructive"
+                      onClick={() => removeVariant(variant.id)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* Common Fields */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status" className="typo-semibold-14">
                 {t("fields.status")}
@@ -329,55 +541,15 @@ export function ProductFormModal({
             </div>
           </div>
 
-          {/* Image Upload with Drag & Drop */}
+          {/* Image Upload */}
           <div className="space-y-2">
+            <Label className="typo-semibold-14">Product Image</Label>
             <div
               className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${
                 formData.image
                   ? "border-chart-1 bg-chart-1/5"
                   : "border-border hover:bg-muted/30 hover:border-chart-1/50"
               }`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.add(
-                  "border-chart-1",
-                  "bg-chart-1/10",
-                );
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                if (!formData.image) {
-                  e.currentTarget.classList.remove(
-                    "border-chart-1",
-                    "bg-chart-1/10",
-                  );
-                }
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove(
-                  "border-chart-1",
-                  "bg-chart-1/10",
-                );
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith("image/")) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setFormData({
-                      ...formData,
-                      image: reader.result as string,
-                    });
-                  };
-                  reader.readAsDataURL(file);
-                } else {
-                  toast.error(
-                    t(
-                      "validation.invalidImageFormat",
-                      "Please upload a valid image file",
-                    ),
-                  );
-                }
-              }}
               onClick={() => {
                 const input = document.createElement("input");
                 input.type = "file";
@@ -426,19 +598,8 @@ export function ProductFormModal({
                     <Upload className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <p className="typo-semibold-14 text-foreground">
-                    {t("fields.imageDrag", "Drag & drop your image here")}
+                    {t("fields.imageDrag", "Click to upload image")}
                   </p>
-                  <p className="typo-regular-12 text-muted-foreground mt-1">
-                    {t("fields.imageClick", "or click to browse")}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {t("fields.browse", "Browse Files")}
-                  </Button>
                 </>
               )}
             </div>

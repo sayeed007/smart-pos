@@ -29,7 +29,18 @@ export async function GET(request: Request) {
     return NextResponse.json(filtered);
 }
 
+import { enforceRole } from '@/lib/auth-check';
+import { UserRole } from '@/types';
+
+// ... (GET handler remains public/authenticated for all?)
+
 export async function POST(request: Request) {
+    // Check Auth
+    const auth = enforceRole(request, [UserRole.ADMIN, UserRole.MANAGER]);
+    if (!auth.authorized) {
+        return NextResponse.json({ message: auth.message }, { status: auth.status as number });
+    }
+
     try {
         const body = await request.json();
         const newProduct: Product = {
@@ -38,6 +49,8 @@ export async function POST(request: Request) {
             stockQuantity: Number(body.stockQuantity) || 0,
             costPrice: Number(body.costPrice) || 0,
             sellingPrice: Number(body.sellingPrice) || 0,
+            type: body.type || 'simple', // Handle type
+            variants: body.variants || [] // Handle variants
         };
         products.push(newProduct);
         return NextResponse.json(newProduct, { status: 201 });

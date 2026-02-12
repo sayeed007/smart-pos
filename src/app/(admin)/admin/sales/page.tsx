@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/popover";
 import Image from "next/image";
 import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
+import { useInventoryStore } from "@/features/inventory/store/inventory-store";
+import { toast } from "sonner";
 
 // Mock mapping if categories aren't populated in items
 const CATEGORY_MAP: Record<string, string> = {
@@ -78,9 +80,31 @@ export default function SalesHistoryPage() {
     saleId: string,
     items: { itemId: string; quantity: number }[],
     reason: string,
+    restock: boolean,
   ) => {
-    console.log("Return processed:", { saleId, items, reason });
-    // TODO: Implement API call
+    // In a real app, this would be an API call to create a Return entity
+    // api.post('/returns', { saleId, items, reason, restock })
+
+    if (restock) {
+      // Optimistically update inventory if requested
+      const transactions = items.map((i) => ({
+        id: `ret-${Date.now()}-${i.itemId}`,
+        productId: i.itemId,
+        type: "IN" as const,
+        quantity: i.quantity,
+        reason: `Return: ${reason}`,
+        referenceId: saleId,
+        performedBy: "admin",
+        timestamp: new Date().toISOString(),
+        locationId: "loc1",
+      }));
+      useInventoryStore.getState().addTransactions(transactions);
+      toast.success("Items returned and restocked to inventory.");
+    } else {
+      toast.success("Return processed (Items discarded).");
+    }
+
+    console.log("Return processed:", { saleId, items, reason, restock });
     setReturnSale(null);
   };
 

@@ -44,8 +44,8 @@ export function RevenueTrendChart() {
               />
               <Tooltip
                 labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                formatter={(value: number) => [
-                  `$${value.toFixed(2)}`,
+                formatter={(value: any) => [
+                  `$${Number(value).toFixed(2)}`,
                   "Revenue",
                 ]}
               />

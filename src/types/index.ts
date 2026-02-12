@@ -34,10 +34,28 @@ export interface Product {
     minStockLevel: number;
     status: 'active' | 'inactive';
     image?: string;
+    type: 'simple' | 'variable';
+    variants?: Variant[];
+    // Extended P0 Fields
+    barcodes?: string[]; // Multiple barcodes (Manufacturer, Store, etc.)
+    uom?: string; // Unit of Measure: 'pcs', 'kg', 'm', 'l'
+    allowDecimals?: boolean; // If true, allows 1.5 kg, etc.
+}
+
+export interface Variant {
+    id: string;
+    productId: string;
+    sku: string;
+    name: string;
+    price: number; // Override product price
+    stockQuantity: number;
+    attributes: Record<string, string>; // e.g. { Color: "Red", Size: "L" }
+    barcodes?: string[]; // Variant-specific barcodes
 }
 
 export interface CartItem extends Product {
     quantity: number;
+    originalProductId?: string;
 }
 
 export interface Offer {
@@ -66,10 +84,14 @@ export interface Sale {
     discount: number;
     tax: number;
     total: number;
-    paymentMethod: 'Cash' | 'Card' | 'Digital';
+    paymentMethod: 'Cash' | 'Card' | 'Digital' | 'Split';
+    payments?: { method: string; amount: number }[]; // For split payments
     status: 'Completed' | 'Returned';
     cashierId: string;
     customerName?: string;
+    customerId?: string;
+    loyaltyPointsEarned?: number;
+    loyaltyPointsRedeemed?: number;
 }
 
 export interface Customer {
@@ -78,8 +100,27 @@ export interface Customer {
     phone: string;
     email: string;
     totalSpent: number;
-    loyaltyPoints: number;
+    loyaltyPoints: number; // Current Balance
+    tierId?: string; // Current Tier
     history: string[];
+}
+
+export interface LoyaltyTier {
+    id: string;
+    name: string;
+    minSpend: number;
+    earnRate: number; // Points per $1
+    color: string; // UI Color
+}
+
+export interface LoyaltyLog {
+    id: string;
+    customerId: string;
+    saleId?: string;
+    type: 'earning' | 'redemption' | 'adjustment';
+    points: number;
+    reason?: string;
+    createdAt: string;
 }
 
 export interface Return {
@@ -93,4 +134,62 @@ export interface Return {
     status: 'Pending' | 'Approved' | 'Rejected' | 'Completed';
     processedBy: string;
     customerName?: string;
+}
+
+export interface InventoryTransaction {
+    id: string;
+    productId: string;
+    variantId?: string;
+    type: 'IN' | 'OUT' | 'ADJUST' | 'TRANSFER' | 'RETURN';
+    quantity: number;
+    reason: string;
+    referenceId?: string;
+    performedBy: string;
+    timestamp: string;
+    locationId: string;
+}
+
+export interface Location {
+    id: string;
+    name: string;
+    address: string;
+    type: 'store' | 'warehouse';
+    status: 'active' | 'inactive';
+    priceBookId?: string; // Optional: if null, use base price
+}
+
+export interface PriceBook {
+    id: string;
+    name: string;
+    description?: string;
+    isDefault: boolean;
+    createdAt: string;
+}
+
+export interface PriceOverride {
+    id: string;
+    priceBookId: string;
+    productId: string;
+    variantId?: string;
+    price: number;
+    updatedAt: string;
+}
+
+export interface StockTransfer {
+    id: string;
+    fromLocationId: string;
+    toLocationId: string;
+    items: {
+        productId: string;
+        variantId?: string;
+        quantity: number;
+        name: string;
+        sku?: string;
+    }[];
+    status: 'pending' | 'shipped' | 'received' | 'cancelled';
+    createdAt: string;
+    updatedAt: string;
+    shippedBy: string;
+    receivedBy?: string;
+    notes?: string;
 }

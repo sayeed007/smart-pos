@@ -2,17 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
+import { db } from "@/lib/db";
 import { Product, Category, Offer } from "@/types";
 import { ProductGrid } from "./components/ProductGrid";
 import { CartPanel } from "./components/CartPanel";
 import { POSModals } from "./components/POSModals";
 import { Loader2 } from "lucide-react";
 
+import { useOfflineProducts } from "@/hooks/use-offline-products";
+
+// ...
+
 export default function POSFeature() {
-  const { data: products, isLoading: pLoading } = useQuery<Product[]>({
-    queryKey: ["products"],
-    queryFn: async () => (await api.get("/products")).data,
-  });
+  const { data: products, isLoading: pLoading } = useOfflineProducts();
 
   const { data: categories, isLoading: cLoading } = useQuery<Category[]>({
     queryKey: ["categories"],
@@ -21,7 +23,8 @@ export default function POSFeature() {
 
   const { data: offers = [] } = useQuery<Offer[]>({
     queryKey: ["offers"],
-    queryFn: async () => [], // TODO: api.get("/offers")
+    queryFn: async () =>
+      await db.offers.where("status").equals("active").toArray(),
   });
 
   if (pLoading || cLoading) {

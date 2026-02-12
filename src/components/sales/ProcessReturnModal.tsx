@@ -24,6 +24,7 @@ interface ProcessReturnModalProps {
     saleId: string,
     items: { itemId: string; quantity: number }[],
     reason: string,
+    restock: boolean,
   ) => void;
 }
 
@@ -45,6 +46,7 @@ export function ProcessReturnModal({
   });
 
   const [reason, setReason] = useState("");
+  const [restock, setRestock] = useState(true);
 
   const handleIncrement = (item: CartItem) => {
     setQuantities((prev) => {
@@ -86,7 +88,7 @@ export function ProcessReturnModal({
 
     if (itemsToReturn.length === 0) return;
 
-    onConfirm(sale.id, itemsToReturn, reason);
+    onConfirm(sale.id, itemsToReturn, reason, restock);
     onClose();
   };
 
@@ -204,6 +206,22 @@ export function ProcessReturnModal({
               className="resize-none"
               rows={3}
             />
+          </div>
+
+          <div className="flex items-center space-x-2 pt-4">
+            <input
+              type="checkbox"
+              id="restock"
+              checked={restock}
+              onChange={(e) => setRestock(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label
+              htmlFor="restock"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Restock items to inventory?
+            </label>
           </div>
         </ScrollArea>
 

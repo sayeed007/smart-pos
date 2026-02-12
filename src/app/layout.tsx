@@ -6,6 +6,8 @@ import { InstanceProvider } from "@/providers/instance-provider";
 import { I18nProvider } from "@/providers/i18n-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/auth-provider";
+import { SessionProvider } from "@/providers/SessionProvider";
+import { SyncProvider } from "@/providers/SyncProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -34,8 +36,13 @@ export default function RootLayout({
             <InstanceProvider>
               <I18nProvider>
                 <AuthProvider>
-                  {children}
-                  <Toaster />
+                  <SessionProvider>
+                    <SyncProvider>
+                      {children}
+                      <Toaster />
+                      {/* SyncProvider has its own toast logic or uses Toaster */}
+                    </SyncProvider>
+                  </SessionProvider>
                 </AuthProvider>
               </I18nProvider>
             </InstanceProvider>

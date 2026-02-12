@@ -10,6 +10,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { LocationSelector } from "@/components/location/LocationSelector";
 
 interface NavItem {
   name: string;
@@ -110,7 +111,6 @@ export function Sidebar({
           )}
         </div>
       </div>
-
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-hide">
         {items.map((item) => {
           const isActive = pathname.startsWith(item.path);
@@ -152,7 +152,6 @@ export function Sidebar({
           );
         })}
       </nav>
-
       {/* USER AND LOG OUT */}
       <div
         className={cn(
@@ -160,6 +159,8 @@ export function Sidebar({
           collapsed ? "p-2" : "p-3",
         )}
       >
+        <LocationSelector collapsed={collapsed} className="mb-3" />
+
         <div
           className={cn(
             "flex items-center gap-3 mb-3",

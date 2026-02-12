@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
   ProductFormModal,
-  ProductFormData,
+  ProductSubmissionData,
 } from "@/components/products/ProductFormModal";
 import { useTranslation } from "react-i18next";
 import { ProductListTable } from "@/components/products/ProductListTable";
@@ -63,7 +63,7 @@ export function ProductsPageContent() {
     setIsAddOpen(true);
   };
 
-  const handleSave = async (data: ProductFormData) => {
+  const handleSave = async (data: ProductSubmissionData) => {
     // API Simulation handled here
     await new Promise((resolve) => setTimeout(resolve, 500));
 
