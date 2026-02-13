@@ -23,6 +23,12 @@ import { ProductDeleteDialog } from "@/components/products/ProductDeleteDialog";
 import { Category, Product } from "@/types";
 import { useTranslation } from "react-i18next";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -174,23 +180,117 @@ export function ProductListTable({
         </Button>
       ),
       accessorFn: (row) => {
-        if (row.type === "variable" && row.variants) {
-          return row.variants.reduce((acc, v) => acc + v.stockQuantity, 0);
+        // Calculate total stock from locationWiseStock array
+        if (row.locationWiseStock && row.locationWiseStock.length > 0) {
+          return row.locationWiseStock.reduce((acc, loc) => acc + loc.stock, 0);
         }
-        return row.stockQuantity;
+
+        // Fallback to variants for variable products
+        if (row.type === "variable" && row.variants) {
+          // Sum from variant locationWiseStock if available
+          return row.variants.reduce((acc, v) => {
+            if (v.locationWiseStock && v.locationWiseStock.length > 0) {
+              return (
+                acc +
+                v.locationWiseStock.reduce((sum, loc) => sum + loc.stock, 0)
+              );
+            }
+            return acc + (v.stockQuantity || 0);
+          }, 0);
+        }
+
+        return row.stockQuantity || 0;
       },
       cell: ({ row, getValue }) => {
-        const stock = getValue() as number;
-        return (
+        const product = row.original;
+        const totalStock = getValue() as number;
+
+        // Determine if we have location-wise data to show
+        const hasLocationData =
+          product.locationWiseStock && product.locationWiseStock.length > 0;
+
+        // For variable products, aggregate all variant locations
+        let locationStockMap: Map<
+          string,
+          { locationName: string; stock: number }
+        > | null = null;
+
+        if (product.type === "variable" && product.variants) {
+          locationStockMap = new Map();
+          product.variants.forEach((variant) => {
+            if (variant.locationWiseStock) {
+              variant.locationWiseStock.forEach((loc) => {
+                const existing = locationStockMap!.get(loc.locationId);
+                if (existing) {
+                  existing.stock += loc.stock;
+                } else {
+                  locationStockMap!.set(loc.locationId, {
+                    locationName: loc.locationName,
+                    stock: loc.stock,
+                  });
+                }
+              });
+            }
+          });
+        }
+
+        const stockContent = (
           <span
             className={
-              stock < 10
+              totalStock < 10
                 ? "typo-bold-14 text-destructive"
                 : "text-muted-foreground typo-regular-14"
             }
           >
-            {stock}
+            {totalStock}
           </span>
+        );
+
+        // If no location data, just show the number
+        if (
+          !hasLocationData &&
+          (!locationStockMap || locationStockMap.size === 0)
+        ) {
+          return stockContent;
+        }
+
+        // Show tooltip with location breakdown
+        const locationData = hasLocationData
+          ? product.locationWiseStock
+          : Array.from(locationStockMap!.values()).map((item, idx) => ({
+              locationId: `loc-${idx}`,
+              locationName: item.locationName,
+              stock: item.stock,
+            }));
+
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="cursor-help">{stockContent}</div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-xs">
+                <div className="space-y-1">
+                  <p className="typo-semibold-12 text-foreground mb-2">
+                    Stock by Location
+                  </p>
+                  {locationData!.map((loc) => (
+                    <div
+                      key={loc.locationId}
+                      className="flex justify-between gap-4 typo-regular-12"
+                    >
+                      <span className="text-muted-foreground">
+                        {loc.locationName}:
+                      </span>
+                      <span className="text-foreground font-medium">
+                        {loc.stock}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       },
     },
