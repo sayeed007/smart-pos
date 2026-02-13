@@ -17,10 +17,8 @@ import {
   SquarePen,
   Trash2,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { ProductDeleteDialog } from "@/components/products/ProductDeleteDialog";
 import { Category, Product } from "@/types";
 import { useTranslation } from "react-i18next";
@@ -28,11 +26,18 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   SortingState,
 } from "@tanstack/react-table";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface ProductListTableProps {
   products: Product[];
@@ -40,6 +45,9 @@ interface ProductListTableProps {
   categories: Category[];
   onEdit: (product: Product) => void;
   onDelete?: (product: Product) => Promise<void> | void;
+  pageCount: number;
+  pagination: { pageIndex: number; pageSize: number };
+  onPageChange: (pagination: { pageIndex: number; pageSize: number }) => void;
 }
 
 export function ProductListTable({
@@ -48,13 +56,12 @@ export function ProductListTable({
   categories,
   onEdit,
   onDelete,
+  pageCount,
+  pagination,
+  onPageChange,
 }: ProductListTableProps) {
   const { t } = useTranslation("products");
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
   // Columns Definition
   const columns: ColumnDef<Product>[] = [
@@ -78,7 +85,7 @@ export function ProductListTable({
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0 border border-border">
               {product.image ? (
-                <Image
+                <ServerImage
                   src={product.image}
                   alt={product.name}
                   width={40}
@@ -247,15 +254,23 @@ export function ProductListTable({
   const table = useReactTable({
     data: products,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    pageCount,
     state: {
       sorting,
       pagination,
     },
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      // Handle both functional updates and direct values
+      if (typeof updater === "function") {
+        onPageChange(updater(pagination));
+      } else {
+        onPageChange(updater);
+      }
+    },
+    manualPagination: true,
   });
 
   if (isLoading) {
@@ -318,29 +333,46 @@ export function ProductListTable({
 
       {/* Pagination Controls */}
       <div className="flex items-center justify-end space-x-2 p-4 pt-0">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getPrePaginationRowModel().rows.length} products
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  if (table.getCanPreviousPage()) table.previousPage();
+                }}
+                className={
+                  !table.getCanPreviousPage()
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {/* Simple Page Indicator for now to avoid logic complexity without a helper, or we can iterate */}
+            <PaginationItem>
+              <span className="text-sm font-medium text-muted-foreground px-4">
+                Page {pagination.pageIndex + 1} of {pageCount}
+              </span>
+            </PaginationItem>
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  if (table.getCanNextPage()) table.nextPage();
+                }}
+                className={
+                  !table.getCanNextPage()
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,7 +40,7 @@ export interface ProductFormData {
   stockQuantity: number;
   minStockLevel?: number;
   status: "active" | "inactive";
-  image?: string;
+  image?: string | File;
   type: "simple" | "variable";
   variants: Variant[];
   uom: string;
@@ -56,14 +56,14 @@ export interface ProductSubmissionData extends Omit<
 }
 
 const defaultFormData: ProductFormData = {
-  name: "",
-  categoryId: "",
-  sku: "",
-  barcode: "",
-  costPrice: 0,
-  sellingPrice: 0,
+  name: "Men's Premium Performance T-shirt – Offline",
+  categoryId: "87465a08-7e41-43d6-b5e5-ad9a48033e6e",
+  sku: "73431",
+  barcode: "73431",
+  costPrice: 550,
+  sellingPrice: 900,
   taxRate: 0,
-  stockQuantity: 0,
+  stockQuantity: 20,
   minStockLevel: 10,
   status: "active",
   type: "simple",
@@ -72,6 +72,24 @@ const defaultFormData: ProductFormData = {
   allowDecimals: false,
   barcodes: "",
 };
+
+// const defaultFormData: ProductFormData = {
+//   name: "",
+//   categoryId: "",
+//   sku: "",
+//   barcode: "",
+//   costPrice: 0,
+//   sellingPrice: 0,
+//   taxRate: 0,
+//   stockQuantity: 0,
+//   minStockLevel: 10,
+//   status: "active",
+//   type: "simple",
+//   variants: [],
+//   uom: "pcs",
+//   allowDecimals: false,
+//   barcodes: "",
+// };
 
 interface ProductFormModalProps {
   open: boolean;
@@ -557,14 +575,10 @@ export function ProductFormModal({
                 input.onchange = (e) => {
                   const file = (e.target as HTMLInputElement).files?.[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData({
-                        ...formData,
-                        image: reader.result as string,
-                      });
-                    };
-                    reader.readAsDataURL(file);
+                    setFormData({
+                      ...formData,
+                      image: file,
+                    });
                   }
                 };
                 input.click();
@@ -572,8 +586,12 @@ export function ProductFormModal({
             >
               {formData.image ? (
                 <div className="relative w-full">
-                  <Image
-                    src={formData.image}
+                  <ServerImage
+                    src={
+                      formData.image instanceof File
+                        ? URL.createObjectURL(formData.image)
+                        : (formData.image as string)
+                    }
                     alt="Product preview"
                     width={400}
                     height={192}

@@ -7,7 +7,7 @@
 
 import React, { createContext, useContext, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
+import { backendApi } from "@/lib/axios";
 import {
   InstanceConfig,
   defaultInstanceConfig,
@@ -29,8 +29,10 @@ export function InstanceProvider({ children }: { children: React.ReactNode }) {
     queryKey: ["instance-config"],
     queryFn: async () => {
       try {
-        const response = await api.get("/instance/config");
-        return response.data;
+        const response = await backendApi.get("/instance/config");
+        // Handle ApiEnvelope wrapper
+        const data = response.data;
+        return data.success ? data.data : data;
       } catch (error) {
         console.warn("Failed to load instance config, using defaults:", error);
         return defaultInstanceConfig;

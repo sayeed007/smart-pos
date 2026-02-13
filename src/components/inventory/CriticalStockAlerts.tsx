@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
 import { useTranslation } from "react-i18next";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { Package } from "lucide-react";
 
 interface CriticalStockAlertsProps {
@@ -38,7 +38,7 @@ export function CriticalStockAlerts({
           >
             <div className="w-12 h-12 rounded-lg bg-white overflow-hidden shrink-0">
               {product.image ? (
-                <Image
+                <ServerImage
                   src={product.image}
                   alt={product.name}
                   width={48}

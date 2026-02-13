@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { AlertCircle, Package } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,7 +59,7 @@ export function RestockModal({
         <DialogHeader className="p-6 pb-4 flex flex-row items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-muted border border-border overflow-hidden shrink-0 flex items-center justify-center">
             {product.image ? (
-              <Image
+              <ServerImage
                 src={product.image}
                 alt={product.name}
                 width={48}

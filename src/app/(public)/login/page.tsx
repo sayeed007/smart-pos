@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
   Form,
   FormControl,
@@ -226,10 +226,10 @@ export default function LoginPage() {
                 />
               </div>
 
-              <Button
+              <PrimaryActionButton
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-6 text-base rounded-xl shadow-lg shadow-red-100 bg-[#f87171] hover:bg-destructive transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full py-6 text-base rounded-xl"
               >
                 {isLoading ? (
                   <>
@@ -239,7 +239,7 @@ export default function LoginPage() {
                 ) : (
                   "Sign In"
                 )}
-              </Button>
+              </PrimaryActionButton>
             </form>
           </Form>
 

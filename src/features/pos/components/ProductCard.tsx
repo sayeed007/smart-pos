@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Product } from "@/types";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +17,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
     >
       <div className="relative aspect-square rounded-lg overflow-hidden mb-2 bg-muted">
         {product.image ? (
-          <Image
+          <ServerImage
             src={product.image}
             fill
             sizes="(max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 25vw"
