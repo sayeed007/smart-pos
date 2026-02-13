@@ -80,9 +80,18 @@ export function ProductsPageContent() {
 
       setSelectedProduct(null);
       setIsAddOpen(false); // Close modal on success
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save product", error);
-      toast.error(t("toasts.error", "Failed to save product"));
+
+      // Extract error message from backend response
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to save product";
+      toast.error(errorMessage);
+
+      // Keep modal open so user can fix the error (e.g., change SKU)
+      // Don't close modal or clear selectedProduct
     }
   };
 

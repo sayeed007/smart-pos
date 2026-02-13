@@ -201,6 +201,7 @@ export class ProductsService {
             "imageUrl",
             "variants",
             "barcodes",
+            "stockQuantity",
           ])
         : new Set([
             "name",
@@ -230,11 +231,6 @@ export class ProductsService {
         return;
       }
 
-      if (key === "stockQuantity") {
-        // Backend DTO doesn't support stockQuantity directly on create/update
-        return;
-      }
-
       if (key === "variants") {
         if (mode !== "create") return;
         const variants = (value as any[]).map((v) => ({
@@ -244,7 +240,7 @@ export class ProductsService {
           costPrice: v.costPrice ? Number(v.costPrice) : undefined,
           attributes: v.attributes || {},
           imageUrl: v.imageUrl, // Preserve if present
-          // Strip id, productId, stockQuantity which cause 400 Bad Request
+          stockQuantity: Number(v.stockQuantity),
         }));
         formData.append(key, JSON.stringify(variants));
       } else if (key === "barcodes") {

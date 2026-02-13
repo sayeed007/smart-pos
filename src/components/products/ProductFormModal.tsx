@@ -378,6 +378,7 @@ export function ProductFormModal({
                         stockQuantity: parseFloat(e.target.value),
                       })
                     }
+                    disabled={!!productToEdit}
                   />
                 </div>
               </div>

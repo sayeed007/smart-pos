@@ -1,5 +1,9 @@
 import axios from "axios";
-import { clearStoredAuth, getStoredAuth } from "@/lib/auth-storage";
+import {
+  clearStoredAuth,
+  getStoredAuth,
+  setStoredAuth,
+} from "@/lib/auth-storage";
 import { BACKEND_API_URL } from "@/config/backend-api";
 
 // Legacy/mock API client used by existing Next.js route handlers.
@@ -120,18 +124,32 @@ backendApi.interceptors.response.use(
 
     try {
       // Attempt to refresh the token
-      const { data } = await axios.post(
+      console.log("[Auth] Attempting token refresh...");
+      const response = await axios.post(
         `${BACKEND_API_URL}/auth/refresh`,
-        { refreshToken: auth.refreshToken },
+        { refreshToken: auth.refreshToken, deviceInfo: "aura-web" },
         { headers: { "Content-Type": "application/json" } },
       );
 
-      const newAccessToken = data.accessToken;
-      const newRefreshToken = data.refreshToken;
+      // Backend wraps response in { success, data, meta } via ResponseInterceptor
+      const responseData = response.data?.data ?? response.data;
+      const newAccessToken = responseData.accessToken;
+      const newRefreshToken = responseData.refreshToken;
 
-      // Update stored auth
-      localStorage.setItem("aura_access_token", newAccessToken);
-      localStorage.setItem("aura_refresh_token", newRefreshToken);
+      console.log("[Auth] Token refresh successful, new tokens received:", {
+        hasAccessToken: !!newAccessToken,
+        hasRefreshToken: !!newRefreshToken,
+      });
+
+      if (!newAccessToken) {
+        throw new Error("No access token in refresh response");
+      }
+
+      // Update stored auth using setStoredAuth for consistency
+      setStoredAuth({
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      });
 
       // Update the failed request with new token
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -144,6 +162,7 @@ backendApi.interceptors.response.use(
       return backendApi(originalRequest);
     } catch (refreshError) {
       // Refresh failed, logout
+      console.error("[Auth] Token refresh failed:", refreshError);
       processQueue(refreshError, null);
       isRefreshing = false;
       clearStoredAuth();
