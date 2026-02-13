@@ -64,11 +64,7 @@ export default function LoginPage() {
             status: "active",
           };
 
-          login(user, {
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-            tenantId: data.user.tenantId,
-          });
+          login(user, data.user.tenantId);
 
           toast.success("Logged in successfully");
         },

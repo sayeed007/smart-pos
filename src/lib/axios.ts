@@ -1,10 +1,20 @@
-import axios from "axios";
-import {
-  clearStoredAuth,
-  getStoredAuth,
-  setStoredAuth,
-} from "@/lib/auth-storage";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { clearStoredAuth, getStoredAuth } from "@/lib/auth-storage";
 import { BACKEND_API_URL } from "@/config/backend-api";
+
+const getCookieValue = (name: string): string | null => {
+  if (typeof document === "undefined") return null;
+  const nameEQ = name + "=";
+  const cookies = document.cookie.split(";");
+  for (let i = 0; i < cookies.length; i++) {
+    let c = cookies[i];
+    while (c.charAt(0) === " ") c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) {
+      return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+  }
+  return null;
+};
 
 // Legacy/mock API client used by existing Next.js route handlers.
 export const api = axios.create({
@@ -20,15 +30,17 @@ export const backendApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Request interceptor for legacy/mock client.
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("aura_user");
       if (storedUser) {
         const user = JSON.parse(storedUser);
+        config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer mock-token-${user.id}`;
       }
     }
@@ -40,13 +52,17 @@ api.interceptors.request.use(
 );
 
 backendApi.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const auth = getStoredAuth();
-    if (auth.accessToken) {
-      config.headers.Authorization = `Bearer ${auth.accessToken}`;
-    }
+    // Tokens are in cookies now
     if (auth.tenantId) {
+      config.headers = config.headers ?? {};
       config.headers["X-Tenant-ID"] = auth.tenantId;
+    }
+    const csrfToken = getCookieValue("csrfToken");
+    if (csrfToken) {
+      config.headers = config.headers ?? {};
+      config.headers["X-CSRF-Token"] = csrfToken;
     }
     return config;
   },
@@ -82,10 +98,15 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
+type RetryRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+
 backendApi.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryRequestConfig | undefined;
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
     // If error is not 401 or request already retried, reject immediately
     if (error.response?.status !== 401 || originalRequest._retry) {
@@ -101,8 +122,8 @@ backendApi.interceptors.response.use(
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
-        .then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+        .then(() => {
+          // Retry without adding header
           return backendApi(originalRequest);
         })
         .catch((err) => Promise.reject(err));
@@ -111,51 +132,26 @@ backendApi.interceptors.response.use(
     originalRequest._retry = true;
     isRefreshing = true;
 
-    const auth = getStoredAuth();
-
-    if (!auth.refreshToken) {
-      // No refresh token available, logout
-      isRefreshing = false;
-      clearStoredAuth();
-      localStorage.removeItem("aura_user");
-      window.location.href = "/login";
-      return Promise.reject(error);
-    }
-
     try {
-      // Attempt to refresh the token
+      // Attempt to refresh the token via cookie
       console.log("[Auth] Attempting token refresh...");
-      const response = await axios.post(
+      const csrfToken = getCookieValue("csrfToken");
+      await axios.post(
         `${BACKEND_API_URL}/auth/refresh`,
-        { refreshToken: auth.refreshToken, deviceInfo: "aura-web" },
-        { headers: { "Content-Type": "application/json" } },
+        { deviceInfo: "aura-web" },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+          },
+          withCredentials: true,
+        },
       );
 
-      // Backend wraps response in { success, data, meta } via ResponseInterceptor
-      const responseData = response.data?.data ?? response.data;
-      const newAccessToken = responseData.accessToken;
-      const newRefreshToken = responseData.refreshToken;
-
-      console.log("[Auth] Token refresh successful, new tokens received:", {
-        hasAccessToken: !!newAccessToken,
-        hasRefreshToken: !!newRefreshToken,
-      });
-
-      if (!newAccessToken) {
-        throw new Error("No access token in refresh response");
-      }
-
-      // Update stored auth using setStoredAuth for consistency
-      setStoredAuth({
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      });
-
-      // Update the failed request with new token
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      console.log("[Auth] Token refresh successful via cookies");
 
       // Process queued requests
-      processQueue(null, newAccessToken);
+      processQueue(null, null); // passing null as token since we use cookies
       isRefreshing = false;
 
       // Retry the original request

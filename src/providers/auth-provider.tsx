@@ -14,10 +14,7 @@ import {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (
-    userData: User,
-    tokens: { accessToken: string; refreshToken: string; tenantId: string },
-  ) => void;
+  login: (userData: User, tenantId: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -58,11 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth();
   }, []);
 
-  const login = (
-    userData: User,
-    tokens: { accessToken: string; refreshToken: string; tenantId: string },
-  ) => {
-    setStoredAuth(tokens);
+  const login = (userData: User, tenantId: string) => {
+    setStoredAuth({ tenantId });
     setUser(userData);
     localStorage.setItem("aura_user", JSON.stringify(userData));
 
