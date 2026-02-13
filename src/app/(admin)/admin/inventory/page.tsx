@@ -1,6 +1,6 @@
 "use client";
 
-import { InventoryTransaction } from "@/types";
+import { InventoryTransaction, Location } from "@/types";
 import {
   Table,
   TableBody,
@@ -12,14 +12,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { Loader2, MapPin, Search } from "lucide-react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { MOCK_PRODUCTS, MOCK_LOCATIONS } from "@/lib/mock-data";
-import { useInventoryStore } from "@/features/inventory/store/inventory-store";
-import { StockAdjustmentDialog } from "@/features/inventory/components/StockAdjustmentDialog";
 import { useLocationStore } from "@/features/locations/store";
-
+import { StockAdjustmentDialog } from "@/features/inventory/components/StockAdjustmentDialog";
 import {
   Select,
   SelectContent,
@@ -27,20 +24,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { StockTransferList } from "@/features/inventory/components/StockTransferList";
 import { CreateTransferDialog } from "@/features/inventory/components/CreateTransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
+import { useAllInventoryTransactions } from "@/hooks/api/inventory";
+import { useProducts } from "@/hooks/api/products";
+import { useLocations } from "@/hooks/api/locations";
 
 export default function InventoryPage() {
+  const { t } = useTranslation("inventory");
   const { currentLocation } = useLocationStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
 
-  // Simulated Queries (replace with API)
-  const transactions = useInventoryStore((state) => state.transactions);
-  const products = MOCK_PRODUCTS;
-  const locations = MOCK_LOCATIONS;
+  // Fetch locations for dropdown
+  const { data: locationsData } = useLocations();
+  const locations: Location[] = locationsData?.data ?? [];
+
+  // Get default location - prefer currentLocation if it exists in the list, otherwise use first location
+  const defaultLocation =
+    locations.length > 0
+      ? locations.find((loc) => loc.id === currentLocation.id) || locations[0]
+      : null;
+
+  const [selectedLocationId, setSelectedLocationId] = useState<string>("");
+  const defaultLocationId = defaultLocation?.id ?? "";
+  const effectiveLocationId = selectedLocationId || defaultLocationId;
+
+  // Fetch transactions from API for selected location (only when we have a valid location)
+  const { data: transactionsData, isLoading: isLoadingTransactions } =
+    useAllInventoryTransactions(effectiveLocationId, 1, 100);
+
+  // Fetch products for lookup
+  const { data: productsData } = useProducts({
+    page: 1,
+    limit: 1000, // Get all products for lookup
+  });
+
+  const transactions = transactionsData?.data || [];
+  const products = productsData?.data || [];
 
   // Filter Logic
   const filteredTransactions = transactions.filter((tx) => {
@@ -49,31 +72,40 @@ export default function InventoryPage() {
       `${product?.name} ${product?.sku} ${tx.reason} ${tx.referenceId}`.toLowerCase();
     const matchesSearch = searchString.includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === "all" || tx.type === typeFilter;
-    const matchesLocation = tx.locationId === currentLocation.id;
-    return matchesSearch && matchesType && matchesLocation;
+    return matchesSearch && matchesType;
   });
 
   const getTypeBadge = (type: InventoryTransaction["type"]) => {
     switch (type) {
       case "IN":
         return (
-          <Badge className="bg-green-500 hover:bg-green-600">Stock In</Badge>
+          <Badge className="bg-green-500 hover:bg-green-600">
+            {t("transactionTypes.in")}
+          </Badge>
         );
       case "OUT":
-        return <Badge className="bg-red-500 hover:bg-red-600">Stock Out</Badge>;
+        return (
+          <Badge className="bg-red-500 hover:bg-red-600">
+            {t("transactionTypes.out")}
+          </Badge>
+        );
       case "ADJUST":
         return (
           <Badge
             variant="outline"
             className="border-orange-500 text-orange-500"
           >
-            Adjustment
+            {t("transactionTypes.adjust")}
           </Badge>
         );
       case "TRANSFER":
-        return <Badge variant="secondary">Transfer</Badge>;
+        return (
+          <Badge variant="secondary">{t("transactionTypes.transfer")}</Badge>
+        );
       case "RETURN":
-        return <Badge className="bg-blue-500">Return</Badge>;
+        return (
+          <Badge className="bg-blue-500">{t("transactionTypes.return")}</Badge>
+        );
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -83,31 +115,43 @@ export default function InventoryPage() {
     const p = products.find((prod) => prod.id === id);
     return p
       ? { name: p.name, sku: p.sku, image: p.image }
-      : { name: "Unknown Product", sku: "N/A", image: null };
+      : { name: t("messages.unknownProduct"), sku: "N/A", image: null };
   };
 
-  const getLocationName = (id: string) => {
-    const l = locations.find((loc) => loc.id === id);
-    return l ? l.name : id;
-  };
+  const selectedLocation =
+    locations?.find((loc) => loc.id === effectiveLocationId) || currentLocation;
 
   return (
-    <div className="p-6 space-y-6 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div className="p-6 space-y-6 max-w-400 mx-auto animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Inventory Management
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Manage stock levels, transfers, and audit logs for{" "}
-            <span className="font-semibold text-primary">
-              {currentLocation.name}
-            </span>
-            .
+            {t("subtitleWithLocation", { location: selectedLocation.name })}
           </p>
         </div>
-        <div className="flex gap-2">
-          {/* <Button variant="outline">Export CSV</Button> */}
+        <div className="flex items-center gap-2">
+          {/* Location Selector */}
+          <div className="flex items-center gap-2 min-w-50">
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <Select
+              value={effectiveLocationId}
+              onValueChange={setSelectedLocationId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map((loc) => (
+                  <SelectItem key={loc.id} value={loc.id}>
+                    {loc.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <StockAdjustmentDialog />
           <CreateTransferDialog />
         </div>
@@ -115,115 +159,133 @@ export default function InventoryPage() {
 
       <Tabs defaultValue="ledger" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="ledger">Transaction Ledger</TabsTrigger>
-          <TabsTrigger value="transfers">Stock Transfers</TabsTrigger>
+          <TabsTrigger value="ledger">{t("tabs.ledger")}</TabsTrigger>
+          <TabsTrigger value="transfers">{t("tabs.transfers")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ledger">
           <Card>
             <CardHeader>
-              <CardTitle>Transactions</CardTitle>
+              <CardTitle>{t("cards.transactions")}</CardTitle>
               <div className="flex items-center gap-2 mt-2">
                 <div className="relative flex-1 max-w-sm">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search by product, SKU, or reason..."
+                    placeholder={t("filters.search")}
                     className="pl-9"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by Type" />
+                  <SelectTrigger className="w-45">
+                    <SelectValue placeholder={t("filters.filterByType")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="IN">Stock In</SelectItem>
-                    <SelectItem value="OUT">Stock Out</SelectItem>
-                    <SelectItem value="ADJUST">Adjustment</SelectItem>
-                    <SelectItem value="TRANSFER">Transfer</SelectItem>
-                    <SelectItem value="RETURN">Return</SelectItem>
+                    <SelectItem value="all">{t("filters.allTypes")}</SelectItem>
+                    <SelectItem value="IN">
+                      {t("transactionTypes.in")}
+                    </SelectItem>
+                    <SelectItem value="OUT">
+                      {t("transactionTypes.out")}
+                    </SelectItem>
+                    <SelectItem value="ADJUST">
+                      {t("transactionTypes.adjust")}
+                    </SelectItem>
+                    <SelectItem value="TRANSFER">
+                      {t("transactionTypes.transfer")}
+                    </SelectItem>
+                    <SelectItem value="RETURN">
+                      {t("transactionTypes.return")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date & Time</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Qty</TableHead>
-                    <TableHead>Reason / Ref</TableHead>
-                    <TableHead>User</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((tx) => {
-                      const product = getProductDetails(tx.productId);
-                      return (
-                        <TableRow key={tx.id}>
-                          <TableCell className="font-medium text-xs text-muted-foreground whitespace-nowrap">
-                            {format(
-                              new Date(tx.timestamp),
-                              "MMM dd, yyyy HH:mm",
-                            )}
-                          </TableCell>
-                          <TableCell>{getTypeBadge(tx.type)}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-col">
-                              <span className="font-semibold text-sm">
-                                {product.name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {product.sku}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {getLocationName(tx.locationId)}
-                          </TableCell>
-                          <TableCell>
-                            <span
-                              className={
-                                tx.type === "IN" || tx.type === "RETURN"
-                                  ? "text-green-600 font-bold"
-                                  : "text-red-600 font-bold"
-                              }
-                            >
-                              {tx.type === "OUT" ? "-" : "+"}
-                              {Math.abs(tx.quantity)}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col text-sm">
-                              <span>{tx.reason}</span>
-                              {tx.referenceId && (
-                                <span className="text-xs text-muted-foreground font-mono">
-                                  {tx.referenceId}
-                                </span>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {tx.performedBy}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : (
+              {isLoadingTransactions ? (
+                <div className="flex h-64 items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/50" />
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                        No transactions found.
-                      </TableCell>
+                      <TableHead>{t("tableHeaders.dateTime")}</TableHead>
+                      <TableHead>{t("tableHeaders.type")}</TableHead>
+                      <TableHead>{t("tableHeaders.product")}</TableHead>
+                      <TableHead>{t("tableHeaders.location")}</TableHead>
+                      <TableHead>{t("tableHeaders.qty")}</TableHead>
+                      <TableHead>{t("tableHeaders.reasonRef")}</TableHead>
+                      <TableHead>{t("tableHeaders.user")}</TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTransactions.length > 0 ? (
+                      filteredTransactions.map((tx) => {
+                        const product = getProductDetails(tx.productId);
+                        return (
+                          <TableRow key={tx.id}>
+                            <TableCell className="font-medium text-xs text-muted-foreground whitespace-nowrap">
+                              {format(
+                                new Date(
+                                  tx.createdAt || tx.timestamp || new Date(),
+                                ),
+                                "MMM dd, yyyy HH:mm",
+                              )}
+                            </TableCell>
+                            <TableCell>{getTypeBadge(tx.type)}</TableCell>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-sm">
+                                  {product.name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {product.sku}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {selectedLocation.name}
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                className={
+                                  tx.type === "IN" || tx.type === "RETURN"
+                                    ? "text-green-600 font-bold"
+                                    : "text-red-600 font-bold"
+                                }
+                              >
+                                {tx.type === "OUT" ? "-" : "+"}
+                                {Math.abs(tx.quantity)}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-col text-sm">
+                                <span>{tx.reason}</span>
+                                {tx.referenceId && (
+                                  <span className="text-xs text-muted-foreground font-mono">
+                                    {tx.referenceId}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {tx.performedBy}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          {t("messages.noTransactions")}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -231,7 +293,7 @@ export default function InventoryPage() {
         <TabsContent value="transfers">
           <Card>
             <CardHeader>
-              <CardTitle>Transfer History</CardTitle>
+              <CardTitle>{t("cards.transferHistory")}</CardTitle>
             </CardHeader>
             <CardContent>
               <StockTransferList />

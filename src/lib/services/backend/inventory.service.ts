@@ -18,6 +18,24 @@ export class InventoryService {
     return unwrapEnvelope(response.data);
   }
 
+  static async getAllTransactions(
+    locationId: string,
+    page: number = 1,
+    limit: number = 100,
+  ) {
+    const response = await backendApi.get<
+      ApiEnvelope<{
+        data: InventoryTransaction[];
+        total: number;
+        page: number;
+        limit: number;
+      }>
+    >(
+      `/inventory/transactions?locationId=${locationId}&page=${page}&limit=${limit}`,
+    );
+    return unwrapEnvelope(response.data);
+  }
+
   static async getTransactions(productId: string) {
     const response = await backendApi.get<ApiEnvelope<InventoryTransaction[]>>(
       `/inventory/transactions/${productId}`,

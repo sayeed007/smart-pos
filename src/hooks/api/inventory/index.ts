@@ -9,6 +9,18 @@ export function useStockLevels(locationId: string) {
   });
 }
 
+export function useAllInventoryTransactions(
+  locationId: string,
+  page: number = 1,
+  limit: number = 100,
+) {
+  return useQuery({
+    queryKey: ["inventory", "transactions", "all", locationId, page, limit],
+    queryFn: () => InventoryService.getAllTransactions(locationId, page, limit),
+    enabled: !!locationId,
+  });
+}
+
 export function useInventoryTransactions(productId: string) {
   return useQuery({
     queryKey: ["inventory", "transactions", productId],

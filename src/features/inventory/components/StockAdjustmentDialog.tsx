@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
   Select,
   SelectContent,
@@ -21,11 +21,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
-import { MOCK_PRODUCTS, MOCK_LOCATIONS } from "@/lib/mock-data";
-import { InventoryTransaction } from "@/types";
 import { updateLocalStock } from "@/lib/db";
+import { MOCK_LOCATIONS, MOCK_PRODUCTS } from "@/lib/mock-data";
+import { InventoryTransaction } from "@/types";
+import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Minus } from "lucide-react";
 
 import { useLocationStore } from "@/features/locations/store";
 
@@ -59,7 +60,7 @@ export function StockAdjustmentDialog({
     }
 
     const transaction: InventoryTransaction = {
-      id: `tx-adj-${Date.now()}`,
+      id: `tx-adj-${new Date().getTime()}`,
       productId,
       variantId: variantId !== "none" ? variantId : undefined,
       type,
@@ -70,6 +71,7 @@ export function StockAdjustmentDialog({
       reason,
       performedBy: "u1", // Default Admin
       timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       locationId,
     };
 
@@ -91,9 +93,9 @@ export function StockAdjustmentDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <Button>Adjust Stock</Button>}
+        {trigger || <PrimaryActionButton>Adjust Stock</PrimaryActionButton>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>New Stock Adjustment</DialogTitle>
           <DialogDescription>
@@ -104,7 +106,10 @@ export function StockAdjustmentDialog({
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-right">Type</Label>
-            <Select value={type} onValueChange={(v: any) => setType(v)}>
+            <Select
+              value={type}
+              onValueChange={(v) => setType(v as InventoryTransaction["type"])}
+            >
               <SelectTrigger className="col-span-3">
                 <SelectValue />
               </SelectTrigger>

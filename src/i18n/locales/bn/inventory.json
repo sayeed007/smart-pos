@@ -1,6 +1,7 @@
 {
   "title": "ইনভেন্টরি ম্যানেজমেন্ট",
   "subtitle": "আপনার স্টক মনিটর এবং পরিচালনা করুন",
+  "subtitleWithLocation": "{{location}} এর জন্য স্টক লেভেল, ট্রান্সফার এবং অডিট লগ পরিচালনা করুন।",
   "stats": {
     "totalProducts": "মোট পণ্য",
     "inStock": "স্টকে আছে",
@@ -14,6 +15,39 @@
     "stockByCategory": "বিভাগ অনুযায়ী স্টক",
     "criticalAlerts": "সতর্কতা",
     "viewAll": "সব সতর্কতা দেখুন"
+  },
+  "tabs": {
+    "ledger": "লেনদেন খতিয়ান",
+    "transfers": "স্টক ট্রান্সফার"
+  },
+  "transactionTypes": {
+    "in": "স্টক ইন",
+    "out": "স্টক আউট",
+    "adjust": "সামঞ্জস্য",
+    "transfer": "ট্রান্সফার",
+    "return": "ফেরত"
+  },
+  "filters": {
+    "search": "পণ্য, SKU, বা কারণ দিয়ে খুঁজুন...",
+    "filterByType": "ধরন অনুসারে ফিল্টার করুন",
+    "allTypes": "সব ধরন"
+  },
+  "tableHeaders": {
+    "dateTime": "তারিখ ও সময়",
+    "type": "ধরন",
+    "product": "পণ্য",
+    "location": "লোকেশন",
+    "qty": "পরিমাণ",
+    "reasonRef": "কারণ / রেফ",
+    "user": "ব্যবহারকারী"
+  },
+  "messages": {
+    "noTransactions": "কোন লেনদেন পাওয়া যায়নি।",
+    "unknownProduct": "অজানা পণ্য"
+  },
+  "cards": {
+    "transactions": "লেনদেন",
+    "transferHistory": "ট্রান্সফার ইতিহাস"
   },
   "alerts": {
     "units": "ইউনিট",

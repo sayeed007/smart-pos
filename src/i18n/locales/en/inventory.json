@@ -1,6 +1,7 @@
 {
   "title": "Inventory Management",
   "subtitle": "Monitor and manage your stock",
+  "subtitleWithLocation": "Manage stock levels, transfers, and audit logs for {{location}}.",
   "stats": {
     "totalProducts": "Total Products",
     "inStock": "In Stock",
@@ -14,6 +15,39 @@
     "stockByCategory": "Stock by Category",
     "criticalAlerts": "Critical Stock Alerts",
     "viewAll": "View All Alerts"
+  },
+  "tabs": {
+    "ledger": "Transaction Ledger",
+    "transfers": "Stock Transfers"
+  },
+  "transactionTypes": {
+    "in": "Stock In",
+    "out": "Stock Out",
+    "adjust": "Adjustment",
+    "transfer": "Transfer",
+    "return": "Return"
+  },
+  "filters": {
+    "search": "Search by product, SKU, or reason...",
+    "filterByType": "Filter by Type",
+    "allTypes": "All Types"
+  },
+  "tableHeaders": {
+    "dateTime": "Date & Time",
+    "type": "Type",
+    "product": "Product",
+    "location": "Location",
+    "qty": "Qty",
+    "reasonRef": "Reason / Ref",
+    "user": "User"
+  },
+  "messages": {
+    "noTransactions": "No transactions found.",
+    "unknownProduct": "Unknown Product"
+  },
+  "cards": {
+    "transactions": "Transactions",
+    "transferHistory": "Transfer History"
   },
   "alerts": {
     "units": "units",

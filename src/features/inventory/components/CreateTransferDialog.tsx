@@ -6,6 +6,7 @@ import { db, updateLocalStock } from "@/lib/db";
 import { StockTransfer, InventoryTransaction } from "@/types";
 import { MOCK_PRODUCTS, MOCK_LOCATIONS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
   Dialog,
   DialogContent,
@@ -99,6 +100,7 @@ export function CreateTransferDialog({
         referenceId: transferId,
         performedBy: "u1",
         timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         locationId: currentLocation.id,
       }));
 
@@ -119,7 +121,7 @@ export function CreateTransferDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <Button>New Transfer</Button>}
+        {trigger || <PrimaryActionButton>New Transfer</PrimaryActionButton>}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -219,7 +221,7 @@ export function CreateTransferDialog({
           </div>
 
           {/* Items List */}
-          <div className="max-h-[200px] overflow-y-auto space-y-2">
+          <div className="max-h-50 overflow-y-auto space-y-2">
             {items.length === 0 && (
               <div className="text-center text-xs text-muted-foreground py-4">
                 No items added.
@@ -230,7 +232,7 @@ export function CreateTransferDialog({
                 key={idx}
                 className="flex justify-between items-center bg-muted/20 p-2 rounded text-sm border"
               >
-                <span className="font-medium truncate max-w-[200px]">
+                <span className="font-medium truncate max-w-50">
                   {item.name}
                 </span>
                 <div className="flex items-center gap-3">

@@ -156,7 +156,8 @@ export interface InventoryTransaction {
   reason: string;
   referenceId?: string;
   performedBy: string;
-  timestamp: string;
+  timestamp?: string; // Legacy/Local
+  createdAt: string; // From Backend
   locationId: string;
 }
 
