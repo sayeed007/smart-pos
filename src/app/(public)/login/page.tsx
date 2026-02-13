@@ -1,12 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Smartphone, Loader2, Shield, User, Store } from "lucide-react";
-import { UserRole } from "@/types";
-import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,8 +10,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { useLogin } from "@/hooks/api/auth";
 import { cn } from "@/lib/utils";
+import { mapBackendRoleToUiRole, useAuth } from "@/providers/auth-provider";
+import { User, UserRole } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Shield, Smartphone, Store } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -28,26 +29,56 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const loginMutation = useLogin();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "jane@pos.com",
-      password: "password",
+      email: "admin@aura-demo.com",
+      password: "SecureP@ss123",
       role: UserRole.CASHIER,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    try {
-      await login(values.email, values.role);
-      toast.success("Logged in successfully");
-    } catch (error) {
-      toast.error("Invalid credentials");
-      setIsLoading(false);
-    }
+    loginMutation.mutate(
+      {
+        email: values.email,
+        password: values.password,
+        deviceInfo: "aura-web",
+      },
+      {
+        onSuccess: (data) => {
+          const resolvedRole = mapBackendRoleToUiRole(
+            data.user.roles,
+            values.role,
+          );
+
+          const user: User = {
+            id: data.user.id,
+            name: data.user.name,
+            email: data.user.email,
+            role: resolvedRole,
+            status: "active",
+          };
+
+          login(user, {
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            tenantId: data.user.tenantId,
+          });
+
+          toast.success("Logged in successfully");
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error("Invalid credentials");
+          setIsLoading(false);
+        },
+      },
+    );
   }
 
   return (
@@ -198,7 +229,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-6 text-base rounded-xl shadow-lg shadow-red-100 bg-[#f87171] hover:bg-[#ef4444] transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="w-full py-6 text-base rounded-xl shadow-lg shadow-red-100 bg-[#f87171] hover:bg-destructive transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 {isLoading ? (
                   <>

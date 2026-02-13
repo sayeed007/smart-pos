@@ -1,22 +1,39 @@
 "use client";
 
+import { clearStoredAuth, setStoredAuth } from "@/lib/auth-storage";
+import { User, UserRole } from "@/types";
+import { useRouter } from "next/navigation";
 import {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
-import { User, UserRole } from "@/types";
-import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, role: UserRole) => Promise<void>;
+  login: (
+    userData: User,
+    tokens: { accessToken: string; refreshToken: string; tenantId: string },
+  ) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
+
+export const mapBackendRoleToUiRole = (
+  backendRoles: string[] | undefined,
+  fallback?: UserRole,
+): UserRole => {
+  const normalized = (backendRoles ?? []).map((role) => role.toLowerCase());
+
+  if (normalized.includes("admin")) return UserRole.ADMIN;
+  if (normalized.includes("manager")) return UserRole.MANAGER;
+  if (normalized.includes("cashier")) return UserRole.CASHIER;
+
+  return fallback ?? UserRole.CASHIER;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -26,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check local storage or session
     const initializeAuth = () => {
       const storedUser = localStorage.getItem("aura_user");
       if (storedUser) {
@@ -42,34 +58,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth();
   }, []);
 
-  const login = async (email: string, role: UserRole) => {
-    // Mock login -> In real app, call API
-    setIsLoading(true);
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+  const login = (
+    userData: User,
+    tokens: { accessToken: string; refreshToken: string; tenantId: string },
+  ) => {
+    setStoredAuth(tokens);
+    setUser(userData);
+    localStorage.setItem("aura_user", JSON.stringify(userData));
 
-    const mockUser: User = {
-      id: "u1",
-      name: email.split("@")[0] || "User",
-      email: email,
-      role: role,
-      status: "active",
-    };
-
-    setUser(mockUser);
-    localStorage.setItem("aura_user", JSON.stringify(mockUser));
-    setIsLoading(false);
-
-    // Redirect based on role
-    if (role === UserRole.ADMIN) {
+    if (
+      userData.role === UserRole.ADMIN ||
+      userData.role === UserRole.MANAGER
+    ) {
       router.push("/admin/dashboard");
-    } else if (role === UserRole.CASHIER) {
+    } else {
       router.push("/cashier/pos");
     }
   };
 
   const logout = () => {
     setUser(null);
+    clearStoredAuth();
     localStorage.removeItem("aura_user");
     router.push("/login");
   };
