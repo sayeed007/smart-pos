@@ -15,9 +15,21 @@ export type UpdateLocationDto = Partial<CreateLocationDto>;
 
 export class LocationsService {
   static async list() {
-    const response =
-      await backendApi.get<ApiEnvelope<Location[]>>("/locations");
-    return unwrapEnvelope(response.data);
+    const response = await backendApi.get<
+      ApiEnvelope<{
+        data: Location[];
+        meta: {
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+          hasNextPage: boolean;
+          hasPreviousPage: boolean;
+        };
+      }>
+    >("/locations");
+    const unwrapped = unwrapEnvelope(response.data);
+    return unwrapped.data; // Return just the array of locations
   }
 
   static async getById(id: string) {

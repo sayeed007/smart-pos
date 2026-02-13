@@ -40,6 +40,9 @@ export function useAdjustStock() {
       queryClient.invalidateQueries({
         queryKey: ["inventory", "transactions", variables.productId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["inventory", "transactions", "all"],
+      });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -51,6 +54,43 @@ export function useCreateTransfer() {
     mutationFn: InventoryService.createTransfer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "stock"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "transfers"] });
+    },
+  });
+}
+
+export function useTransfers(locationId?: string) {
+  return useQuery({
+    queryKey: ["inventory", "transfers", locationId],
+    queryFn: () => InventoryService.getTransfers(locationId),
+    enabled: !!locationId,
+  });
+}
+
+export function useShipTransfer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: InventoryService.shipTransfer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory", "stock"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "transfers"] });
+      queryClient.invalidateQueries({
+        queryKey: ["inventory", "transactions"],
+      });
+    },
+  });
+}
+
+export function useReceiveTransfer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: InventoryService.receiveTransfer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory", "stock"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "transfers"] });
+      queryClient.invalidateQueries({
+        queryKey: ["inventory", "transactions"],
+      });
     },
   });
 }

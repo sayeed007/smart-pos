@@ -62,7 +62,7 @@ backendApi.interceptors.request.use(
     const csrfToken = getCookieValue("csrfToken");
     if (csrfToken) {
       config.headers = config.headers ?? {};
-      config.headers["X-CSRF-Token"] = csrfToken;
+      config.headers["x-csrf-token"] = csrfToken;
     }
     return config;
   },
@@ -142,7 +142,7 @@ backendApi.interceptors.response.use(
         {
           headers: {
             "Content-Type": "application/json",
-            ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+            ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
           },
           withCredentials: true,
         },

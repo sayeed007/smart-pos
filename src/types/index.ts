@@ -198,10 +198,10 @@ export interface StockTransfer {
     name: string;
     sku?: string;
   }[];
-  status: "pending" | "shipped" | "received" | "cancelled";
+  status: "DRAFT" | "PENDING" | "SHIPPED" | "RECEIVED" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
-  shippedBy: string;
+  shippedBy?: string;
   receivedBy?: string;
   notes?: string;
 }

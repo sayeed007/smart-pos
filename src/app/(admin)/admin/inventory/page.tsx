@@ -1,6 +1,15 @@
 "use client";
 
-import { InventoryTransaction, Location } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -9,28 +18,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Loader2, MapPin, Search } from "lucide-react";
-import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { useLocationStore } from "@/features/locations/store";
-import { StockAdjustmentDialog } from "@/features/inventory/components/StockAdjustmentDialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { StockTransferList } from "@/features/inventory/components/StockTransferList";
-import { CreateTransferDialog } from "@/features/inventory/components/CreateTransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslation } from "react-i18next";
+import { CreateTransferDialog } from "@/features/inventory/components/CreateTransferDialog";
+import { StockAdjustmentDialog } from "@/features/inventory/components/StockAdjustmentDialog";
+import { StockTransferList } from "@/features/inventory/components/StockTransferList";
+import { useLocationStore } from "@/features/locations/store";
 import { useAllInventoryTransactions } from "@/hooks/api/inventory";
-import { useProducts } from "@/hooks/api/products";
 import { useLocations } from "@/hooks/api/locations";
+import { useProducts } from "@/hooks/api/products";
+import { InventoryTransaction, Location } from "@/types";
+import { format } from "date-fns";
+import { Loader2, MapPin, Search } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function InventoryPage() {
   const { t } = useTranslation("inventory");
@@ -40,7 +40,7 @@ export default function InventoryPage() {
 
   // Fetch locations for dropdown
   const { data: locationsData } = useLocations();
-  const locations: Location[] = locationsData?.data ?? [];
+  const locations: Location[] = locationsData ?? [];
 
   // Get default location - prefer currentLocation if it exists in the list, otherwise use first location
   const defaultLocation =
@@ -152,7 +152,7 @@ export default function InventoryPage() {
               </SelectContent>
             </Select>
           </div>
-          <StockAdjustmentDialog />
+          <StockAdjustmentDialog defaultLocationId={effectiveLocationId} />
           <CreateTransferDialog />
         </div>
       </div>

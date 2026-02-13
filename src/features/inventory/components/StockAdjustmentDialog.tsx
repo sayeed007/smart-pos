@@ -20,208 +20,365 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useInventoryStore } from "@/features/inventory/store/inventory-store";
-import { updateLocalStock } from "@/lib/db";
-import { MOCK_LOCATIONS, MOCK_PRODUCTS } from "@/lib/mock-data";
-import { InventoryTransaction } from "@/types";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-
+import { useTranslation } from "react-i18next";
 import { useLocationStore } from "@/features/locations/store";
+import { useAdjustStock } from "@/hooks/api/inventory";
+import { useProducts } from "@/hooks/api/products";
+import { useLocations } from "@/hooks/api/locations";
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/lib/utils";
 
 export function StockAdjustmentDialog({
   trigger,
+  defaultLocationId,
 }: {
   trigger?: React.ReactNode;
+  defaultLocationId?: string;
 }) {
+  const { t } = useTranslation("inventory");
   const { currentLocation } = useLocationStore();
   const [open, setOpen] = useState(false);
-  const [productId, setProductId] = useState("");
-  const [variantId, setVariantId] = useState("none");
-  const [type, setType] = useState<InventoryTransaction["type"]>("ADJUST");
-  const [quantity, setQuantity] = useState(1);
-  const [reason, setReason] = useState("");
-  const [locationId, setLocationId] = useState(currentLocation.id);
 
-  const addTransaction = useInventoryStore((state) => state.addTransaction);
+  const { stockAdjustmentSchema, StockAdjustmentFormValues } = useMemo(() => {
+    const schema = z.object({
+      type: z.enum(["IN", "OUT", "ADJUST", "RETURN"]),
+      locationId: z.string().uuid({
+        message:
+          t("dialogs.stockAdjustment.errorInvalidLocation") ||
+          "Invalid location ID",
+      }),
+      productId: z
+        .string()
+        .min(1, { message: t("dialogs.stockAdjustment.errorSelectProduct") }),
+      variantId: z.string().optional(),
+      quantity: z.coerce.number().min(1, {
+        message:
+          t("dialogs.stockAdjustment.errorInvalidQuantity") ||
+          "Quantity must be at least 1",
+      }),
+      reason: z
+        .string()
+        .min(1, { message: t("dialogs.stockAdjustment.errorProvideReason") }),
+    });
+    type FormValues = z.infer<typeof schema>;
+    return {
+      stockAdjustmentSchema: schema,
+      StockAdjustmentFormValues: {} as FormValues,
+    };
+  }, [t]);
 
-  const selectedProduct = MOCK_PRODUCTS.find((p) => p.id === productId);
+  const adjustStock = useAdjustStock();
+  const { data: productsData } = useProducts({ page: 1, limit: 1000 });
+  const { data: locations } = useLocations();
+
+  const products = productsData?.data || [];
+
+  const form = useForm<typeof StockAdjustmentFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(stockAdjustmentSchema) as any,
+    defaultValues: {
+      type: "ADJUST",
+      locationId: defaultLocationId || currentLocation?.id || "",
+      productId: "",
+      variantId: "none",
+      quantity: 1,
+      reason: "",
+    },
+  });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = form;
+  const productId = watch("productId");
+
+  const selectedProduct = products.find((p) => p.id === productId);
   const variants = selectedProduct?.variants || [];
 
-  const handleSubmit = () => {
-    if (!productId) {
-      toast.error("Please select a product");
-      return;
+  useEffect(() => {
+    if (open) {
+      reset({
+        type: "ADJUST",
+        locationId: defaultLocationId || currentLocation?.id || "",
+        productId: "",
+        variantId: "none",
+        quantity: 1,
+        reason: "",
+      });
     }
-    if (!reason) {
-      toast.error("Please provide a reason");
-      return;
+  }, [open, currentLocation, defaultLocationId, reset]);
+
+  const onSubmit = async (data: typeof StockAdjustmentFormValues) => {
+    try {
+      await adjustStock.mutateAsync({
+        productId: data.productId,
+        variantId: data.variantId !== "none" ? data.variantId : undefined,
+        locationId: data.locationId,
+        quantity: data.quantity,
+        reason: data.reason,
+        type: data.type as "IN" | "OUT" | "ADJUST",
+      });
+      toast.success(t("dialogs.stockAdjustment.successMessage"));
+      setOpen(false);
+      reset();
+    } catch (error) {
+      toast.error("Failed to adjust stock");
+      console.error(error);
     }
-
-    const transaction: InventoryTransaction = {
-      id: `tx-adj-${new Date().getTime()}`,
-      productId,
-      variantId: variantId !== "none" ? variantId : undefined,
-      type,
-      quantity:
-        type === "OUT" || type === "RETURN"
-          ? -Math.abs(quantity)
-          : Math.abs(quantity),
-      reason,
-      performedBy: "u1", // Default Admin
-      timestamp: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      locationId,
-    };
-
-    addTransaction(transaction);
-    updateLocalStock([transaction]);
-    toast.success("Stock adjustment recorded");
-    setOpen(false);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setProductId("");
-    setVariantId("none");
-    setType("ADJUST");
-    setQuantity(1);
-    setReason("");
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <PrimaryActionButton>Adjust Stock</PrimaryActionButton>}
+        {trigger || (
+          <PrimaryActionButton>
+            {t("dialogs.stockAdjustment.buttonText")}
+          </PrimaryActionButton>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
-          <DialogTitle>New Stock Adjustment</DialogTitle>
+          <DialogTitle>{t("dialogs.stockAdjustment.title")}</DialogTitle>
           <DialogDescription>
-            Manually adjust stock levels for a product. This will create an
-            audit record.
+            {t("dialogs.stockAdjustment.description")}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Type</Label>
-            <Select
-              value={type}
-              onValueChange={(v) => setType(v as InventoryTransaction["type"])}
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="IN">Stock In (Purchase)</SelectItem>
-                <SelectItem value="OUT">Stock Out (Damage/Loss)</SelectItem>
-                <SelectItem value="ADJUST">Correction</SelectItem>
-                <SelectItem value="RETURN">Customer Return</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Location</Label>
-            <Select value={locationId} onValueChange={setLocationId}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MOCK_LOCATIONS.map((loc) => (
-                  <SelectItem key={loc.id} value={loc.id}>
-                    {loc.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Product</Label>
-            <Select
-              value={productId}
-              onValueChange={(v) => {
-                setProductId(v);
-                setVariantId("none");
-              }}
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select Product" />
-              </SelectTrigger>
-              <SelectContent>
-                {MOCK_PRODUCTS.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {variants.length > 0 && (
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Variant</Label>
-              <Select value={variantId} onValueChange={setVariantId}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select Variant" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">-- No Variant --</SelectItem>
-                  {variants.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>
-                      {v.name} ({v.sku})
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+          {/* Type Field */}
+          <div className="space-y-2">
+            <Label className={cn(errors.type && "text-destructive")}>
+              {t("dialogs.stockAdjustment.type")}{" "}
+              <span className="text-destructive">*</span>
+            </Label>
+            <Controller
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      "w-full",
+                      errors.type && "border-destructive",
+                    )}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="IN">
+                      {t("dialogs.stockAdjustment.typeStockIn")}
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    <SelectItem value="OUT">
+                      {t("dialogs.stockAdjustment.typeStockOut")}
+                    </SelectItem>
+                    <SelectItem value="ADJUST">
+                      {t("dialogs.stockAdjustment.typeCorrection")}
+                    </SelectItem>
+                    <SelectItem value="RETURN">
+                      {t("dialogs.stockAdjustment.typeReturn")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && (
+              <p className="text-sm text-destructive">{errors.type.message}</p>
+            )}
+          </div>
+
+          {/* Location Field */}
+          <div className="space-y-2">
+            <Label className={cn(errors.locationId && "text-destructive")}>
+              {t("dialogs.stockAdjustment.location")}{" "}
+              <span className="text-destructive">*</span>
+            </Label>
+            <Controller
+              control={control}
+              name="locationId"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger
+                    className={cn(
+                      "w-full",
+                      errors.locationId && "border-destructive",
+                    )}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(locations || []).map((loc) => (
+                      <SelectItem key={loc.id} value={loc.id}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.locationId && (
+              <p className="text-sm text-destructive">
+                {errors.locationId.message}
+              </p>
+            )}
+          </div>
+
+          {/* Product Field */}
+          <div className="space-y-2">
+            <Label className={cn(errors.productId && "text-destructive")}>
+              {t("dialogs.stockAdjustment.product")}{" "}
+              <span className="text-destructive">*</span>
+            </Label>
+            <Controller
+              control={control}
+              name="productId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(v) => {
+                    field.onChange(v);
+                    setValue("variantId", "none");
+                  }}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      "w-full",
+                      errors.productId && "border-destructive",
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={t("dialogs.stockAdjustment.selectProduct")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.productId && (
+              <p className="text-sm text-destructive">
+                {errors.productId.message}
+              </p>
+            )}
+          </div>
+
+          {/* Variant Field */}
+          {variants.length > 0 && (
+            <div className="space-y-2">
+              <Label>{t("dialogs.stockAdjustment.variant")}</Label>
+              <Controller
+                control={control}
+                name="variantId"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={t("dialogs.stockAdjustment.selectVariant")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        {t("dialogs.stockAdjustment.noVariant")}
+                      </SelectItem>
+                      {variants.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.name} ({v.sku})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           )}
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Quantity</Label>
-            <div className="col-span-3 flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <Input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="h-8 text-center"
-              />
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+          {/* Quantity Field */}
+          <div className="space-y-2">
+            <Label className={cn(errors.quantity && "text-destructive")}>
+              {t("dialogs.stockAdjustment.quantity")}{" "}
+              <span className="text-destructive">*</span>
+            </Label>
+            <Controller
+              control={control}
+              name="quantity"
+              render={({ field }) => (
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    className="h-10 w-10"
+                    onClick={() =>
+                      field.onChange(Math.max(1, Number(field.value) - 1))
+                    }
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Input
+                    {...field}
+                    type="number"
+                    className={cn(
+                      "h-10 text-center",
+                      errors.quantity && "border-destructive",
+                    )}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    className="h-10 w-10"
+                    onClick={() => field.onChange(Number(field.value) + 1)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            />
+            {errors.quantity && (
+              <p className="text-sm text-destructive">
+                {errors.quantity.message}
+              </p>
+            )}
           </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Reason</Label>
+          {/* Reason Field */}
+          <div className="space-y-2">
+            <Label className={cn(errors.reason && "text-destructive")}>
+              {t("dialogs.stockAdjustment.reason")}{" "}
+              <span className="text-destructive">*</span>
+            </Label>
             <Input
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="e.g. PO #123, Damaged during shipping"
-              className="col-span-3"
+              {...form.register("reason")}
+              placeholder={t("dialogs.stockAdjustment.reasonPlaceholder")}
+              className={cn("w-full", errors.reason && "border-destructive")}
             />
+            {errors.reason && (
+              <p className="text-sm text-destructive">
+                {errors.reason.message}
+              </p>
+            )}
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>
-            Record Transaction
-          </Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <PrimaryActionButton type="submit">
+              {t("dialogs.stockAdjustment.recordTransaction")}
+            </PrimaryActionButton>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

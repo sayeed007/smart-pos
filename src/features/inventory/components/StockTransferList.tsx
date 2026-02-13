@@ -1,57 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocationStore } from "@/features/locations/store";
-import { db } from "@/lib/db";
 import { StockTransfer } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ArrowRight, Eye } from "lucide-react";
 import { ViewTransferDialog } from "./ViewTransferDialog";
+import { useTranslation } from "react-i18next";
+import { useTransfers } from "@/hooks/api/inventory";
 
 export function StockTransferList({
   onView,
 }: {
   onView?: (transfer: StockTransfer) => void;
 }) {
+  const { t: translate } = useTranslation("inventory");
   const { currentLocation } = useLocationStore();
-  const [transfers, setTransfers] = useState<StockTransfer[]>([]);
   const [selectedTransfer, setSelectedTransfer] =
     useState<StockTransfer | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const sent = await db.stockTransfers
-        .where("fromLocationId")
-        .equals(currentLocation.id)
-        .toArray();
-      const received = await db.stockTransfers
-        .where("toLocationId")
-        .equals(currentLocation.id)
-        .toArray();
-
-      const map = new Map<string, StockTransfer>();
-      sent.forEach((t) => map.set(t.id, t));
-      received.forEach((t) => map.set(t.id, t));
-
-      setTransfers(
-        Array.from(map.values()).sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        ),
-      );
-    };
-    load();
-
-    const interval = setInterval(load, 5000);
-    return () => clearInterval(interval);
-  }, [currentLocation]);
+  const { data: transfersData } = useTransfers(currentLocation.id);
+  const transfers = transfersData || [];
 
   if (transfers.length === 0)
     return (
       <div className="p-12 text-center text-muted-foreground border rounded-lg bg-muted/10">
-        No transfers found for this location.
+        {translate("dialogs.transferList.noTransfers")}
       </div>
     );
 
@@ -73,22 +49,22 @@ export function StockTransferList({
           <thead className="bg-muted/50 border-b">
             <tr>
               <th className="p-3 text-left font-medium text-muted-foreground">
-                Ref
+                {translate("dialogs.transferList.ref")}
               </th>
               <th className="p-3 text-left font-medium text-muted-foreground">
-                Date
+                {translate("dialogs.transferList.date")}
               </th>
               <th className="p-3 text-left font-medium text-muted-foreground">
-                Route
+                {translate("dialogs.transferList.route")}
               </th>
               <th className="p-3 text-left font-medium text-muted-foreground">
-                Status
+                {translate("dialogs.transferList.status")}
               </th>
               <th className="p-3 text-left font-medium text-muted-foreground">
-                Items
+                {translate("dialogs.transferList.items")}
               </th>
               <th className="p-3 text-right font-medium text-muted-foreground">
-                Action
+                {translate("dialogs.transferList.action")}
               </th>
             </tr>
           </thead>
@@ -128,9 +104,9 @@ export function StockTransferList({
                   <td className="p-3">
                     <Badge
                       variant={
-                        t.status === "received"
+                        t.status === "RECEIVED"
                           ? "default"
-                          : t.status === "cancelled"
+                          : t.status === "CANCELLED"
                             ? "destructive"
                             : "secondary"
                       }
@@ -149,14 +125,14 @@ export function StockTransferList({
                     >
                       <Eye size={16} />
                     </Button>
-                    {isIncoming && t.status === "shipped" && (
+                    {isIncoming && t.status === "SHIPPED" && (
                       <Button
                         size="sm"
                         variant="default"
                         className="ml-2 h-7 text-xs"
                         onClick={() => handleView(t)}
                       >
-                        Receive
+                        {translate("dialogs.transferList.receive")}
                       </Button>
                     )}
                   </td>

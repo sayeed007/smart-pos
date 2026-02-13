@@ -86,5 +86,68 @@
     "dresses": "Dresses",
     "tops": "Tops",
     "general": "General"
+  },
+  "dialogs": {
+    "createTransfer": {
+      "title": "New Stock Transfer",
+      "buttonText": "New Transfer",
+      "destination": "Destination",
+      "product": "Product",
+      "selectProduct": "Select Product",
+      "variant": "Variant",
+      "oneSize": "One Size",
+      "noVariant": "-- One Size --",
+      "qty": "Qty",
+      "noItems": "No items added.",
+      "shipTransfer": "Ship Transfer",
+      "successMessage": "Transfer created & shipped. Ref: {{ref}}",
+      "errorMessage": "Failed to create transfer."
+    },
+    "stockAdjustment": {
+      "title": "New Stock Adjustment",
+      "buttonText": "Adjust Stock",
+      "description": "Manually adjust stock levels for a product. This will create an audit record.",
+      "type": "Type",
+      "typeStockIn": "Stock In (Purchase)",
+      "typeStockOut": "Stock Out (Damage/Loss)",
+      "typeCorrection": "Correction",
+      "typeReturn": "Customer Return",
+      "location": "Location",
+      "product": "Product",
+      "selectProduct": "Select Product",
+      "variant": "Variant",
+      "selectVariant": "Select Variant",
+      "noVariant": "-- No Variant --",
+      "quantity": "Quantity",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. PO #123, Damaged during shipping",
+      "recordTransaction": "Record Transaction",
+      "errorSelectProduct": "Please select a product",
+      "errorProvideReason": "Please provide a reason",
+      "errorInvalidQuantity": "Quantity must be at least 1",
+      "errorInvalidLocation": "Invalid location ID",
+      "successMessage": "Stock adjustment recorded"
+    },
+    "viewTransfer": {
+      "title": "Transfer #{{ref}}",
+      "from": "From:",
+      "to": "To:",
+      "item": "Item",
+      "qty": "Qty",
+      "receiveInventory": "Receive Inventory",
+      "status": "Status:",
+      "successMessage": "Transfer received successfully.",
+      "errorMessage": "Failed to receive transfer."
+    },
+    "transferList": {
+      "noTransfers": "No transfers found for this location.",
+      "ref": "Ref",
+      "date": "Date",
+      "route": "Route",
+      "status": "Status",
+      "items": "Items",
+      "action": "Action",
+      "receive": "Receive"
+    }
   }
 }

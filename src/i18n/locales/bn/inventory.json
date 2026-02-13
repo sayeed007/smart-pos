@@ -86,5 +86,68 @@
     "dresses": "পোশাক",
     "tops": "টপস",
     "general": "সাধারণ"
+  },
+  "dialogs": {
+    "createTransfer": {
+      "title": "নতুন স্টক ট্রান্সফার",
+      "buttonText": "নতুন ট্রান্সফার",
+      "destination": "গন্তব্য",
+      "product": "পণ্য",
+      "selectProduct": "পণ্য নির্বাচন করুন",
+      "variant": "ভ্যারিয়েন্ট",
+      "oneSize": "এক সাইজ",
+      "noVariant": "-- এক সাইজ --",
+      "qty": "পরিমাণ",
+      "noItems": "কোন আইটেম যোগ করা হয়নি।",
+      "shipTransfer": "ট্রান্সফার পাঠান",
+      "successMessage": "ট্রান্সফার তৈরি এবং পাঠানো হয়েছে। রেফ: {{ref}}",
+      "errorMessage": "ট্রান্সফার তৈরি করতে ব্যর্থ।"
+    },
+    "stockAdjustment": {
+      "title": "নতুন স্টক সামঞ্জস্য",
+      "buttonText": "স্টক সামঞ্জস্য করুন",
+      "description": "একটি পণ্যের জন্য ম্যানুয়ালি স্টক লেভেল সামঞ্জস্য করুন। এটি একটি অডিট রেকর্ড তৈরি করবে।",
+      "type": "ধরন",
+      "typeStockIn": "স্টক ইন (ক্রয়)",
+      "typeStockOut": "স্টক আউট (ক্ষতি/হারানো)",
+      "typeCorrection": "সংশোধন",
+      "typeReturn": "গ্রাহক ফেরত",
+      "location": "লোকেশন",
+      "product": "পণ্য",
+      "selectProduct": "পণ্য নির্বাচন করুন",
+      "variant": "ভ্যারিয়েন্ট",
+      "selectVariant": "ভ্যারিয়েন্ট নির্বাচন করুন",
+      "noVariant": "-- কোন ভ্যারিয়েন্ট নেই --",
+      "quantity": "পরিমাণ",
+      "reason": "কারণ",
+      "reasonPlaceholder": "যেমন PO #123, শিপিং এর সময় ক্ষতিগ্রস্ত",
+      "recordTransaction": "লেনদেন রেকর্ড করুন",
+      "errorSelectProduct": "অনুগ্রহ করে একটি পণ্য নির্বাচন করুন",
+      "errorProvideReason": "অনুগ্রহ করে একটি কারণ প্রদান করুন",
+      "errorInvalidQuantity": "পরিমাণ অবশ্যই ১ বা তার বেশি হতে হবে",
+      "errorInvalidLocation": "অবৈধ লোকেশন আইডি",
+      "successMessage": "স্টক সামঞ্জস্য রেকর্ড করা হয়েছে"
+    },
+    "viewTransfer": {
+      "title": "ট্রান্সফার #{{ref}}",
+      "from": "থেকে:",
+      "to": "প্রতি:",
+      "item": "আইটেম",
+      "qty": "পরিমাণ",
+      "receiveInventory": "ইনভেন্টরি গ্রহণ করুন",
+      "status": "স্ট্যাটাস:",
+      "successMessage": "ট্রান্সফার সফলভাবে গৃহীত হয়েছে।",
+      "errorMessage": "ট্রান্সফার গ্রহণ করতে ব্যর্থ।"
+    },
+    "transferList": {
+      "noTransfers": "এই লোকেশনের জন্য কোন ট্রান্সফার পাওয়া যায়নি।",
+      "ref": "রেফ",
+      "date": "তারিখ",
+      "route": "রুট",
+      "status": "স্ট্যাটাস",
+      "items": "আইটেম",
+      "action": "অ্যাকশন",
+      "receive": "গ্রহণ করুন"
+    }
   }
 }

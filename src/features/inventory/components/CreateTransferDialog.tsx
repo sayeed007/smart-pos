@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 import { useLocationStore } from "@/features/locations/store";
-import { db, updateLocalStock } from "@/lib/db";
-import { StockTransfer, InventoryTransaction } from "@/types";
-import { MOCK_PRODUCTS, MOCK_LOCATIONS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
@@ -24,12 +21,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Plus, Trash2, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useCreateTransfer, useShipTransfer } from "@/hooks/api/inventory";
+import { useProducts } from "@/hooks/api/products";
+import { useLocations } from "@/hooks/api/locations";
 
 export function CreateTransferDialog({
   trigger,
 }: {
   trigger?: React.ReactNode;
 }) {
+  const { t } = useTranslation("inventory");
   const { currentLocation } = useLocationStore();
   const [open, setOpen] = useState(false);
   const [toLocationId, setToLocationId] = useState("");
@@ -37,15 +39,19 @@ export function CreateTransferDialog({
     { productId: string; variantId?: string; quantity: number; name: string }[]
   >([]);
 
+  const createTransfer = useCreateTransfer();
+  const shipTransfer = useShipTransfer();
+  const { data: productsData } = useProducts({ page: 1, limit: 1000 });
+  const { data: locations } = useLocations();
+
+  const products = productsData?.data || [];
+
   // Form state for adding item
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("none");
   const [quantity, setQuantity] = useState(1);
 
-  const availableLocations = MOCK_LOCATIONS.filter(
-    (l) => l.id !== currentLocation.id,
-  );
-  const selectedProduct = MOCK_PRODUCTS.find((p) => p.id === selectedProductId);
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
   const variants = selectedProduct?.variants || [];
 
   const addItem = () => {
@@ -70,62 +76,47 @@ export function CreateTransferDialog({
   const handleCreate = async () => {
     if (!toLocationId || items.length === 0) return;
 
-    const transferId = crypto.randomUUID();
-
-    const transfer: StockTransfer = {
-      id: transferId,
-      fromLocationId: currentLocation.id,
-      toLocationId,
-      items,
-      status: "shipped", // Immediate ship for MVP
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      shippedBy: "u1", // Default User
-    };
-
     try {
-      // 1. Save Transfer
-      await db.stockTransfers.add(transfer);
+      // 1. Create Transfer
+      const transfer = await createTransfer.mutateAsync({
+        fromLocationId: currentLocation.id,
+        toLocationId,
+        lines: items.map(({ productId, variantId, quantity }) => ({
+          productId,
+          variantId,
+          quantity,
+        })),
+      });
 
-      // 2. Create OUT Transactions (Deduct from Source)
-      // Note: We use type 'OUT' because we are removing from HERE.
-      // When Receiving, we will use type 'IN'.
-      const transactions: InventoryTransaction[] = items.map((item) => ({
-        id: `tx-${crypto.randomUUID()}`,
-        productId: item.productId,
-        variantId: item.variantId,
-        type: "OUT",
-        quantity: item.quantity,
-        reason: `Transfer to ${toLocationId} (Ref: ${transferId.slice(0, 8)})`,
-        referenceId: transferId,
-        performedBy: "u1",
-        timestamp: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        locationId: currentLocation.id,
-      }));
-
-      await updateLocalStock(transactions); // Updates Source Inventory Level
+      // 2. Ship the transfer immediately (for MVP)
+      await shipTransfer.mutateAsync(transfer.id);
 
       toast.success(
-        `Transfer created & shipped. Ref: ${transfer.id.slice(0, 8)}`,
+        t("dialogs.createTransfer.successMessage", {
+          ref: transfer.id.slice(0, 8),
+        }),
       );
       setOpen(false);
       setItems([]);
       setToLocationId("");
     } catch (e) {
       console.error(e);
-      toast.error("Failed to create transfer.");
+      toast.error(t("dialogs.createTransfer.errorMessage"));
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <PrimaryActionButton>New Transfer</PrimaryActionButton>}
+        {trigger || (
+          <PrimaryActionButton>
+            {t("dialogs.createTransfer.buttonText")}
+          </PrimaryActionButton>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>New Stock Transfer</DialogTitle>
+          <DialogTitle>{t("dialogs.createTransfer.title")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -137,14 +128,18 @@ export function CreateTransferDialog({
             <div className="flex-1">
               <Select value={toLocationId} onValueChange={setToLocationId}>
                 <SelectTrigger className="w-full h-8 bg-white border-0 shadow-sm">
-                  <SelectValue placeholder="Destination" />
+                  <SelectValue
+                    placeholder={t("dialogs.createTransfer.destination")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableLocations.map((l) => (
-                    <SelectItem key={l.id} value={l.id}>
-                      {l.name}
-                    </SelectItem>
-                  ))}
+                  {(locations || [])
+                    .filter((loc) => loc.id !== currentLocation.id)
+                    .map((loc) => (
+                      <SelectItem key={loc.id} value={loc.id}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -154,17 +149,19 @@ export function CreateTransferDialog({
           <div className="grid grid-cols-4 gap-2 items-end border-b pb-4">
             <div className="col-span-4">
               <label className="text-xs font-medium text-muted-foreground uppercase">
-                Product
+                {t("dialogs.createTransfer.product")}
               </label>
               <Select
                 value={selectedProductId}
                 onValueChange={setSelectedProductId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select Product" />
+                  <SelectValue
+                    placeholder={t("dialogs.createTransfer.selectProduct")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {MOCK_PRODUCTS.map((p) => (
+                  {products.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
                       {p.name}
                     </SelectItem>
@@ -176,17 +173,21 @@ export function CreateTransferDialog({
             {variants.length > 0 && (
               <div className="col-span-2">
                 <label className="text-xs font-medium text-muted-foreground uppercase">
-                  Variant
+                  {t("dialogs.createTransfer.variant")}
                 </label>
                 <Select
                   value={selectedVariantId}
                   onValueChange={setSelectedVariantId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="One Size" />
+                    <SelectValue
+                      placeholder={t("dialogs.createTransfer.oneSize")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- One Size --</SelectItem>
+                    <SelectItem value="none">
+                      {t("dialogs.createTransfer.noVariant")}
+                    </SelectItem>
                     {variants.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         {v.name}
@@ -199,7 +200,7 @@ export function CreateTransferDialog({
 
             <div className={variants.length > 0 ? "col-span-1" : "col-span-2"}>
               <label className="text-xs font-medium text-muted-foreground uppercase">
-                Qty
+                {t("dialogs.createTransfer.qty")}
               </label>
               <Input
                 type="number"
@@ -224,7 +225,7 @@ export function CreateTransferDialog({
           <div className="max-h-50 overflow-y-auto space-y-2">
             {items.length === 0 && (
               <div className="text-center text-xs text-muted-foreground py-4">
-                No items added.
+                {t("dialogs.createTransfer.noItems")}
               </div>
             )}
             {items.map((item, idx) => (
@@ -257,7 +258,7 @@ export function CreateTransferDialog({
             onClick={handleCreate}
             disabled={items.length === 0 || !toLocationId}
           >
-            Ship Transfer
+            {t("dialogs.createTransfer.shipTransfer")}
           </Button>
         </div>
       </DialogContent>

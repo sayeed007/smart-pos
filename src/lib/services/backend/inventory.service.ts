@@ -61,7 +61,8 @@ export class InventoryService {
   static async createTransfer(data: {
     fromLocationId: string;
     toLocationId: string;
-    items: { productId: string; variantId?: string; quantity: number }[];
+    lines: { productId: string; variantId?: string; quantity: number }[];
+    notes?: string;
   }) {
     const response = await backendApi.post<ApiEnvelope<StockTransfer>>(
       "/inventory/transfers",
@@ -82,5 +83,32 @@ export class InventoryService {
       `/inventory/transfers/${id}/receive`,
     );
     return unwrapEnvelope(response.data);
+  }
+
+  static async getTransfers(
+    locationId?: string,
+    page: number = 1,
+    limit: number = 100,
+  ) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(locationId && { locationId }),
+    });
+    const response = await backendApi.get<
+      ApiEnvelope<{
+        data: StockTransfer[];
+        meta: {
+          total: number;
+          page: number;
+          limit: number;
+          totalPages: number;
+          hasNextPage: boolean;
+          hasPreviousPage: boolean;
+        };
+      }>
+    >(`/inventory/transfers?${params}`);
+    const unwrapped = unwrapEnvelope(response.data);
+    return unwrapped.data; // Return just the array of transfers
   }
 }
