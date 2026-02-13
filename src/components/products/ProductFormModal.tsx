@@ -257,7 +257,7 @@ export function ProductFormModal({
                   setFormData({ ...formData, categoryId: val })
                 }
               >
-                <SelectTrigger id="category">
+                <SelectTrigger id="category" className="w-full">
                   <SelectValue placeholder={t("fields.categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>

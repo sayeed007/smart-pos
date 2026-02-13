@@ -265,28 +265,40 @@ export function ProductListTable({
 
         return (
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={200}>
               <TooltipTrigger asChild>
-                <div className="cursor-help">{stockContent}</div>
+                <div className="cursor-help inline-flex items-center gap-1">
+                  {stockContent}
+                </div>
               </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-xs">
-                <div className="space-y-1">
-                  <p className="typo-semibold-12 text-foreground mb-2">
+              <TooltipContent
+                side="right"
+                className="p-3 bg-popover border-border shadow-lg"
+                sideOffset={8}
+              >
+                <div className="space-y-2 min-w-[180px]">
+                  <p className="text-xs font-semibold text-foreground border-b border-border pb-1.5 mb-2">
                     Stock by Location
                   </p>
-                  {locationData!.map((loc) => (
-                    <div
-                      key={loc.locationId}
-                      className="flex justify-between gap-4 typo-regular-12"
-                    >
-                      <span className="text-muted-foreground">
-                        {loc.locationName}:
-                      </span>
-                      <span className="text-foreground font-medium">
-                        {loc.stock}
-                      </span>
-                    </div>
-                  ))}
+                  <div className="space-y-1.5">
+                    {locationData!.map((loc, index) => (
+                      <div
+                        key={loc.locationId}
+                        className={`flex items-center justify-between gap-6 text-xs ${
+                          index !== locationData!.length - 1
+                            ? "pb-1.5 border-b border-border/50"
+                            : ""
+                        }`}
+                      >
+                        <span className="text-muted-foreground font-medium">
+                          {loc.locationName}
+                        </span>
+                        <span className="text-foreground font-bold tabular-nums">
+                          {loc.stock}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
