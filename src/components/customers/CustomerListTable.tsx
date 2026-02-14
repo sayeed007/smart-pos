@@ -97,7 +97,7 @@ export function CustomerListTable({
                   </TableCell>
                   <TableCell className="text-right">
                     <span className="typo-bold-14 text-foreground">
-                      ${customer.totalSpent.toFixed(2)}
+                      ${Number(customer.totalSpent).toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">

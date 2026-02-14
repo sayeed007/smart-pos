@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/axios";
 import { unwrapEnvelope } from "./utils";
 import { Customer, LoyaltyLog } from "@/types";
-import { ApiEnvelope, ListQueryParams } from "@/types/backend";
+import { ApiEnvelope, ListQueryParams, PaginatedResult } from "@/types/backend";
 
 export interface CreateCustomerDto {
   name: string;
@@ -13,11 +13,11 @@ export type UpdateCustomerDto = Partial<CreateCustomerDto>;
 
 export class CustomersService {
   static async list(params?: ListQueryParams) {
-    const response = await backendApi.get<ApiEnvelope<Customer[]>>(
-      "/customers",
-      { params },
-    );
-    return unwrapEnvelope(response.data);
+    const response = await backendApi.get<
+      ApiEnvelope<PaginatedResult<Customer>>
+    >("/customers", { params });
+    const result = unwrapEnvelope(response.data);
+    return result.data; // Return the array of customers directly
   }
 
   static async getById(id: string) {

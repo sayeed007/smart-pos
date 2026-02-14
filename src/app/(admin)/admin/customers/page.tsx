@@ -3,25 +3,20 @@
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { CustomerListTable } from "@/components/customers/CustomerListTable";
 import { CustomerSearchBar } from "@/components/customers/CustomerSearchBar";
-import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { api } from "@/lib/axios";
-import { MOCK_CUSTOMERS } from "@/lib/mock-data";
+  useCustomers,
+  useCreateCustomer,
+  useUpdateCustomer,
+  useDeleteCustomer,
+} from "@/hooks/api/customers";
 import { Customer } from "@/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
+import { CustomerFormValues } from "@/lib/validations/customer";
 
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
@@ -32,68 +27,36 @@ export default function AdminCustomersPage() {
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null,
   );
-  const queryClient = useQueryClient();
   const { t } = useTranslation("customers");
 
-  // Mock implementation for demo purpose if backend missing
-  // But strictly following cashier implementation:
-  const { data: customers, isLoading } = useQuery<Customer[]>({
-    queryKey: ["customers", search],
-    queryFn: async () => (await api.get(`/customers?search=${search}`)).data,
-    initialData: MOCK_CUSTOMERS,
-  });
+  // Use real API hooks
+  const { data: customers, isLoading } = useCustomers({ search });
+  const createMutation = useCreateCustomer();
+  const updateMutation = useUpdateCustomer();
+  const deleteMutation = useDeleteCustomer();
 
-  const createMutation = useMutation({
-    mutationFn: async (newCustomer: Partial<Customer>) => {
-      return api.post("/customers", newCustomer);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setIsDialogOpen(false);
-      setSelectedCustomer(null);
-      toast.success(t("toasts.customerCreated"));
-    },
-    onError: () => toast.error(t("toasts.customerError")),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (updatedCustomer: Partial<Customer>) => {
-      return api.put(`/customers/${updatedCustomer.id}`, updatedCustomer);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setIsDialogOpen(false);
-      setSelectedCustomer(null);
-      toast.success(t("toasts.customerUpdated"));
-    },
-    onError: () => toast.error(t("toasts.customerError")),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (customerId: string) => {
-      return api.delete(`/customers/${customerId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      toast.success(t("toasts.customerDeleted"));
-    },
-    onError: () => toast.error(t("toasts.deleteError")),
-  });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const customerData = {
-      id: selectedCustomer?.id,
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-    };
-
+  const handleSubmit = async (values: CustomerFormValues) => {
     if (selectedCustomer) {
-      updateMutation.mutate(customerData);
+      updateMutation.mutate(
+        { id: selectedCustomer.id, data: values },
+        {
+          onSuccess: () => {
+            setIsDialogOpen(false);
+            setSelectedCustomer(null);
+            toast.success(t("toasts.customerUpdated"));
+          },
+          onError: () => toast.error(t("toasts.customerError")),
+        },
+      );
     } else {
-      createMutation.mutate(customerData);
+      createMutation.mutate(values, {
+        onSuccess: () => {
+          setIsDialogOpen(false);
+          setSelectedCustomer(null);
+          toast.success(t("toasts.customerCreated"));
+        },
+        onError: () => toast.error(t("toasts.customerError")),
+      });
     }
   };
 
@@ -140,13 +103,9 @@ export default function AdminCustomersPage() {
             {t("page.subtitle")}
           </p>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="bg-chart-1 hover:bg-chart-1/90 typo-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all"
-        >
-          <Plus className="w-4 h-4 mr-2" />
+        <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
           {t("addCustomer")}
-        </Button>
+        </PrimaryActionButton>
       </div>
 
       <CustomerSearchBar value={search} onChange={setSearch} />
@@ -159,83 +118,13 @@ export default function AdminCustomersPage() {
       />
 
       {/* Add/Edit Customer Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="typo-bold-18">
-              {selectedCustomer ? t("dialog.editTitle") : t("dialog.addTitle")}
-            </DialogTitle>
-            <DialogDescription className="typo-regular-14">
-              {selectedCustomer
-                ? t("dialog.editDescription")
-                : t("dialog.addDescription")}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="typo-semibold-14">
-                {t("fields.fullName")}
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={selectedCustomer?.name}
-                required
-                className="h-10"
-                placeholder={t("fields.enterName")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="typo-semibold-14">
-                {t("fields.phoneNumber")}
-              </Label>
-              <Input
-                id="phone"
-                name="phone"
-                defaultValue={selectedCustomer?.phone}
-                required
-                className="h-10"
-                placeholder={t("fields.enterPhone")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="typo-semibold-14">
-                {t("fields.emailAddress")}
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={selectedCustomer?.email}
-                required
-                className="h-10"
-                placeholder={t("fields.enterEmail")}
-              />
-            </div>
-            <DialogFooter className="gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="typo-semibold-14"
-              >
-                {t("actions.cancel")}
-              </Button>
-              <Button
-                type="submit"
-                className="bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? t("actions.saving")
-                  : selectedCustomer
-                    ? t("actions.update")
-                    : t("actions.save")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <CustomerFormDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        customer={selectedCustomer}
+        onSubmit={handleSubmit}
+        isLoading={createMutation.isPending || updateMutation.isPending}
+      />
 
       <ConfirmationDialog
         open={!!customerToDelete}
