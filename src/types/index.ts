@@ -78,12 +78,34 @@ export interface Offer {
   minPurchase?: number;
   maxDiscount?: number;
   applicableOn: "all" | "category" | "product";
-  categoryId?: string;
+  categoryId?: string | null;
   productIds?: string[];
   startDate: string;
   endDate: string;
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "scheduled";
+  rule?: OfferRule;
 }
+
+export type OfferRule =
+  | {
+      buyXGetY?: {
+        buyProductIds: string[];
+        getProductIds?: string[];
+        buyQty: number;
+        getQty: number;
+        sameProduct: boolean;
+        discountType: "free" | "percent" | "fixed";
+        discountValue?: number;
+      };
+    }
+  | {
+      bundle?: {
+        productIds: string[];
+        pricingType: "fixed_price" | "percent";
+        price?: number;
+        percent?: number;
+      };
+    };
 
 export interface Sale {
   id: string;

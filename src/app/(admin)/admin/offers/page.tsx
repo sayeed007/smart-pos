@@ -5,9 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { db } from "@/lib/db";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Offer } from "@/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useCreateOffer,
+  useDeleteOffer,
+  useOffers,
+  useUpdateOffer,
+} from "@/hooks/api/offers";
+import { CreateOfferDto } from "@/lib/services/backend/offers.service";
 import {
   DollarSign,
   Gift,
@@ -28,12 +34,11 @@ export default function OffersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [search, setSearch] = useState("");
-  const queryClient = useQueryClient();
 
-  const { data: offers, isLoading } = useQuery<Offer[]>({
-    queryKey: ["offers"],
-    queryFn: async () => await db.offers.toArray(),
-  });
+  const { data: offers, isLoading } = useOffers();
+  const createOffer = useCreateOffer();
+  const updateOffer = useUpdateOffer();
+  const deleteOffer = useDeleteOffer();
 
   const handleEdit = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -47,34 +52,28 @@ export default function OffersPage() {
 
   const handleSave = async (offerData: Partial<Offer>) => {
     try {
-      if (offerData.id) {
-        await db.offers.update(offerData.id, offerData);
+      if (selectedOffer) {
+        await updateOffer.mutateAsync({
+          id: selectedOffer.id,
+          data: offerData,
+        });
         toast.success(t("updateSuccess"));
       } else {
-        const newOffer = {
-          ...offerData,
-          id: crypto.randomUUID(),
-          status: offerData.status || "active",
-          startDate: offerData.startDate || new Date().toISOString(),
-          endDate: offerData.endDate || new Date().toISOString(),
-        } as Offer;
-        await db.offers.add(newOffer);
+        await createOffer.mutateAsync(offerData as unknown as CreateOfferDto);
         toast.success(t("createSuccess"));
       }
-      queryClient.invalidateQueries({ queryKey: ["offers"] });
-      setIsModalOpen(false);
     } catch (error) {
       console.error(error);
       toast.error(t("common:error", "An error occurred"));
+      throw error;
     }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm(t("common:confirmDelete", "Are you sure?"))) {
       try {
-        await db.offers.delete(id);
+        await deleteOffer.mutateAsync(id);
         toast.success(t("deleteSuccess", "Offer deleted successfully"));
-        queryClient.invalidateQueries({ queryKey: ["offers"] });
       } catch (error) {
         console.error(error);
         toast.error(t("common:error"));
@@ -107,7 +106,29 @@ export default function OffersPage() {
   };
 
   const getOfferValueDisplay = (offer: Offer) => {
-    if (offer.type === "buy_x_get_y") return "Buy 2 Get 1"; // Simplification for dummy
+    if (offer.type === "buy_x_get_y") {
+      const rule =
+        offer.rule && "buyXGetY" in offer.rule
+          ? offer.rule.buyXGetY
+          : undefined;
+      if (!rule) return "Buy X Get Y";
+      const discountLabel =
+        rule.discountType === "free"
+          ? "Free"
+          : rule.discountType === "percent"
+            ? `${rule.discountValue ?? 0}% off`
+            : `$${rule.discountValue ?? 0} off`;
+      return `Buy ${rule.buyQty} Get ${rule.getQty} (${discountLabel})`;
+    }
+    if (offer.type === "bundle") {
+      const rule =
+        offer.rule && "bundle" in offer.rule ? offer.rule.bundle : undefined;
+      if (!rule) return "Bundle";
+      if (rule.pricingType === "fixed_price") {
+        return `Bundle $${rule.price ?? 0}`;
+      }
+      return `Bundle ${rule.percent ?? 0}% off`;
+    }
     if (offer.type === "fixed") return `$${offer.value}`;
     return `${offer.value}%`;
   };
@@ -128,13 +149,9 @@ export default function OffersPage() {
             {t("subtitle")}
           </p>
         </div>
-        <Button
-          onClick={handleAdd}
-          className="bg-chart-1 hover:bg-chart-1/90 text-card"
-        >
-          <Plus className="w-4 h-4 mr-2" />
+        <PrimaryActionButton onClick={handleAdd} icon={Plus}>
           {t("createOffer")}
-        </Button>
+        </PrimaryActionButton>
       </div>
 
       {/* Search Bar */}
@@ -175,6 +192,7 @@ export default function OffersPage() {
                         variant="secondary"
                         className="bg-green-100 text-green-700 hover:bg-green-100/80 border-none rounded-sm px-2 py-0.5 h-auto font-normal text-xs"
                       >
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {t(`status.${offer.status}` as any, offer.status)}
                       </Badge>
                     </div>
