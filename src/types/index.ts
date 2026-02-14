@@ -159,6 +159,22 @@ export interface InventoryTransaction {
   timestamp?: string; // Legacy/Local
   createdAt: string; // From Backend
   locationId: string;
+  product?: {
+    id: string;
+    name: string;
+    sku: string;
+    image?: string;
+  };
+  variant?: {
+    id: string;
+    productId: string;
+    sku: string;
+    name: string;
+  };
+  performer?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface Location {
@@ -191,12 +207,27 @@ export interface StockTransfer {
   id: string;
   fromLocationId: string;
   toLocationId: string;
-  items: {
+  fromLocation?: {
+    id: string;
+    name: string;
+  };
+  toLocation?: {
+    id: string;
+    name: string;
+  };
+  lines: {
+    id: string;
     productId: string;
     variantId?: string;
     quantity: number;
-    name: string;
-    sku?: string;
+    product: {
+      name: string;
+      sku: string;
+    };
+    variant?: {
+      name: string;
+      sku: string;
+    };
   }[];
   status: "DRAFT" | "PENDING" | "SHIPPED" | "RECEIVED" | "CANCELLED";
   createdAt: string;

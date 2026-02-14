@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -18,18 +19,21 @@ export function ViewTransferDialog({
   transfer,
   open,
   onOpenChange,
+  currentLocationId,
 }: {
   transfer: StockTransfer | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  currentLocationId?: string;
 }) {
   const { t } = useTranslation("inventory");
   const { currentLocation } = useLocationStore();
+  const effectiveLocationId = currentLocationId || currentLocation.id;
   const receiveTransfer = useReceiveTransfer();
 
   if (!transfer) return null;
 
-  const isIncoming = transfer.toLocationId === currentLocation.id;
+  const isIncoming = transfer.toLocationId === effectiveLocationId;
   const canReceive = isIncoming && transfer.status === "SHIPPED";
 
   const handleReceive = async () => {
@@ -50,17 +54,24 @@ export function ViewTransferDialog({
           <DialogTitle>
             {t("dialogs.viewTransfer.title", { ref: transfer.id.slice(0, 8) })}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Transfer details for {transfer.id}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="flex justify-between text-sm text-muted-foreground">
             <span>
               {t("dialogs.viewTransfer.from")}{" "}
-              <strong>{transfer.fromLocationId}</strong>
+              <strong>
+                {transfer.fromLocation?.name || transfer.fromLocationId}
+              </strong>
             </span>
             <span>
               {t("dialogs.viewTransfer.to")}{" "}
-              <strong>{transfer.toLocationId}</strong>
+              <strong>
+                {transfer.toLocation?.name || transfer.toLocationId}
+              </strong>
             </span>
           </div>
 
@@ -77,9 +88,11 @@ export function ViewTransferDialog({
                 </tr>
               </thead>
               <tbody>
-                {transfer.items.map((item, idx) => (
+                {transfer.lines.map((item, idx) => (
                   <tr key={idx} className="border-t">
-                    <td className="p-2">{item.name}</td>
+                    <td className="p-2">
+                      {item.variant ? item.variant.name : item.product.name}
+                    </td>
                     <td className="p-2 text-right font-mono">
                       {item.quantity}
                     </td>

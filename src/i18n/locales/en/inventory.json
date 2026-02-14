@@ -101,7 +101,22 @@
       "noItems": "No items added.",
       "shipTransfer": "Ship Transfer",
       "successMessage": "Transfer created & shipped. Ref: {{ref}}",
-      "errorMessage": "Failed to create transfer."
+      "errorMessage": "Failed to create transfer.",
+      "currentStock": "Current Stock",
+      "addQuantity": "Quantity",
+      "addItem": "Add Item",
+      "from": "From",
+      "to": "To",
+      "items": "Items",
+      "clearAll": "Clear All",
+      "noItemsAdded": "No items added yet",
+      "confirmTransfer": "Confirm Transfer",
+      "selectVariant": "Select Variant",
+      "errorValidation": "Please fill in all required fields",
+      "errorSameLocation": "Source and destination locations cannot be the same",
+      "errorMinQuantity": "Quantity must be at least 1",
+      "errorMaxStock": "Cannot transfer more than available stock ({{max}})",
+      "errorSelectProduct": "Select a product"
     },
     "stockAdjustment": {
       "title": "New Stock Adjustment",

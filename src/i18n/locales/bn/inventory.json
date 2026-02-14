@@ -101,7 +101,22 @@
       "noItems": "কোন আইটেম যোগ করা হয়নি।",
       "shipTransfer": "ট্রান্সফার পাঠান",
       "successMessage": "ট্রান্সফার তৈরি এবং পাঠানো হয়েছে। রেফ: {{ref}}",
-      "errorMessage": "ট্রান্সফার তৈরি করতে ব্যর্থ।"
+      "errorMessage": "ট্রান্সফার তৈরি করতে ব্যর্থ।",
+      "currentStock": "বর্তমান স্টক",
+      "addQuantity": "পরিমাণ",
+      "addItem": "আইটেম যোগ করুন",
+      "from": "থেকে",
+      "to": "প্রতি",
+      "items": "আইটেম",
+      "clearAll": "সব মুছুন",
+      "noItemsAdded": "এখনও কোন আইটেম যোগ করা হয়নি",
+      "confirmTransfer": "ট্রান্সফার নিশ্চিত করুন",
+      "selectVariant": "ভ্যারিয়েন্ট নির্বাচন করুন",
+      "errorValidation": "অনুগ্রহ করে সব প্রয়োজনীয় তথ্য পূরণ করুন",
+      "errorSameLocation": "উৎস এবং গন্তব্য লোকেশন একই হতে পারে না",
+      "errorMinQuantity": "পরিমাণ অবশ্যই ১ বা তার বেশি হতে হবে",
+      "errorMaxStock": "মজুদ স্টকের চেয়ে বেশি ট্রান্সফার করা যাবে না ({{max}})",
+      "errorSelectProduct": "একটি পণ্য নির্বাচন করুন"
     },
     "stockAdjustment": {
       "title": "নতুন স্টক সামঞ্জস্য",

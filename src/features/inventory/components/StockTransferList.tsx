@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useLocationStore } from "@/features/locations/store";
 import { StockTransfer } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,16 +11,17 @@ import { useTranslation } from "react-i18next";
 import { useTransfers } from "@/hooks/api/inventory";
 
 export function StockTransferList({
+  locationId,
   onView,
 }: {
+  locationId: string;
   onView?: (transfer: StockTransfer) => void;
 }) {
   const { t: translate } = useTranslation("inventory");
-  const { currentLocation } = useLocationStore();
   const [selectedTransfer, setSelectedTransfer] =
     useState<StockTransfer | null>(null);
 
-  const { data: transfersData } = useTransfers(currentLocation.id);
+  const { data: transfersData } = useTransfers(locationId);
   const transfers = transfersData || [];
 
   if (transfers.length === 0)
@@ -42,6 +42,7 @@ export function StockTransferList({
         transfer={selectedTransfer}
         open={!!selectedTransfer}
         onOpenChange={(open) => !open && setSelectedTransfer(null)}
+        currentLocationId={locationId}
       />
 
       <div className="border rounded-lg bg-white overflow-hidden">
@@ -70,7 +71,7 @@ export function StockTransferList({
           </thead>
           <tbody>
             {transfers.map((t) => {
-              const isIncoming = t.toLocationId === currentLocation.id;
+              const isIncoming = t.toLocationId === locationId;
               return (
                 <tr
                   key={t.id}
@@ -89,7 +90,7 @@ export function StockTransferList({
                           !isIncoming ? "font-bold" : "text-muted-foreground"
                         }
                       >
-                        {t.fromLocationId}
+                        {t.fromLocation?.name || t.fromLocationId}
                       </span>
                       <ArrowRight size={12} className="text-muted-foreground" />
                       <span
@@ -97,7 +98,7 @@ export function StockTransferList({
                           isIncoming ? "font-bold" : "text-muted-foreground"
                         }
                       >
-                        {t.toLocationId}
+                        {t.toLocation?.name || t.toLocationId}
                       </span>
                     </div>
                   </td>
@@ -115,7 +116,21 @@ export function StockTransferList({
                       {t.status}
                     </Badge>
                   </td>
-                  <td className="p-3">{t.items.length}</td>
+                  <td className="p-3">
+                    <div className="flex flex-col text-xs max-w-50">
+                      {t.lines.slice(0, 2).map((line, idx) => (
+                        <span key={idx} className="truncate">
+                          {line.quantity} x{" "}
+                          {line.variant ? line.variant.name : line.product.name}
+                        </span>
+                      ))}
+                      {t.lines.length > 2 && (
+                        <span className="text-muted-foreground text-[10px]">
+                          +{t.lines.length - 2} {translate("common:more")}
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-3 text-right">
                     <Button
                       size="icon"
