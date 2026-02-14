@@ -7,6 +7,7 @@ export interface CreateCategoryDto {
   name: string;
   image?: string;
   parentId?: string;
+  icon?: string;
 }
 
 export type UpdateCategoryDto = Partial<CreateCategoryDto>;

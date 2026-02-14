@@ -3,14 +3,17 @@
 import { CategoryFormModal } from "@/components/categories/CategoryFormModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { api } from "@/lib/axios";
-import { Category, Product } from "@/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { Category } from "@/types";
 import { Loader2, Plus, SquarePen } from "lucide-react";
-import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import {
+  useCategories,
+  useCreateCategory,
+  useUpdateCategory,
+} from "@/hooks/api/categories";
 
 export default function CategoriesPage() {
   const { t } = useTranslation(["categories", "common"]);
@@ -18,37 +21,14 @@ export default function CategoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
-  const queryClient = useQueryClient();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
 
   // Queries
-  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
-    queryKey: ["products"],
-    queryFn: async () => (await api.get("/products")).data,
-  });
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery<
-    Category[]
-  >({
-    queryKey: ["categories"],
-    queryFn: async () => (await api.get("/categories")).data,
-  });
-
-  const categoriesWithStats = useMemo(() => {
-    if (!categories || !products) return [];
-    return categories.map((cat) => {
-      const catProducts = products.filter((p) => p.categoryId === cat.id);
-      const count = catProducts.length;
-      const value = catProducts.reduce(
-        (sum, p) => sum + p.stockQuantity * p.sellingPrice,
-        0,
-      );
-      return {
-        ...cat,
-        computedCount: count,
-        computedValue: value,
-      };
-    });
-  }, [categories, products]);
+  // Remove manual calculation as backend provides stats (productCount, totalValue)
+  const categoriesList = categories || [];
 
   const handleEdit = (category: Category) => {
     setSelectedCategory(category);
@@ -62,16 +42,24 @@ export default function CategoriesPage() {
 
   const handleSave = async (categoryData: Partial<Category>) => {
     try {
-      if (categoryData.id) {
-        // Edit simulation
-        await new Promise((resolve) => setTimeout(resolve, 500));
+      if (selectedCategory) {
+        // Edit
+        await updateCategory.mutateAsync({
+          id: selectedCategory.id,
+          data: categoryData,
+        });
         toast.success(t("updateSuccess", "Category updated successfully"));
       } else {
-        // Create simulation
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Create
+        if (!categoryData.name) {
+          throw new Error("Category name is required");
+        }
+        await createCategory.mutateAsync({
+          name: categoryData.name,
+          icon: categoryData.icon,
+        });
         toast.success(t("createSuccess", "Category created successfully"));
       }
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
@@ -79,7 +67,7 @@ export default function CategoriesPage() {
     }
   };
 
-  if (productsLoading || categoriesLoading) {
+  if (categoriesLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -99,41 +87,31 @@ export default function CategoriesPage() {
             {t("subtitle", "Product categories overview")}
           </p>
         </div>
-        <Button
-          onClick={handleAdd}
-          className="bg-chart-1 hover:bg-chart-1/90 text-card"
-        >
-          <Plus className="w-4 h-4 mr-2" />
+        <PrimaryActionButton onClick={handleAdd} icon={Plus}>
           {t("addCategory", "Add Category")}
-        </Button>
+        </PrimaryActionButton>
       </div>
 
       {/* Categories Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {categoriesWithStats.map((category) => (
+        {categoriesList.map((category) => (
           <Card
             key={category.id}
             className="p-4 flex flex-row items-center gap-4 border-none shadow-sm"
           >
-            <Image
-              src="/icons/Category.png"
-              alt={category.name}
-              width={40}
-              height={40}
-              className="w-10 h-10"
-            />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
+              <span className="text-2xl" role="img" aria-label={category.name}>
+                {category.icon || "📦"}
+              </span>
+            </div>
             <div className="flex-1 min-w-0">
               <h3 className="typo-semibold-16 truncate">{category.name}</h3>
               <p className="typo-regular-14 text-muted-foreground">
-                {category.computedCount} {t("products", "products")}
+                {category.productCount || 0} {t("products", "products")}
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-right whitespace-nowrap">
-                <span className="typo-bold-16">
-                  ${category.computedValue.toFixed(2)}
-                </span>
-              </div>
+              {/* Total Value Replaced by Icon (already shown on left), so we remove this block */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -145,7 +123,7 @@ export default function CategoriesPage() {
             </div>
           </Card>
         ))}
-        {categoriesWithStats.length === 0 && (
+        {categoriesList.length === 0 && (
           <div className="col-span-full text-center py-12 text-muted-foreground">
             {t("noCategories", "No categories found")}
           </div>
@@ -153,6 +131,7 @@ export default function CategoriesPage() {
       </div>
 
       <CategoryFormModal
+        key={isModalOpen ? selectedCategory?.id || "new" : "closed"}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         categoryToEdit={selectedCategory}

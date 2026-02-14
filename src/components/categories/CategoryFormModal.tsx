@@ -8,11 +8,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Category } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+const formSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  icon: z.string().optional(),
+});
 
 interface CategoryFormModalProps {
   open: boolean;
@@ -28,33 +44,20 @@ export function CategoryFormModal({
   onSave,
 }: CategoryFormModalProps) {
   const { t } = useTranslation(["categories", "common"]);
-  const [formData, setFormData] = useState({
-    name: "",
-    icon: "",
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: categoryToEdit?.name || "",
+      icon: categoryToEdit?.icon || "",
+    },
   });
 
-  useEffect(() => {
-    if (open) {
-      if (categoryToEdit) {
-        setFormData({
-          name: categoryToEdit.name,
-          icon: categoryToEdit.icon || "",
-        });
-      } else {
-        setFormData({
-          name: "",
-          icon: "",
-        });
-      }
-    }
-  }, [open, categoryToEdit]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     onSave({
       ...categoryToEdit,
-      name: formData.name,
-      icon: formData.icon,
+      name: values.name,
+      icon: values.icon || "", // ensure string
     });
     onOpenChange(false);
   };
@@ -69,41 +72,76 @@ export function CategoryFormModal({
               : t("addCategory", "Add Category")}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">{t("fields.name", "Category Name")}</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder={t("placeholders.name", "e.g. Dresses")}
-              required
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4 py-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("fields.name", "Category Name")}{" "}
+                    <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("placeholders.name", "e.g. Dresses")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="icon">{t("fields.icon", "Icon")}</Label>
-            <Input
-              id="icon"
-              value={formData.icon}
-              onChange={(e) =>
-                setFormData({ ...formData, icon: e.target.value })
-              }
-              placeholder={t("placeholders.icon", "Icon Name")}
+
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.icon", "Icon")}</FormLabel>
+                  <div className="flex flex-col gap-2">
+                    <FormControl>
+                      <>
+                        {field.value ? (
+                          <span className="text-2xl mr-2">{field.value}</span>
+                        ) : (
+                          <span className="text-muted-foreground">
+                            {t("placeholders.selectIcon", "Select an icon")}
+                          </span>
+                        )}
+                        <EmojiPicker
+                          onEmojiClick={(emojiData: EmojiClickData) =>
+                            field.onChange(emojiData.emoji)
+                          }
+                          width="100%"
+                          height={300}
+                        />
+                      </>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              {t("common:cancel", "Cancel")}
-            </Button>
-            <Button type="submit">{t("common:save", "Save")}</Button>
-          </DialogFooter>
-        </form>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                {t("common:cancel", "Cancel")}
+              </Button>
+              <PrimaryActionButton type="submit">
+                {t("common:save", "Save")}
+              </PrimaryActionButton>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
