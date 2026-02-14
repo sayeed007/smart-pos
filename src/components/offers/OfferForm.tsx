@@ -38,7 +38,7 @@ const ALL_TYPES = [
   "category_discount",
 ] as const;
 
-const optionalNumber = (schema: z.ZodType<number, any, any>) =>
+const optionalNumber = (schema: z.ZodType<number, z.ZodTypeDef, unknown>) =>
   z.preprocess((value) => {
     if (value === "" || value === null || value === undefined) {
       return undefined;
@@ -53,7 +53,7 @@ const offerSchema = z
     type: z.enum(ALL_TYPES),
     value: optionalNumber(z.coerce.number()),
     applicableOn: z.enum(["all", "category", "product"]),
-    categoryId: z.string().optional(),
+    categoryId: z.string().optional().nullable(),
     productIds: z.array(z.string()).default([]),
     minPurchase: optionalNumber(
       z.coerce.number().min(0, { message: "Must be 0 or more" }),
@@ -68,8 +68,14 @@ const offerSchema = z
       .object({
         buyProductIds: z.array(z.string()).default([]),
         getProductIds: z.array(z.string()).default([]),
-        buyQty: z.coerce.number().min(1, { message: "Must be at least 1" }),
-        getQty: z.coerce.number().min(1, { message: "Must be at least 1" }),
+        buyQty: z
+          .union([z.number(), z.string()])
+          .transform((val) => Number(val))
+          .pipe(z.number().min(1, { message: "Must be at least 1" })),
+        getQty: z
+          .union([z.number(), z.string()])
+          .transform((val) => Number(val))
+          .pipe(z.number().min(1, { message: "Must be at least 1" })),
         sameProduct: z.boolean().default(true),
         discountType: z.enum(["free", "percent", "fixed"]),
         discountValue: optionalNumber(z.coerce.number()),

@@ -60,10 +60,7 @@ export function OfferFormModal({
             categories={categories}
             onSubmit={async (values: OfferFormPayload) => {
               try {
-                await onSave({
-                  ...offerToEdit,
-                  ...values,
-                });
+                await onSave(values);
                 onOpenChange(false);
               } catch (error) {
                 console.error("Failed to save offer", error);

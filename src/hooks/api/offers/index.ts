@@ -58,8 +58,7 @@ export function useDeleteOffer() {
   return useMutation({
     mutationFn: (id: string) => OffersService.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["offers", "list"] });
-      queryClient.invalidateQueries({ queryKey: ["offers", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["offers"], exact: false });
     },
   });
 }

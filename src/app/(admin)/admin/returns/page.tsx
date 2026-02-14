@@ -1,6 +1,7 @@
 "use client";
 
 import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { ReturnListTable } from "@/components/returns/ReturnListTable";
 import { Button } from "@/components/ui/button";
 import { MOCK_RETURNS } from "@/lib/mock-data";
@@ -14,6 +15,7 @@ export default function ReturnsPage() {
   const [returns, setReturns] = useState<Return[]>(MOCK_RETURNS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReturn, setSelectedReturn] = useState<Return | null>(null);
+  const [returnToDelete, setReturnToDelete] = useState<Return | null>(null);
   const [search, setSearch] = useState("");
 
   const handleCreateReturn = (data: Partial<Return>) => {
@@ -41,11 +43,15 @@ export default function ReturnsPage() {
   };
 
   const handleDeleteReturn = (ret: Return) => {
-    if (confirm("Are you sure you want to delete this return?")) {
-      const updatedReturns = returns.filter((r) => r.id !== ret.id);
-      setReturns(updatedReturns);
-      toast.success("Return deleted successfully");
-    }
+    setReturnToDelete(ret);
+  };
+
+  const confirmDeleteReturn = () => {
+    if (!returnToDelete) return;
+    const updatedReturns = returns.filter((r) => r.id !== returnToDelete.id);
+    setReturns(updatedReturns);
+    toast.success("Return deleted successfully");
+    setReturnToDelete(null);
   };
 
   const filteredReturns = returns.filter(
@@ -98,6 +104,16 @@ export default function ReturnsPage() {
           onSubmit={selectedReturn ? handleUpdateReturn : handleCreateReturn}
         />
       )}
+
+      <ConfirmationDialog
+        open={!!returnToDelete}
+        onOpenChange={(open) => !open && setReturnToDelete(null)}
+        title="Delete Return?"
+        description={`Are you sure you want to delete return #${returnToDelete?.invoiceNo}?`}
+        onConfirm={confirmDeleteReturn}
+        confirmLabel="Delete"
+        variant="destructive"
+      />
     </div>
   );
 }

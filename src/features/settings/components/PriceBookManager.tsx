@@ -25,6 +25,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { PriceBookEditorDialog } from "./PriceBookEditorDialog";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 export function PriceBookManager() {
   const [books, setBooks] = useState<PriceBook[]>([]);
@@ -32,6 +33,10 @@ export function PriceBookManager() {
   const [editingBook, setEditingBook] = useState<PriceBook | null>(null);
   const [newBookName, setNewBookName] = useState("");
   const [newBookDesc, setNewBookDesc] = useState("");
+  const [deleteState, setDeleteState] = useState<{
+    id: string | null;
+    name: string;
+  }>({ id: null, name: "" });
 
   const load = async () => {
     const data = await db.priceBooks.toArray();
@@ -63,19 +68,21 @@ export function PriceBookManager() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (
-      confirm(
-        `Delete Price Book "${name}"?\nThis will remove all price overrides associated with it.`,
-      )
-    ) {
-      await db.transaction("rw", db.priceBooks, db.priceOverrides, async () => {
-        await db.priceBooks.delete(id);
-        await db.priceOverrides.where("priceBookId").equals(id).delete();
-      });
-      load();
-      toast.success("Price Book deleted.");
-    }
+  const handleDeleteClick = (id: string, name: string) => {
+    setDeleteState({ id, name });
+  };
+
+  const handleConfirmDelete = async () => {
+    const { id } = deleteState;
+    if (!id) return;
+
+    await db.transaction("rw", db.priceBooks, db.priceOverrides, async () => {
+      await db.priceBooks.delete(id);
+      await db.priceOverrides.where("priceBookId").equals(id).delete();
+    });
+    load();
+    toast.success("Price Book deleted.");
+    setDeleteState({ id: null, name: "" });
   };
 
   return (
@@ -167,7 +174,7 @@ export function PriceBookManager() {
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground hover:text-destructive"
-                  onClick={() => handleDelete(book.id, book.name)}
+                  onClick={() => handleDeleteClick(book.id, book.name)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -176,6 +183,16 @@ export function PriceBookManager() {
           ))}
         </div>
       </CardContent>
+
+      <ConfirmationDialog
+        open={!!deleteState.id}
+        onOpenChange={(open) => !open && setDeleteState({ id: null, name: "" })}
+        title={`Delete Price Book "${deleteState.name}"?`}
+        description="This will remove all price overrides associated with it. This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+        confirmLabel="Delete"
+        variant="destructive"
+      />
     </Card>
   );
 }

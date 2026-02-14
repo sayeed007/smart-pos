@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { CustomerListTable } from "@/components/customers/CustomerListTable";
 import { CustomerSearchBar } from "@/components/customers/CustomerSearchBar";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,9 @@ export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null,
   );
   const queryClient = useQueryClient();
@@ -104,8 +108,16 @@ export default function AdminCustomersPage() {
   };
 
   const handleDeleteClick = (customer: Customer) => {
-    if (confirm(t("confirmDelete", { name: customer.name }))) {
-      deleteMutation.mutate(customer.id);
+    setCustomerToDelete(customer);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!customerToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(customerToDelete.id);
+      setCustomerToDelete(null);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -224,6 +236,16 @@ export default function AdminCustomersPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmationDialog
+        open={!!customerToDelete}
+        onOpenChange={(open) => !open && setCustomerToDelete(null)}
+        title={t("confirmDeleteTitle", "Delete Customer?")}
+        description={t("confirmDelete", { name: customerToDelete?.name })}
+        onConfirm={handleConfirmDelete}
+        loading={deleteMutation.isPending}
+        variant="destructive"
+      />
     </div>
   );
 }

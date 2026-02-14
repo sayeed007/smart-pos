@@ -1,6 +1,7 @@
 "use client";
 
 import { OfferFormModal } from "@/components/offers/OfferFormModal";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,7 +24,7 @@ import {
   Search,
   SquarePen,
   Tag,
-  Trash2,
+  Archive,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,6 +34,7 @@ export default function OffersPage() {
   const { t } = useTranslation(["offers", "common"]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+  const [offerToDelete, setOfferToDelete] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
   const { data: offers, isLoading } = useOffers();
@@ -69,15 +71,19 @@ export default function OffersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm(t("common:confirmDelete", "Are you sure?"))) {
-      try {
-        await deleteOffer.mutateAsync(id);
-        toast.success(t("deleteSuccess", "Offer deleted successfully"));
-      } catch (error) {
-        console.error(error);
-        toast.error(t("common:error"));
-      }
+  const handleDelete = (id: string) => {
+    setOfferToDelete(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!offerToDelete) return;
+    try {
+      await deleteOffer.mutateAsync(offerToDelete);
+      toast.success(t("deleteSuccess", "Offer deleted successfully"));
+      setOfferToDelete(null);
+    } catch (error) {
+      console.error(error);
+      toast.error(t("common:error"));
     }
   };
 
@@ -190,7 +196,11 @@ export default function OffersPage() {
                       </h3>
                       <Badge
                         variant="secondary"
-                        className="bg-green-100 text-green-700 hover:bg-green-100/80 border-none rounded-sm px-2 py-0.5 h-auto font-normal text-xs"
+                        className={`border-none rounded-sm px-2 py-0.5 h-auto font-normal text-xs ${
+                          offer.status === "active"
+                            ? "bg-green-100 text-green-700 hover:bg-green-100/80"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-100/80"
+                        }`}
                       >
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {t(`status.${offer.status}` as any, offer.status)}
@@ -249,8 +259,9 @@ export default function OffersPage() {
                   size="icon"
                   className="border-gray-200 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20"
                   onClick={() => handleDelete(offer.id)}
+                  title={t("archive", "Archive")}
                 >
-                  <Trash2 className="w-4 h-4 text-red-500" />
+                  <Archive className="w-4 h-4 text-gray-700" />
                 </Button>
               </div>
             </Card>
@@ -267,6 +278,20 @@ export default function OffersPage() {
         onOpenChange={setIsModalOpen}
         offerToEdit={selectedOffer}
         onSave={handleSave}
+      />
+
+      <ConfirmationDialog
+        open={!!offerToDelete}
+        onOpenChange={(open) => !open && setOfferToDelete(null)}
+        title={t("archiveOfferTitle", "Archive Offer?")}
+        description={t(
+          "archiveOfferDescription",
+          "This offer will be marked as inactive and archived.",
+        )}
+        confirmLabel={t("archive", "Archive")}
+        onConfirm={handleConfirmDelete}
+        loading={deleteOffer.isPending}
+        variant="destructive"
       />
     </div>
   );
