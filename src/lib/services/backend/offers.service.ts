@@ -104,9 +104,12 @@ export class OffersService {
         const bundle = (rawRule as any).bundle;
         rule = {
           bundle: {
-            productIds: Array.isArray(bundle.productIds) ? bundle.productIds : [],
+            productIds: Array.isArray(bundle.productIds)
+              ? bundle.productIds
+              : [],
             pricingType:
-              bundle.pricingType === "fixed_price" || bundle.pricingType === "percent"
+              bundle.pricingType === "fixed_price" ||
+              bundle.pricingType === "percent"
                 ? bundle.pricingType
                 : "fixed_price",
             price:
@@ -147,12 +150,13 @@ export class OffersService {
     } as Offer;
   }
 
-  static async list() {
-    const response =
-      await backendApi.get<ApiEnvelope<PaginatedResult<Offer>>>("/offers");
+  static async list(page: number = 1, limit: number = 20) {
+    const response = await backendApi.get<ApiEnvelope<PaginatedResult<Offer>>>(
+      `/offers?page=${page}&limit=${limit}`,
+    );
     const result = unwrapEnvelope(response.data);
     result.data = result.data.map((offer) => this.mapOfferFromBackend(offer));
-    return result.data;
+    return result;
   }
 
   static async listActive() {

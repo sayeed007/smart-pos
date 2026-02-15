@@ -1,14 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { StockTransfer } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { ArrowRight, Eye } from "lucide-react";
-import { ViewTransferDialog } from "./ViewTransferDialog";
-import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useTransfers } from "@/hooks/api/inventory";
+import { cn } from "@/lib/utils";
+import { StockTransfer } from "@/types";
+import { format, startOfDay, endOfDay } from "date-fns";
+import { ArrowRight, Calendar as CalendarIcon, Eye } from "lucide-react";
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
+import { useTranslation } from "react-i18next";
+import { ViewTransferDialog } from "./ViewTransferDialog";
 
 export function StockTransferList({
   locationId,
@@ -20,16 +43,33 @@ export function StockTransferList({
   const { t: translate } = useTranslation("inventory");
   const [selectedTransfer, setSelectedTransfer] =
     useState<StockTransfer | null>(null);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: startOfDay(
+      new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    ),
+    to: new Date(),
+  });
+  const [page, setPage] = useState(1);
 
-  const { data: transfersData } = useTransfers(locationId);
-  const transfers = transfersData || [];
+  const handleDateChange = (val: DateRange | undefined) => {
+    setDate(val);
+    setPage(1);
+  };
 
-  if (transfers.length === 0)
-    return (
-      <div className="p-12 text-center text-muted-foreground border rounded-lg bg-muted/10">
-        {translate("dialogs.transferList.noTransfers")}
-      </div>
-    );
+  const startDate = date?.from
+    ? startOfDay(date.from).toISOString()
+    : undefined;
+  const endDate = date?.to ? endOfDay(date.to).toISOString() : undefined;
+
+  const { data: transfersData } = useTransfers(
+    locationId,
+    page,
+    10,
+    startDate,
+    endDate,
+  );
+  const transfers = transfersData?.data || [];
+  const meta = transfersData?.meta;
 
   const handleView = (t: StockTransfer) => {
     setSelectedTransfer(t);
@@ -45,117 +85,215 @@ export function StockTransferList({
         currentLocationId={locationId}
       />
 
-      <div className="border rounded-lg bg-white overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 border-b">
-            <tr>
-              <th className="p-3 text-left font-medium text-muted-foreground">
-                {translate("dialogs.transferList.ref")}
-              </th>
-              <th className="p-3 text-left font-medium text-muted-foreground">
-                {translate("dialogs.transferList.date")}
-              </th>
-              <th className="p-3 text-left font-medium text-muted-foreground">
-                {translate("dialogs.transferList.route")}
-              </th>
-              <th className="p-3 text-left font-medium text-muted-foreground">
-                {translate("dialogs.transferList.status")}
-              </th>
-              <th className="p-3 text-left font-medium text-muted-foreground">
-                {translate("dialogs.transferList.items")}
-              </th>
-              <th className="p-3 text-right font-medium text-muted-foreground">
-                {translate("dialogs.transferList.action")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transfers.map((t) => {
-              const isIncoming = t.toLocationId === locationId;
-              return (
-                <tr
-                  key={t.id}
-                  className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-                >
-                  <td className="p-3 font-mono text-xs text-muted-foreground">
-                    {t.id.slice(0, 8)}
-                  </td>
-                  <td className="p-3">
-                    {format(new Date(t.createdAt), "MMM dd, yyyy")}
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span
-                        className={
-                          !isIncoming ? "font-bold" : "text-muted-foreground"
-                        }
-                      >
-                        {t.fromLocation?.name || t.fromLocationId}
-                      </span>
-                      <ArrowRight size={12} className="text-muted-foreground" />
-                      <span
-                        className={
-                          isIncoming ? "font-bold" : "text-muted-foreground"
-                        }
-                      >
-                        {t.toLocation?.name || t.toLocationId}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <Badge
-                      variant={
-                        t.status === "RECEIVED"
-                          ? "default"
-                          : t.status === "CANCELLED"
-                            ? "destructive"
-                            : "secondary"
+      <div className="space-y-4">
+        {/* Date Filter */}
+        <div className="flex items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-60 justify-start text-left font-normal",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>{translate("filters.pickDate")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={handleDateChange}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="border rounded-lg bg-white overflow-hidden">
+          {transfers.length === 0 ? (
+            <div className="p-12 text-center text-muted-foreground bg-muted/10">
+              {translate("dialogs.transferList.noTransfers")}
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead>{translate("dialogs.transferList.ref")}</TableHead>
+                  <TableHead>
+                    {translate("dialogs.transferList.date")}
+                  </TableHead>
+                  <TableHead>
+                    {translate("dialogs.transferList.route")}
+                  </TableHead>
+                  <TableHead>
+                    {translate("dialogs.transferList.status")}
+                  </TableHead>
+                  <TableHead>
+                    {translate("dialogs.transferList.items")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {translate("dialogs.transferList.action")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transfers.map((transfer) => {
+                  const isIncoming = transfer.toLocationId === locationId;
+                  return (
+                    <TableRow key={transfer.id}>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {transfer.id.slice(0, 8)}
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(transfer.createdAt), "MMM dd, yyyy")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span
+                            className={
+                              !isIncoming
+                                ? "font-bold"
+                                : "text-muted-foreground"
+                            }
+                          >
+                            {transfer.fromLocation?.name ||
+                              transfer.fromLocationId}
+                          </span>
+                          <ArrowRight
+                            size={12}
+                            className="text-muted-foreground"
+                          />
+                          <span
+                            className={
+                              isIncoming ? "font-bold" : "text-muted-foreground"
+                            }
+                          >
+                            {transfer.toLocation?.name || transfer.toLocationId}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            transfer.status === "RECEIVED"
+                              ? "default"
+                              : transfer.status === "CANCELLED"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                          className="capitalize"
+                        >
+                          {transfer.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col text-xs max-w-50">
+                          {transfer.lines.slice(0, 2).map((line, idx) => (
+                            <span key={idx} className="truncate">
+                              {line.quantity} x{" "}
+                              {line.variant
+                                ? line.variant.name
+                                : line.product.name}
+                            </span>
+                          ))}
+                          {transfer.lines.length > 2 && (
+                            <span className="text-muted-foreground text-[10px]">
+                              +{transfer.lines.length - 2}{" "}
+                              {translate("common:more")}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8"
+                          onClick={() => handleView(transfer)}
+                        >
+                          <Eye size={16} />
+                        </Button>
+                        {isIncoming && transfer.status === "SHIPPED" && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            className="ml-2 h-7 text-xs"
+                            onClick={() => handleView(transfer)}
+                          >
+                            {translate("dialogs.transferList.receive")}
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {meta && (
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      if (meta.hasPreviousPage) {
+                        setPage((p) => Math.max(1, p - 1));
                       }
-                      className="capitalize"
-                    >
-                      {t.status}
-                    </Badge>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex flex-col text-xs max-w-50">
-                      {t.lines.slice(0, 2).map((line, idx) => (
-                        <span key={idx} className="truncate">
-                          {line.quantity} x{" "}
-                          {line.variant ? line.variant.name : line.product.name}
-                        </span>
-                      ))}
-                      {t.lines.length > 2 && (
-                        <span className="text-muted-foreground text-[10px]">
-                          +{t.lines.length - 2} {translate("common:more")}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-3 text-right">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
-                      onClick={() => handleView(t)}
-                    >
-                      <Eye size={16} />
-                    </Button>
-                    {isIncoming && t.status === "SHIPPED" && (
-                      <Button
-                        size="sm"
-                        variant="default"
-                        className="ml-2 h-7 text-xs"
-                        onClick={() => handleView(t)}
-                      >
-                        {translate("dialogs.transferList.receive")}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    }}
+                    className={
+                      !meta.hasPreviousPage
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <span className="text-sm font-medium text-muted-foreground px-4">
+                    Page {meta.page} of {meta.totalPages}
+                  </span>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      if (meta.hasNextPage) {
+                        setPage((p) => p + 1);
+                      }
+                    }}
+                    className={
+                      !meta.hasNextPage
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer"
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </>
   );

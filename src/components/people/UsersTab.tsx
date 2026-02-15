@@ -35,17 +35,33 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 export function UsersTab() {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [page, setPage] = useState(1);
 
-  const { data: users, isLoading } = useUsers({ search: debouncedSearch });
+  const { data: usersData, isLoading } = useUsers({
+    search: debouncedSearch,
+    page,
+    limit: 10,
+  });
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();
+
+  const users = usersData?.data || [];
+  const meta = usersData?.meta;
 
   const handleCreate = () => {
     setSelectedUser(null);
@@ -74,6 +90,7 @@ export function UsersTab() {
   };
 
   const handleSubmit = async (values: UserFormValues) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = {
       ...values,
       roleIds: [values.roleId],
@@ -95,6 +112,7 @@ export function UsersTab() {
             setIsDialogOpen(false);
             toast.success("User updated successfully");
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onError: (error: any) => {
             console.error(error);
             toast.error(
@@ -110,6 +128,7 @@ export function UsersTab() {
           setIsDialogOpen(false);
           toast.success("User created successfully");
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
           console.error(error);
           toast.error(
@@ -158,7 +177,7 @@ export function UsersTab() {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : users?.length === 0 ? (
+            ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-64 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -171,7 +190,7 @@ export function UsersTab() {
                 </TableCell>
               </TableRow>
             ) : (
-              users?.map((user) => {
+              users.map((user) => {
                 const roleName =
                   typeof user.role === "object" ? user.role.name : user.role;
                 return (
@@ -255,6 +274,53 @@ export function UsersTab() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination Controls */}
+      {meta && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasPreviousPage) {
+                      setPage((p) => Math.max(1, p - 1));
+                    }
+                  }}
+                  className={
+                    !meta.hasPreviousPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="text-sm font-medium text-muted-foreground px-4">
+                  Page {meta.page} of {meta.totalPages}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasNextPage) {
+                      setPage((p) => p + 1);
+                    }
+                  }}
+                  className={
+                    !meta.hasNextPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <UserFormDialog
         open={isDialogOpen}

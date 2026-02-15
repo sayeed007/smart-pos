@@ -18,6 +18,13 @@ import { toast } from "sonner";
 import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
 import { CustomerFormValues } from "@/lib/validations/customer";
 import { useDebounce } from "use-debounce";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export function CustomersTab() {
   const [search, setSearch] = useState("");
@@ -29,17 +36,26 @@ export function CustomersTab() {
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null,
   );
+  const [page, setPage] = useState(1);
   const { t } = useTranslation("customers");
 
+  // ... imports
+
   // Use real API hooks
-  const { data: customers, isLoading } = useCustomers({
+  const { data: customersData, isLoading } = useCustomers({
     search: debouncedSearch,
+    page,
+    limit: 10,
   });
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
   const deleteMutation = useDeleteCustomer();
 
+  const customers = customersData?.data || [];
+  const meta = customersData?.meta;
+
   const handleSubmit = async (values: CustomerFormValues) => {
+    // ... logic same as before
     if (selectedCustomer) {
       updateMutation.mutate(
         { id: selectedCustomer.id, data: values },
@@ -88,13 +104,6 @@ export function CustomersTab() {
     }
   };
 
-  const filteredCustomers = customers?.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.phone?.toLowerCase().includes(search.toLowerCase()) ||
-      customer.email?.toLowerCase().includes(search.toLowerCase()),
-  );
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -115,11 +124,58 @@ export function CustomersTab() {
       <CustomerSearchBar value={search} onChange={setSearch} />
 
       <CustomerListTable
-        customers={filteredCustomers}
+        customers={customers}
         isLoading={isLoading}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
       />
+
+      {/* Pagination Controls */}
+      {meta && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasPreviousPage) {
+                      setPage((p) => Math.max(1, p - 1));
+                    }
+                  }}
+                  className={
+                    !meta.hasPreviousPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="text-sm font-medium text-muted-foreground px-4">
+                  Page {meta.page} of {meta.totalPages}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasNextPage) {
+                      setPage((p) => p + 1);
+                    }
+                  }}
+                  className={
+                    !meta.hasNextPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       {/* Add/Edit Customer Dialog */}
       <CustomerFormDialog

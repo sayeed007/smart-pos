@@ -17,7 +17,7 @@ export class CustomersService {
       ApiEnvelope<PaginatedResult<Customer>>
     >("/customers", { params });
     const result = unwrapEnvelope(response.data);
-    return result.data; // Return the array of customers directly
+    return result;
   }
 
   static async getById(id: string) {

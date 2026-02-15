@@ -29,6 +29,13 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function OffersPage() {
   const { t } = useTranslation(["offers", "common"]);
@@ -36,11 +43,15 @@ export default function OffersPage() {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [offerToDelete, setOfferToDelete] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const { data: offers, isLoading } = useOffers();
+  const { data: offersData, isLoading } = useOffers(page, 20);
   const createOffer = useCreateOffer();
   const updateOffer = useUpdateOffer();
   const deleteOffer = useDeleteOffer();
+
+  const offers = offersData?.data || [];
+  const meta = offersData?.meta;
 
   const handleEdit = (offer: Offer) => {
     setSelectedOffer(offer);
@@ -139,9 +150,16 @@ export default function OffersPage() {
     return `${offer.value}%`;
   };
 
-  const filteredOffers = offers?.filter((offer) =>
-    offer.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredOffers = offers
+    .filter((offer) => offer.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      // Sort by status: active first
+      if (a.status === "active" && b.status !== "active") return -1;
+      if (a.status !== "active" && b.status === "active") return 1;
+
+      // Then sort by name
+      return a.name.localeCompare(b.name);
+    });
 
   return (
     <div className="space-y-6 p-8">
@@ -176,7 +194,7 @@ export default function OffersPage() {
         <div className="flex justify-center p-12">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
-      ) : filteredOffers && filteredOffers.length > 0 ? (
+      ) : filteredOffers.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredOffers.map((offer) => (
             <Card
@@ -270,6 +288,53 @@ export default function OffersPage() {
       ) : (
         <div className="text-center py-12 text-muted-foreground">
           {t("noOffers", "No offers found")}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {meta && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasPreviousPage) {
+                      setPage((p) => Math.max(1, p - 1));
+                    }
+                  }}
+                  className={
+                    !meta.hasPreviousPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="text-sm font-medium text-muted-foreground px-4">
+                  Page {meta.page} of {meta.totalPages}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasNextPage) {
+                      setPage((p) => p + 1);
+                    }
+                  }}
+                  className={
+                    !meta.hasNextPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/axios";
 import { unwrapEnvelope } from "./utils";
 import { InventoryTransaction, StockTransfer } from "@/types";
-import { ApiEnvelope } from "@/types/backend";
+import { ApiEnvelope, PaginatedResult } from "@/types/backend";
 
 export interface StockLevel {
   productId: string;
@@ -22,17 +22,20 @@ export class InventoryService {
     locationId: string,
     page: number = 1,
     limit: number = 100,
+    startDate?: string,
+    endDate?: string,
   ) {
+    const params = new URLSearchParams({
+      locationId,
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+    });
+
     const response = await backendApi.get<
-      ApiEnvelope<{
-        data: InventoryTransaction[];
-        total: number;
-        page: number;
-        limit: number;
-      }>
-    >(
-      `/inventory/transactions?locationId=${locationId}&page=${page}&limit=${limit}`,
-    );
+      ApiEnvelope<PaginatedResult<InventoryTransaction>>
+    >(`/inventory/transactions?${params}`);
     return unwrapEnvelope(response.data);
   }
 
@@ -89,26 +92,19 @@ export class InventoryService {
     locationId?: string,
     page: number = 1,
     limit: number = 100,
+    startDate?: string,
+    endDate?: string,
   ) {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
       ...(locationId && { locationId }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
     });
     const response = await backendApi.get<
-      ApiEnvelope<{
-        data: StockTransfer[];
-        meta: {
-          total: number;
-          page: number;
-          limit: number;
-          totalPages: number;
-          hasNextPage: boolean;
-          hasPreviousPage: boolean;
-        };
-      }>
+      ApiEnvelope<PaginatedResult<StockTransfer>>
     >(`/inventory/transfers?${params}`);
-    const unwrapped = unwrapEnvelope(response.data);
-    return unwrapped.data; // Return just the array of transfers
+    return unwrapEnvelope(response.data);
   }
 }

@@ -5,10 +5,10 @@ import {
   UpdateOfferDto,
 } from "@/lib/services/backend/offers.service";
 
-export function useOffers() {
+export function useOffers(page: number = 1, limit: number = 20) {
   return useQuery({
-    queryKey: ["offers", "list"],
-    queryFn: () => OffersService.list(),
+    queryKey: ["offers", "list", page, limit],
+    queryFn: () => OffersService.list(page, limit),
   });
 }
 

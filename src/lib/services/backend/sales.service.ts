@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/axios";
 import { unwrapEnvelope } from "./utils";
 import { Sale, CartItem } from "@/types";
-import { ApiEnvelope, ListQueryParams } from "@/types/backend";
+import { ApiEnvelope, ListQueryParams, PaginatedResult } from "@/types/backend";
 
 export interface CreateSaleDto {
   items: CartItem[];
@@ -12,14 +12,34 @@ export interface CreateSaleDto {
 
 export class SalesService {
   static async list(params?: ListQueryParams) {
-    const response = await backendApi.get<ApiEnvelope<Sale[]>>("/sales", {
-      params,
-    });
+    const response = await backendApi.get<ApiEnvelope<PaginatedResult<Sale>>>(
+      "/sales",
+      {
+        params,
+      },
+    );
     return unwrapEnvelope(response.data);
   }
 
   static async getById(id: string) {
     const response = await backendApi.get<ApiEnvelope<Sale>>(`/sales/${id}`);
+    return unwrapEnvelope(response.data);
+  }
+
+  static async getSummary(params: {
+    startDate?: string;
+    endDate?: string;
+    locationId?: string;
+  }) {
+    const response = await backendApi.get<
+      ApiEnvelope<{
+        totalSales: number;
+        totalOrders: number;
+        averageOrderValue: number;
+        totalDiscount: number;
+        totalTax: number;
+      }>
+    >("/sales/summary", { params });
     return unwrapEnvelope(response.data);
   }
 

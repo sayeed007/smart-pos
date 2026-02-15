@@ -24,15 +24,18 @@ export class UsersService {
       ApiEnvelope<PaginatedResult<BackendAuthUser>>
     >("/users", { params });
     const result = unwrapEnvelope(response.data);
-    return result.data.map((u) => ({
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      role: u.roles?.[0]
-        ? { id: u.roles[0].id, name: u.roles[0].name }
-        : UserRole.CASHIER,
-      status: u.status,
-    }));
+    return {
+      ...result,
+      data: result.data.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.roles?.[0]
+          ? { id: u.roles[0].id, name: u.roles[0].name }
+          : UserRole.CASHIER,
+        status: u.status,
+      })),
+    };
   }
 
   static async getById(id: string) {

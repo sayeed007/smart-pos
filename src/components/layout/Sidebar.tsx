@@ -55,7 +55,7 @@ export function Sidebar({
       <div
         className={cn(
           "flex flex-col justify-center",
-          collapsed ? "p-2 items-center" : "p-4",
+          collapsed ? "p-2 items-center pb-2" : "p-4 pb-2",
         )}
       >
         <div
@@ -111,7 +111,7 @@ export function Sidebar({
           )}
         </div>
       </div>
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-hide">
+      <nav className="flex-1 p-4 pt-0 space-y-2 overflow-y-auto scrollbar-hide">
         {items.map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (

@@ -5,10 +5,22 @@ import {
 } from "@/lib/services/backend/sales.service";
 import { ListQueryParams } from "@/types/backend";
 
-export function useSales(params?: ListQueryParams) {
+export function useSales(
+  params?: ListQueryParams & { startDate?: string; endDate?: string },
+) {
   return useQuery({
     queryKey: ["sales", "list", params],
     queryFn: () => SalesService.list(params),
+  });
+}
+
+export function useSalesSummary(params?: {
+  startDate?: string;
+  endDate?: string;
+}) {
+  return useQuery({
+    queryKey: ["sales", "summary", params],
+    queryFn: () => SalesService.getSummary(params || {}),
   });
 }
 

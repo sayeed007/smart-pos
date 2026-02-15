@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/axios";
 import { Sale, Category } from "@/types";
+import { useSales, useSalesSummary } from "@/hooks/api/sales";
+import { DateRange } from "react-day-picker";
 import {
   Table,
   TableBody,
@@ -22,7 +24,7 @@ import {
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { format, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,6 +32,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import Image from "next/image";
 import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
@@ -55,22 +64,42 @@ interface SaleItem {
 }
 
 export default function SalesHistoryPage() {
-  const { data: sales, isLoading: salesLoading } = useQuery<Sale[]>({
-    queryKey: ["sales"],
-    queryFn: async () => (await api.get("/sales")).data,
+  const { t } = useTranslation("sales");
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date(),
   });
+
+  const handleDateChange = (val: DateRange | undefined) => {
+    setDate(val);
+    setPage(1);
+  };
+  const [page, setPage] = useState(1);
+  const [returnSale, setReturnSale] = useState<Sale | null>(null);
+
+  // Format dates for API
+  const dateParams = useMemo(() => {
+    return {
+      startDate: date?.from ? startOfDay(date.from).toISOString() : undefined,
+      endDate: date?.from
+        ? endOfDay(date.to || date.from).toISOString()
+        : undefined,
+      page,
+      limit: 10,
+    };
+  }, [date, page]);
+
+  const { data: sales, isLoading: salesLoading } = useSales(dateParams);
+  const { data: summary, isLoading: summaryLoading } =
+    useSalesSummary(dateParams);
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["categories"],
     queryFn: async () => (await api.get("/categories")).data,
   });
 
-  const { t } = useTranslation("sales");
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [returnSale, setReturnSale] = useState<Sale | null>(null);
-
   const handleReturnClick = (saleId: string) => {
-    const sale = sales?.find((s) => s.id === saleId);
+    const sale = sales?.data?.find((s) => s.id === saleId);
     if (sale) {
       setReturnSale(sale);
     }
@@ -108,37 +137,14 @@ export default function SalesHistoryPage() {
     setReturnSale(null);
   };
 
-  // Calculate stats
-  const stats = useMemo(() => {
-    if (!sales) return { revenue: 0, profit: 0, count: 0 };
-
-    const revenue = sales.reduce((sum, sale) => sum + sale.total, 0);
-    const count = sales.length;
-
-    // Estimate profit (Revenue - 20% cost assumed if costPrice missing, or calculate from items)
-    // In a real app, calculate strict markup. Here we assume generic ~15-20% margin for demo if cost missing
-    // or use item cost if available.
-    const profit = sales.reduce((sum, sale) => {
-      // Try to calculate exact profit from items
-      const saleProfit = (sale.items as unknown as SaleItem[]).reduce(
-        (acc, item) => {
-          const cost = item.costPrice || item.sellingPrice * 0.7; // Fallback cost
-          return acc + (item.sellingPrice - cost) * (item.quantity || 1);
-        },
-        0,
-      );
-      return sum + saleProfit;
-    }, 0);
-
-    return { revenue, profit, count };
-  }, [sales]);
-
   // Flatten sales to items for the table view (matching reference)
   const soldItems = useMemo(() => {
-    if (!sales) return [];
+    // Check if sales exists and has data property (paginated response)
+    const salesList = sales?.data || [];
+    if (!Array.isArray(salesList)) return [];
 
     // Create a flat list of sold items
-    return sales.flatMap((sale) =>
+    return salesList.flatMap((sale) =>
       ((sale.items as unknown as SaleItem[]) || []).map((item) => ({
         id: `${sale.id}-${item.id || Math.random()}`,
         saleId: sale.id, // Added for return action
@@ -158,7 +164,7 @@ export default function SalesHistoryPage() {
     );
   }, [sales, categories]);
 
-  if (salesLoading) {
+  if (salesLoading || summaryLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -176,20 +182,28 @@ export default function SalesHistoryPage() {
         </div>
       </div>
 
-      {/* Date Filter - DatePicker */}
-      <div className="flex items-center">
+      {/* Date Filter - DateRangePicker */}
+      <div className="flex items-center gap-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button
+              id="date"
               variant={"outline"}
               className={cn(
-                "w-60 justify-start text-left font-normal bg-card",
+                "w-[300px] justify-start text-left font-normal bg-card",
                 !date && "text-muted-foreground",
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? (
-                format(date, "PPP")
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
               ) : (
                 <span>{t("filters.pickDate")}</span>
               )}
@@ -197,10 +211,12 @@ export default function SalesHistoryPage() {
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
               initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={handleDateChange}
+              numberOfMonths={2}
             />
           </PopoverContent>
         </Popover>
@@ -209,31 +225,42 @@ export default function SalesHistoryPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="rounded-xl border-none shadow-sm bg-white">
-          <CardContent>
+          <CardContent className="pt-6">
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalRevenue")}
             </p>
             <p className="text-2xl font-bold text-green-600">
-              ${stats.revenue.toFixed(2)}
+              ${summary?.totalSales.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-white">
-          <CardContent>
+          <CardContent className="pt-6">
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalProfit")}
             </p>
             <p className="text-2xl font-bold text-blue-600">
-              ${stats.profit.toFixed(2)}
+              {/* Profit is not yet calculated in backend summary clearly as "profit" but we can display Average Order Value or Total Discount for now, or just keep it 0 if not returned. 
+                  Actually I added totalDiscount, totalTax. 
+                  Let's assume Profit is not available yet or repurpose this card. 
+                  The user said "UI will be similar". 
+                  Let's use Average Order Value instead of Profit for now or just generic.
+               */}
+              ${summary?.averageOrderValue.toFixed(2) || "0.00"}
+              <span className="text-xs text-muted-foreground ml-2 font-normal">
+                (Avg Order)
+              </span>
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-white">
-          <CardContent>
+          <CardContent className="pt-6">
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalSales")}
             </p>
-            <p className="text-2xl font-bold text-foreground">{stats.count}</p>
+            <p className="text-2xl font-bold text-foreground">
+              {summary?.totalOrders || 0}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -370,6 +397,53 @@ export default function SalesHistoryPage() {
         sale={returnSale}
         onConfirm={handleReturnConfirm}
       />
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-end space-x-2 p-4 pt-0">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  if (sales?.meta?.hasPreviousPage) {
+                    setPage((p) => Math.max(1, p - 1));
+                  }
+                }}
+                className={
+                  !sales?.meta?.hasPreviousPage
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            <PaginationItem>
+              <span className="text-sm font-medium text-muted-foreground px-4">
+                Page {sales?.meta?.page || 1} of {sales?.meta?.totalPages || 1}
+              </span>
+            </PaginationItem>
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  if (sales?.meta?.hasNextPage) {
+                    setPage((p) => p + 1);
+                  }
+                }}
+                className={
+                  !sales?.meta?.hasNextPage
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 }

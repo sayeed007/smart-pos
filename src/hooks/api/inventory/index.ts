@@ -13,10 +13,28 @@ export function useAllInventoryTransactions(
   locationId: string,
   page: number = 1,
   limit: number = 100,
+  startDate?: string,
+  endDate?: string,
 ) {
   return useQuery({
-    queryKey: ["inventory", "transactions", "all", locationId, page, limit],
-    queryFn: () => InventoryService.getAllTransactions(locationId, page, limit),
+    queryKey: [
+      "inventory",
+      "transactions",
+      "all",
+      locationId,
+      page,
+      limit,
+      startDate,
+      endDate,
+    ],
+    queryFn: () =>
+      InventoryService.getAllTransactions(
+        locationId,
+        page,
+        limit,
+        startDate,
+        endDate,
+      ),
     enabled: !!locationId,
   });
 }
@@ -59,11 +77,32 @@ export function useCreateTransfer() {
   });
 }
 
-export function useTransfers(locationId?: string) {
+export function useTransfers(
+  locationId?: string,
+  page: number = 1,
+  limit: number = 100,
+  startDate?: string,
+  endDate?: string,
+) {
   return useQuery({
-    queryKey: ["inventory", "transfers", locationId],
-    queryFn: () => InventoryService.getTransfers(locationId),
-    enabled: !!locationId,
+    queryKey: [
+      "inventory",
+      "transfers",
+      locationId,
+      page,
+      limit,
+      startDate,
+      endDate,
+    ],
+    queryFn: () =>
+      InventoryService.getTransfers(
+        locationId,
+        page,
+        limit,
+        startDate,
+        endDate,
+      ),
+    // enabled: true, // Always enabled
   });
 }
 
