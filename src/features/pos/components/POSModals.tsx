@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { processSale } from "@/features/pos/utils/sale-processor";
-import { Offer, Customer } from "@/types";
+import { Offer, Customer, CartItem } from "@/types";
 import { ReceiptTemplate } from "./ReceiptTemplate";
 import { Printer } from "lucide-react";
 import { CashManagementModal } from "./CashManagementModal";
@@ -128,14 +128,32 @@ export function POSModals({ offers = [] }: POSModalsProps) {
           `INV-${Date.now().toString().slice(-6)}`,
         date: now.toISOString().split("T")[0],
         time: now.toTimeString().split(" ")[0],
+        completedAt: now.toISOString(),
+        createdAt: now.toISOString(),
         items: [...cart],
+        lines: cart.map((item, idx) => ({
+          id: `line-${Date.now()}-${idx}`,
+          productId: item.id,
+          variantId: (item as CartItem & { variantId?: string }).variantId,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.sellingPrice,
+          lineTotal: item.sellingPrice * item.quantity,
+        })),
         total,
         subtotal,
         tax,
         discount,
+        taxTotal: tax,
+        discountTotal: discount,
         paymentMethod: method as Sale["paymentMethod"],
-        payments,
-        status: "Completed",
+        payments:
+          payments?.map((p, i) => ({
+            ...p,
+            id: `pay-${Date.now()}-${i}`,
+            date: new Date().toISOString(),
+          })) || [],
+        status: "COMPLETED",
         cashierId: saleData?.cashier?.id || "unknown",
         customerId: customer?.id,
         customerName: customer ? customer.name : "Guest",

@@ -123,7 +123,7 @@ export default function SalesHistoryPage() {
         reason: `Return: ${reason}`,
         referenceId: saleId,
         performedBy: "admin",
-        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         locationId: "loc1",
       }));
       useInventoryStore.getState().addTransactions(transactions);

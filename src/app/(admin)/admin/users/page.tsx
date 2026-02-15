@@ -42,7 +42,8 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
-  const { data: users, isLoading } = useUsers({ search: debouncedSearch });
+  const { data: usersData, isLoading } = useUsers({ search: debouncedSearch });
+  const users = usersData?.data || [];
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
   const deleteMutation = useDeleteUser();

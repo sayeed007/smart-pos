@@ -62,7 +62,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
                   #{sale.invoiceNo || sale.id.substring(0, 8)}
                 </p>
                 <p className="typo-regular-12 text-muted-foreground">
-                  {formatDistanceToNow(new Date(sale.date), {
+                  {formatDistanceToNow(new Date(sale.date || new Date()), {
                     addSuffix: true,
                   })}
                 </p>

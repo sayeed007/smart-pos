@@ -103,14 +103,14 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
           <span>Tax ({settings.taxRate}%):</span>
           <span>
             {settings.currencySymbol}
-            {sale.tax.toFixed(2)}
+            {(sale.tax || sale.taxTotal || 0).toFixed(2)}
           </span>
         </div>
         <div className="flex justify-between text-xs">
           <span>Discount:</span>
           <span>
             -{settings.currencySymbol}
-            {sale.discount.toFixed(2)}
+            {(sale.discount || sale.discountTotal || 0).toFixed(2)}
           </span>
         </div>
         <div className="flex justify-between text-sm font-bold mt-2">

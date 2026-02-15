@@ -32,9 +32,11 @@ export default function AdminCustomersPage() {
   const { t } = useTranslation("customers");
 
   // Use real API hooks
-  const { data: customers, isLoading } = useCustomers({
+  const { data: customersData, isLoading } = useCustomers({
     search: debouncedSearch,
   });
+  const customers = customersData?.data || [];
+
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
   const deleteMutation = useDeleteCustomer();
@@ -88,13 +90,6 @@ export default function AdminCustomersPage() {
     }
   };
 
-  const filteredCustomers = customers?.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.phone?.toLowerCase().includes(search.toLowerCase()) ||
-      customer.email?.toLowerCase().includes(search.toLowerCase()),
-  );
-
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
@@ -115,7 +110,7 @@ export default function AdminCustomersPage() {
       <CustomerSearchBar value={search} onChange={setSearch} />
 
       <CustomerListTable
-        customers={filteredCustomers}
+        customers={customers}
         isLoading={isLoading}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}

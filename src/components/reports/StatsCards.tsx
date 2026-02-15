@@ -17,7 +17,8 @@ export function StatsCards({ sales }: StatsCardsProps) {
 
     sales.forEach((sale) => {
       revenue += sale.total;
-      sale.items.forEach((item) => {
+      const items = sale.items || [];
+      items.forEach((item) => {
         profit += (item.sellingPrice - item.costPrice) * item.quantity;
       });
     });

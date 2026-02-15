@@ -45,20 +45,28 @@ export default function DashboardPage() {
   const totalRevenue = sales?.reduce((acc, sale) => acc + sale.total, 0) || 0;
   const totalProducts = products?.length || 0;
 
-  const displayData = sales?.length && sales.length > 7 ? sales : dummySales;
+  const normalizedSales = sales?.map((s) => ({
+    date: new Date(s.createdAt).toISOString().split("T")[0],
+    total: s.total,
+  }));
+
+  const displayData =
+    normalizedSales?.length && normalizedSales.length > 7
+      ? normalizedSales
+      : dummySales;
 
   // Prepare chart data (Revenue by Day)
   const chartData = displayData
     .reduce(
       (
         acc: { date: string; revenue: number }[],
-        sale: { date: string; total: number },
+        item: { date: string; total: number },
       ) => {
-        const existing = acc.find((d) => d.date === sale.date);
+        const existing = acc.find((d) => d.date === item.date);
         if (existing) {
-          existing.revenue += sale.total;
+          existing.revenue += item.total;
         } else {
-          acc.push({ date: sale.date, revenue: sale.total });
+          acc.push({ date: item.date, revenue: item.total });
         }
         return acc;
       },

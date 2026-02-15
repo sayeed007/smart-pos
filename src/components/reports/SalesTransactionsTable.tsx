@@ -50,9 +50,13 @@ export function SalesTransactionsTable({ sales }: SalesTransactionsProps) {
                     {sale.invoiceNo}
                   </TableCell>
                   <TableCell>
-                    {new Date(sale.date).toLocaleDateString()}
+                    {new Date(
+                      sale.date || sale.completedAt,
+                    ).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>{sale.items.length} items</TableCell>
+                  <TableCell>
+                    {(sale.items || sale.lines)?.length || 0} items
+                  </TableCell>
                   <TableCell>{sale.paymentMethod || "Cash"}</TableCell>
                   <TableCell className="text-right font-bold">
                     ${sale.total.toFixed(2)}

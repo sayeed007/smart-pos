@@ -176,7 +176,9 @@ export function Sidebar({
                 {user?.name || "User"}
               </p>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate leading-none">
-                {user?.role || t("role")}
+                {typeof user?.role === "object"
+                  ? (user.role as { name: string }).name
+                  : user?.role || t("role")}
               </p>
             </div>
           )}

@@ -53,7 +53,7 @@ export default function LoginPage() {
       {
         onSuccess: (data) => {
           const resolvedRole = mapBackendRoleToUiRole(
-            data.user.roles,
+            data.user.roles.map((r: any) => r.name),
             values.role,
           );
 
