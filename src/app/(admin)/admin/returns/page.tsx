@@ -46,7 +46,7 @@ export default function ReturnsPage() {
       date: ret.createdAt,
       // Map items from return lines
       items: (ret.lines || []).map((line: any) => ({
-        id: line.productId,
+        id: line.saleLineId,
         name: line.product?.name || "Unknown Product",
         quantity: Number(line.quantity),
         sellingPrice: Number(line.refundAmount) / Number(line.quantity), // Approximate unit price from total
@@ -70,35 +70,19 @@ export default function ReturnsPage() {
     }),
   );
 
-  const handleCreateReturn = (data: Partial<Return>) => {
-    // Transform frontend Return execution to backend DTO
-    // Note: The ReturnFormModal provides `items` (CartItems) which we need to map to lines
-    // But backend expects saleLineId. The frontend mock implementation doesn't have saleLineId easily.
-    // For MVP, if we use the backend, we need real Sale Lines.
-    // Since ReturnFormModal mocks finding a sale, it likely won't have real Sale Line IDs unless we update it.
-    // However, assuming for now we just want to hook it up:
-
+  const handleCreateReturn = (data: Partial<Return> & { restock?: boolean }) => {
     if (!data.saleId || !data.items) {
       toast.error("Invalid return data");
       return;
     }
 
-    // This part is tricky without updating the modal to fetch real sales.
-    // We'll attempt to construct the DTO, but it might fail if saleLineId is missing.
-    // Logic: The backend creates return from sale lines.
-    // We'll mark this as "TODO: Modal needs update to support API" if it fails.
-
-    // Attempting to use productID as saleLineId temporarily or handle in backend?
-    // No, backend strictly requires saleLineId.
-    // Let's rely on the mock modal returning items that MIGHT have `id` matching sale lines if they came from a real sale object.
-    // If not, this action will fail.
-
     createReturnMutation.mutate(
       {
         saleId: data.saleId,
         reason: data.reason || "",
+        restock: data.restock,
         lines: data.items.map((item) => ({
-          saleLineId: item.id, // Assuming item.id is saleLineId if coming from a real sale object
+          saleLineId: item.id,
           quantity: item.quantity,
         })),
       },

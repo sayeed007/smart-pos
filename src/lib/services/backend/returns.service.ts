@@ -16,6 +16,30 @@ export interface CreateReturnDto {
   restock?: boolean;
 }
 
+export interface RefundableSaleLine {
+  saleLineId: string;
+  productId: string;
+  variantId?: string;
+  name: string;
+  sku: string;
+  soldQuantity: number;
+  alreadyReturnedQuantity: number;
+  returnableQuantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  unitRefund: number;
+}
+
+export interface RefundableSale {
+  id: string;
+  invoiceNo: string;
+  completedAt: string;
+  customerId?: string;
+  customerName?: string;
+  total: number;
+  returnableLines: RefundableSaleLine[];
+}
+
 export class ReturnsService {
   static async list(
     params?: ListQueryParams & {
@@ -38,6 +62,18 @@ export class ReturnsService {
 
   static async create(data: CreateReturnDto) {
     const response = await backendApi.post<ApiEnvelope<any>>("/returns", data);
+    return unwrapEnvelope(response.data);
+  }
+
+  static async listRefundableSales(params?: {
+    search?: string;
+    limit?: number;
+    locationId?: string;
+  }) {
+    const response = await backendApi.get<ApiEnvelope<RefundableSale[]>>(
+      "/returns/refundable-sales",
+      { params },
+    );
     return unwrapEnvelope(response.data);
   }
 }

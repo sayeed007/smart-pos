@@ -34,6 +34,19 @@ export function useCreateReturn() {
       queryClient.invalidateQueries({ queryKey: ["returns"] });
       // Also might need to invalidate sales or inventory if needed
       queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
+  });
+}
+
+export function useRefundableSales(params?: {
+  search?: string;
+  limit?: number;
+  locationId?: string;
+}) {
+  return useQuery({
+    queryKey: ["returns", "refundable-sales", params],
+    queryFn: () => ReturnsService.listRefundableSales(params),
   });
 }
