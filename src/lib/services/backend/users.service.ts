@@ -1,23 +1,38 @@
 import { backendApi } from "@/lib/axios";
 import { unwrapEnvelope } from "./utils";
 import { UserRole } from "@/types";
-import { ApiEnvelope, BackendAuthUser } from "@/types/backend";
+import {
+  ApiEnvelope,
+  BackendAuthUser,
+  ListQueryParams,
+  PaginatedResult,
+} from "@/types/backend";
 
 export interface CreateUserDto {
   name: string;
   email: string;
-  password?: string; // Optional if invite flow
-  role: UserRole;
-  status: "active" | "inactive";
+  password?: string;
+  roleIds: string[];
+  // status: "active" | "inactive"; // Backend handles status, defaults to active
 }
 
 export type UpdateUserDto = Partial<CreateUserDto>;
 
 export class UsersService {
-  static async list() {
-    const response =
-      await backendApi.get<ApiEnvelope<BackendAuthUser[]>>("/users");
-    return unwrapEnvelope(response.data);
+  static async list(params?: ListQueryParams) {
+    const response = await backendApi.get<
+      ApiEnvelope<PaginatedResult<BackendAuthUser>>
+    >("/users", { params });
+    const result = unwrapEnvelope(response.data);
+    return result.data.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.roles?.[0]
+        ? { id: u.roles[0].id, name: u.roles[0].name }
+        : UserRole.CASHIER,
+      status: u.status,
+    }));
   }
 
   static async getById(id: string) {
@@ -45,6 +60,14 @@ export class UsersService {
 
   static async delete(id: string) {
     const response = await backendApi.delete<ApiEnvelope<void>>(`/users/${id}`);
+    return unwrapEnvelope(response.data);
+  }
+
+  static async getRoles() {
+    const response =
+      await backendApi.get<ApiEnvelope<{ id: string; name: string }[]>>(
+        "/users/roles",
+      );
     return unwrapEnvelope(response.data);
   }
 }

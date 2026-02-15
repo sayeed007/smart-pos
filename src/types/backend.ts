@@ -13,7 +13,9 @@ export interface BackendAuthUser {
   name: string;
   email: string;
   tenantId: string;
-  roles: string[];
+  roles: { id: string; name: string }[];
+  role?: string; // Keep for backward compatibility if needed, or remove if unused
+  status: "active" | "inactive";
 }
 
 export interface LoginRequestDto {

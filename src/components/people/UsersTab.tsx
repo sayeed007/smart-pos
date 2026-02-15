@@ -35,7 +35,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 
-export default function UsersPage() {
+export function UsersTab() {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -121,12 +121,12 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="typo-bold-18 text-foreground tracking-tight">
+          <h2 className="typo-bold-18 text-foreground tracking-tight">
             User Management
-          </h1>
+          </h2>
           <p className="typo-regular-14 text-muted-foreground mt-1">
             Manage system users and permissions
           </p>

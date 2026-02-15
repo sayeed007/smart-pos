@@ -8,8 +8,13 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRole | { id: string; name: string };
   status: "active" | "inactive";
+}
+
+export interface Role {
+  id: string;
+  name: string;
 }
 
 export interface Category {

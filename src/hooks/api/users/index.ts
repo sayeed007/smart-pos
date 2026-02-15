@@ -5,10 +5,12 @@ import {
   UpdateUserDto,
 } from "@/lib/services/backend/users.service";
 
-export function useUsers() {
+import { ListQueryParams } from "@/types/backend";
+
+export function useUsers(params?: ListQueryParams) {
   return useQuery({
-    queryKey: ["users", "list"],
-    queryFn: () => UsersService.list(),
+    queryKey: ["users", "list", params],
+    queryFn: () => UsersService.list(params),
   });
 }
 
@@ -49,5 +51,12 @@ export function useDeleteUser() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "list"] });
     },
+  });
+}
+
+export function useRoles() {
+  return useQuery({
+    queryKey: ["roles"],
+    queryFn: () => UsersService.getRoles(),
   });
 }

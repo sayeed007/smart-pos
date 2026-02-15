@@ -64,9 +64,9 @@ export default function AdminLayout({
       path: "/admin/offers",
     },
     {
-      name: t("customers"),
+      name: "People",
       icon: <Users size={20} />,
-      path: "/admin/customers",
+      path: "/admin/people",
     },
     {
       name: t("reports"),
@@ -78,7 +78,7 @@ export default function AdminLayout({
       icon: <RotateCcw size={20} />,
       path: "/admin/returns",
     },
-    { name: t("users"), icon: <Users size={20} />, path: "/admin/users" },
+
     {
       name: t("settings"),
       icon: <Settings size={20} />,

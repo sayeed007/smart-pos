@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Lock, ShieldAlert } from "lucide-react";
+import { Eye, EyeOff, Lock, ShieldAlert } from "lucide-react";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
 interface LockScreenProps {
@@ -11,6 +11,7 @@ interface LockScreenProps {
 
 export function LockScreen({ onUnlock }: LockScreenProps) {
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,25 +77,34 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                   Security PIN
                 </label>
-                <Input
-                  type="password"
-                  className="text-center text-3xl tracking-[0.5em] h-16 font-mono placeholder:tracking-widest bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-[#f87171] rounded-xl transition-all shadow-sm"
-                  placeholder="••••"
-                  maxLength={4}
-                  value={pin}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, "");
-                    if (val.length <= 4) {
-                      setPin(val);
-                      setError(false);
+                <div className="relative">
+                  <Input
+                    type={showPin ? "text" : "password"}
+                    className="text-center text-3xl tracking-[0.5em] h-16 font-mono placeholder:tracking-widest bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-[#f87171] rounded-xl transition-all shadow-sm pr-12"
+                    placeholder="••••"
+                    maxLength={4}
+                    value={pin}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, "");
+                      if (val.length <= 4) {
+                        setPin(val);
+                        setError(false);
+                      }
+                    }}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && pin.length === 4 && handleUnlock()
                     }
-                  }}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && pin.length === 4 && handleUnlock()
-                  }
-                  autoFocus
-                  disabled={isLoading}
-                />
+                    autoFocus
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin(!showPin)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               {error && (
