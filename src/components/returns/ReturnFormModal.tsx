@@ -20,11 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MOCK_SALES } from "@/lib/mock-data";
 import { CartItem, Return, Sale } from "@/types";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSales } from "@/hooks/api/sales";
 
 interface ReturnFormModalProps {
   isOpen: boolean;
@@ -40,27 +40,69 @@ export function ReturnFormModal({
   initialData,
 }: ReturnFormModalProps) {
   const [invoiceSearch, setInvoiceSearch] = useState("");
+  const [searchTrigger, setSearchTrigger] = useState("");
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
   const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
   const [reason, setReason] = useState("");
   const [status, setStatus] = useState<Return["status"]>("Pending");
   const [refundAmount, setRefundAmount] = useState(0);
 
+  // Hook to search sales from backend
+  const { data: salesData, isFetching: isSearching } = useSales({
+    search: searchTrigger,
+    limit: 1,
+  }); // enabled by default, but searchTrigger defaults to ""
+
+  // Effect to handle search results
+  useEffect(() => {
+    if (searchTrigger && salesData?.data) {
+      const foundSale = salesData.data.find((s) =>
+        s.invoiceNo.toLowerCase().includes(searchTrigger.toLowerCase()),
+      );
+
+      if (foundSale) {
+        // Map API sale to component expected format
+        // API Sale has lines, we need to map to items (CartItem) for the UI logic to work
+        // We attach the saleLineId as id
+        const mappedSale: any = {
+          ...foundSale,
+          items: (foundSale.lines || []).map((line) => ({
+            id: line.id, // CRITICAL: This IS the saleLineId needed for backend
+            name: line.name,
+            quantity: Number(line.quantity),
+            sellingPrice: Number(line.unitPrice),
+            sku: line.product?.sku || "",
+            productId: line.productId, // Keep productId just in case
+            // ... other required CartItem fields with defaults
+            barcode: "",
+            categoryId: "",
+            costPrice: 0,
+            taxRate: 0,
+            stockQuantity: 0,
+            minStockLevel: 0,
+            status: "active",
+            type: "simple",
+          })),
+        };
+        setSelectedSale(mappedSale);
+        toast.success("Sale found!");
+      } else {
+        setSelectedSale(null);
+        if (!isSearching) toast.error("Sale not found.");
+      }
+    }
+  }, [salesData, searchTrigger, isSearching]);
+
   useEffect(() => {
     if (initialData) {
       setInvoiceSearch(initialData.invoiceNo);
-      // find sale again to get full items list? Or just use returned items?
-      // For Edit, we might only show returned items or allow modifying?
-      // For simplicity in edit: show as read-only or just status update.
-      // But user said "edit return & refunds".
-      // I'll assume full edit capability if needed, but usually once returned, items are fixed.
-      // Let's allow simple status update for Edit.
       setStatus(initialData.status);
       setReason(initialData.reason);
       setRefundAmount(initialData.refundAmount);
       setSelectedItems(initialData.items);
     } else {
       setInvoiceSearch("");
+      setSearchTrigger("");
       setSelectedSale(null);
       setSelectedItems([]);
       setReason("");
@@ -70,17 +112,8 @@ export function ReturnFormModal({
   }, [initialData, isOpen]);
 
   const handleSearchSale = () => {
-    // Mock search
-    const sale = MOCK_SALES.find((s) =>
-      s.invoiceNo.toLowerCase().includes(invoiceSearch.toLowerCase()),
-    );
-    if (sale) {
-      setSelectedSale(sale);
-      toast.success("Sale found!");
-    } else {
-      setSelectedSale(null);
-      toast.error("Sale not found.");
-    }
+    if (!invoiceSearch.trim()) return;
+    setSearchTrigger(invoiceSearch);
   };
 
   const toggleItem = (item: CartItem) => {
@@ -153,13 +186,23 @@ export function ReturnFormModal({
               <Label htmlFor="invoice">Search Invoice</Label>
               <Input
                 id="invoice"
-                placeholder="Enter Invoice No (e.g. #INV-2025-0342)"
+                placeholder="Enter Invoice No (e.g. #INV...)"
                 value={invoiceSearch}
                 onChange={(e) => setInvoiceSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchSale()}
               />
             </div>
-            <Button onClick={handleSearchSale} size="icon" className="mb-0.5">
-              <Search className="h-4 w-4" />
+            <Button
+              onClick={handleSearchSale}
+              size="icon"
+              className="mb-0.5"
+              disabled={isSearching}
+            >
+              {isSearching ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
             </Button>
           </div>
         )}
@@ -171,40 +214,43 @@ export function ReturnFormModal({
           </div>
         )}
 
+        {/* Use any cast because our mapped sale has items, but typescript Sale interface usually has lines.
+            Frontend code expects items for checkbox logic (from mock). */}
         {(selectedSale || isEdit) && (
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <div className="border rounded-md p-3 max-h-[200px] overflow-y-auto">
               <Label className="mb-2 block">Select Items to Return</Label>
               <div className="space-y-2">
-                {(isEdit ? initialData.items : selectedSale?.items)?.map(
-                  (item) => {
-                    const isSelected = selectedItems.some(
-                      (i) => i.id === item.id,
-                    );
-                    return (
-                      <div
-                        key={item.id}
-                        className="flex items-center space-x-2 border-b pb-2 last:border-0"
-                      >
-                        <Checkbox
-                          id={`item-${item.id}`}
-                          checked={isSelected || isEdit} // If edit, locked selection? OR allow checkboxes.
-                          onCheckedChange={() => !isEdit && toggleItem(item)} // Lock items in edit for simplicity
-                          disabled={isEdit}
-                        />
-                        <div className="flex-1 text-sm">
-                          <span className="font-medium">{item.name}</span>
-                          <span className="text-muted-foreground ml-2">
-                            x{item.quantity}
-                          </span>
-                        </div>
-                        <div className="text-sm font-bold">
-                          ${(item.sellingPrice * item.quantity).toFixed(2)}
-                        </div>
+                {(isEdit
+                  ? initialData.items
+                  : (selectedSale as any)?.items
+                )?.map((item: CartItem) => {
+                  const isSelected = selectedItems.some(
+                    (i) => i.id === item.id,
+                  );
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center space-x-2 border-b pb-2 last:border-0"
+                    >
+                      <Checkbox
+                        id={`item-${item.id}`}
+                        checked={isSelected || isEdit} // If edit, locked selection? OR allow checkboxes.
+                        onCheckedChange={() => !isEdit && toggleItem(item)} // Lock items in edit for simplicity
+                        disabled={isEdit}
+                      />
+                      <div className="flex-1 text-sm">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-muted-foreground ml-2">
+                          x{item.quantity}
+                        </span>
                       </div>
-                    );
-                  },
-                )}
+                      <div className="text-sm font-bold">
+                        ${(item.sellingPrice * item.quantity).toFixed(2)}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -220,8 +266,12 @@ export function ReturnFormModal({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select value={status} onValueChange={(v: any) => setStatus(v)}>
-                  <SelectTrigger>
+                <Select
+                  value={status}
+                  onValueChange={(v: any) => setStatus(v)}
+                  disabled={!isEdit && status === "Pending"}
+                >
+                  <SelectTrigger disabled={!isEdit}>
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>

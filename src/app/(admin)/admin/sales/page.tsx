@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/pagination";
 import Image from "next/image";
 import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
+import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
 import { toast } from "sonner";
 
@@ -52,16 +53,6 @@ const CATEGORY_MAP: Record<string, string> = {
   "4": "Outerwear",
   "5": "Accessories",
 };
-
-interface SaleItem {
-  id: string;
-  name: string;
-  categoryId: string;
-  sellingPrice: number;
-  costPrice?: number;
-  quantity: number;
-  image?: string;
-}
 
 export default function SalesHistoryPage() {
   const { t } = useTranslation("sales");
@@ -76,6 +67,7 @@ export default function SalesHistoryPage() {
   };
   const [page, setPage] = useState(1);
   const [returnSale, setReturnSale] = useState<Sale | null>(null);
+  const [viewSale, setViewSale] = useState<Sale | null>(null);
 
   // Format dates for API
   const dateParams = useMemo(() => {
@@ -97,6 +89,13 @@ export default function SalesHistoryPage() {
     queryKey: ["categories"],
     queryFn: async () => (await api.get("/categories")).data,
   });
+
+  const handleViewInvoice = (saleId: string) => {
+    const sale = sales?.data?.find((s) => s.id === saleId);
+    if (sale) {
+      setViewSale(sale);
+    }
+  };
 
   const handleReturnClick = (saleId: string) => {
     const sale = sales?.data?.find((s) => s.id === saleId);
@@ -145,21 +144,23 @@ export default function SalesHistoryPage() {
 
     // Create a flat list of sold items
     return salesList.flatMap((sale) =>
-      ((sale.items as unknown as SaleItem[]) || []).map((item) => ({
+      (sale.lines || []).map((item) => ({
         id: `${sale.id}-${item.id || Math.random()}`,
         saleId: sale.id, // Added for return action
         invoiceNo: sale.invoiceNo,
         productName: item.name,
         categoryName:
-          categories?.find((c) => c.id === item.categoryId)?.name ||
-          CATEGORY_MAP[item.categoryId] ||
+          categories?.find((c) => c.id === item.product?.categoryId)?.name ||
+          CATEGORY_MAP[item.product?.categoryId || ""] ||
           "General",
-        price: item.sellingPrice, // Unit price
-        image: item.image,
-        time: sale.time, // "08:30 PM"
-        paymentMethod: sale.paymentMethod,
+        price: Number(item.unitPrice), // Unit price
+        image: item.product?.imageUrl,
+        time: sale.completedAt
+          ? format(new Date(sale.completedAt), "hh:mm a")
+          : "",
+        paymentMethod: sale.payments?.[0]?.method || "CASH",
         status: sale.status,
-        date: sale.date,
+        date: sale.completedAt,
       })),
     );
   }, [sales, categories]);
@@ -190,7 +191,7 @@ export default function SalesHistoryPage() {
               id="date"
               variant={"outline"}
               className={cn(
-                "w-[300px] justify-start text-left font-normal bg-card",
+                "w-75 justify-start text-left font-normal bg-card",
                 !date && "text-muted-foreground",
               )}
             >
@@ -377,6 +378,7 @@ export default function SalesHistoryPage() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+                          onClick={() => handleViewInvoice(item.saleId)}
                         >
                           <FileText className="h-4 w-4" />
                         </Button>
@@ -396,6 +398,12 @@ export default function SalesHistoryPage() {
         onClose={() => setReturnSale(null)}
         sale={returnSale}
         onConfirm={handleReturnConfirm}
+      />
+
+      <InvoiceDetailsModal
+        isOpen={!!viewSale}
+        onClose={() => setViewSale(null)}
+        sale={viewSale}
       />
 
       {/* Pagination Controls */}

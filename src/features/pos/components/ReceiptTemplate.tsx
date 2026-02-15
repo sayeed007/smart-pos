@@ -76,13 +76,15 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
           <span className="w-1/6 text-center">Qty</span>
           <span className="w-1/3 text-right">Total</span>
         </div>
-        {sale.items.map((item, idx) => (
+        {(sale.lines || sale.items || []).map((item: any, idx) => (
           <div key={idx} className="flex justify-between text-xs mb-1">
             <span className="w-1/2 text-left truncate">{item.name}</span>
             <span className="w-1/6 text-center">{item.quantity}</span>
             <span className="w-1/3 text-right">
               {settings.currencySymbol}
-              {(item.sellingPrice * item.quantity).toFixed(2)}
+              {(
+                (item.unitPrice || item.sellingPrice || 0) * item.quantity
+              ).toFixed(2)}
             </span>
           </div>
         ))}

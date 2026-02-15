@@ -112,24 +112,64 @@ export type OfferRule =
       };
     };
 
+export interface SaleLine {
+  id: string;
+  productId: string;
+  variantId?: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  product?: {
+    id: string;
+    name: string;
+    categoryId: string;
+    imageUrl?: string;
+  };
+}
+
+export interface SalePayment {
+  id: string;
+  method: string;
+  amount: number;
+}
+
 export interface Sale {
   id: string;
   invoiceNo: string;
-  date: string;
-  time: string;
-  items: CartItem[];
+  completedAt: string; // ISO date
+  createdAt: string;
+
+  // Financials
   subtotal: number;
-  discount: number;
-  tax: number;
+  discountTotal: number;
+  taxTotal: number;
   total: number;
-  paymentMethod: "Cash" | "Card" | "Digital" | "Split";
-  payments?: { method: string; amount: number }[]; // For split payments
-  status: "Completed" | "Returned";
+
+  // Relations
+  lines: SaleLine[];
+  payments: SalePayment[];
+  customer?: { id: string; name: string };
+  cashier?: { id: string; name: string };
+  location?: { id: string; name: string };
+
+  status: "COMPLETED" | "RETURNED" | "VOIDED";
   cashierId: string;
-  customerName?: string;
   customerId?: string;
+  locationId?: string;
+
   loyaltyPointsEarned?: number;
   loyaltyPointsRedeemed?: number;
+  loyaltyDiscount?: number;
+
+  // Legacy / Mapped fields (optional for backward compatibility)
+  date?: string;
+  time?: string;
+  items?: CartItem[];
+  discount?: number;
+  tax?: number;
+  paymentMethod?: string;
+  customerName?: string;
 }
 
 export interface Customer {

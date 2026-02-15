@@ -1,6 +1,6 @@
 "use client";
 
-import { Sale, CartItem } from "@/types";
+import { Sale, SaleLine } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -37,9 +37,9 @@ export function ProcessReturnModal({
   const { t } = useTranslation("sales");
 
   const [quantities, setQuantities] = useState<Record<string, number>>(() => {
-    if (!sale) return {};
+    if (!sale || !sale.lines) return {};
     const initialMap: Record<string, number> = {};
-    sale.items.forEach((item) => {
+    sale.lines.forEach((item) => {
       initialMap[item.id] = 0;
     });
     return initialMap;
@@ -48,7 +48,7 @@ export function ProcessReturnModal({
   const [reason, setReason] = useState("");
   const [restock, setRestock] = useState(true);
 
-  const handleIncrement = (item: CartItem) => {
+  const handleIncrement = (item: SaleLine) => {
     setQuantities((prev) => {
       const current = prev[item.id] || 0;
       if (current < item.quantity) {
@@ -58,7 +58,7 @@ export function ProcessReturnModal({
     });
   };
 
-  const handleDecrement = (item: CartItem) => {
+  const handleDecrement = (item: SaleLine) => {
     setQuantities((prev) => {
       const current = prev[item.id] || 0;
       if (current > 0) {
@@ -69,10 +69,10 @@ export function ProcessReturnModal({
   };
 
   const totalRefund = useMemo(() => {
-    if (!sale) return 0;
-    return sale.items.reduce((acc, item) => {
+    if (!sale || !sale.lines) return 0;
+    return sale.lines.reduce((acc, item) => {
       const quantityToReturn = quantities[item.id] || 0;
-      return acc + item.sellingPrice * quantityToReturn;
+      return acc + item.unitPrice * quantityToReturn;
     }, 0);
   }, [sale, quantities]);
 
@@ -114,28 +114,30 @@ export function ProcessReturnModal({
           <div>
             <p className="text-muted-foreground">Date</p>
             <p className="font-bold text-foreground">
-              {format(new Date(sale.date), "MMM dd, yyyy")}
+              {sale.completedAt
+                ? format(new Date(sale.completedAt), "MMM dd, yyyy")
+                : "-"}
             </p>
           </div>
           <div className="text-right">
             <p className="text-muted-foreground">Total</p>
             <p className="font-bold text-foreground">
-              ${sale.total.toFixed(2)}
+              ${Number(sale.total).toFixed(2)}
             </p>
           </div>
         </div>
 
         <ScrollArea className="h-75 px-6 py-4">
           <div className="space-y-4">
-            {sale.items.map((item) => (
+            {sale.lines.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-4 p-3 rounded-lg border border-border bg-card"
               >
                 <div className="w-16 h-16 rounded-md bg-muted overflow-hidden shrink-0 border border-border flex items-center justify-center">
-                  {item.image ? (
+                  {item.product?.imageUrl ? (
                     <Image
-                      src={item.image}
+                      src={item.product.imageUrl}
                       alt={item.name}
                       width={64}
                       height={64}
@@ -150,7 +152,7 @@ export function ProcessReturnModal({
                     {item.name}
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    ${item.sellingPrice.toFixed(2)} • {t("modal.max", "Max")}:{" "}
+                    ${item.unitPrice.toFixed(2)} • {t("modal.max", "Max")}:{" "}
                     {item.quantity}
                   </p>
                 </div>
@@ -182,10 +184,7 @@ export function ProcessReturnModal({
                     {t("modal.refund", "Refund")}
                   </p>
                   <p className="font-bold text-destructive">
-                    $
-                    {(item.sellingPrice * (quantities[item.id] || 0)).toFixed(
-                      2,
-                    )}
+                    ${(item.unitPrice * (quantities[item.id] || 0)).toFixed(2)}
                   </p>
                 </div>
               </div>
