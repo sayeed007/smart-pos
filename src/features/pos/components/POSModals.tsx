@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { useSettingsStore } from "@/features/settings/store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,20 +18,26 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { processSale } from "@/features/pos/utils/sale-processor";
-import { useInventoryStore } from "@/features/inventory/store/inventory-store";
-import { InventoryTransaction, Sale, Offer, Customer } from "@/types";
+import { Offer, Customer } from "@/types";
 import { ReceiptTemplate } from "./ReceiptTemplate";
 import { Printer } from "lucide-react";
 import { CashManagementModal } from "./CashManagementModal";
 import { useLocationStore } from "@/features/locations/store";
-import { db, SaleQueueItem, updateLocalStock } from "@/lib/db";
+import { db, SaleQueueItem } from "@/lib/db";
 import { UserPlus } from "lucide-react";
 import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
+import { Sale } from "@/types";
 
-export function POSModals() {
+interface POSModalsProps {
+  offers?: Offer[];
+}
+
+export function POSModals({ offers = [] }: POSModalsProps) {
   const { currentLocation } = useLocationStore();
+  const settings = useSettingsStore();
+  const queryClient = useQueryClient();
   const {
     activeModal,
     setModal,
@@ -42,14 +49,6 @@ export function POSModals() {
     customer,
     redeemedPoints,
   } = usePOSStore();
-  const addTransactions = useInventoryStore((state) => state.addTransactions);
-
-  // Fetch active offers for discount calculation
-  const { data: offers = [] } = useQuery<Offer[]>({
-    queryKey: ["offers"],
-    queryFn: async () =>
-      await db.offers.where("status").equals("active").toArray(),
-  });
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.sellingPrice * item.quantity,
@@ -60,9 +59,10 @@ export function POSModals() {
   const pointsDiscount = redeemedPoints / 100;
   const discount = offerDiscount + pointsDiscount;
 
-  // Consistent Tax Logic with CartPanel (Global 8% for MVP)
+  // Use settings.taxRate (percentage e.g. 10) for consistent tax calculation
+  const taxRate = settings.taxRate / 100;
   const taxBase = Math.max(0, subtotal - discount);
-  const tax = taxBase * 0.08;
+  const tax = taxBase * taxRate;
   const total = taxBase + tax;
 
   const [splitPayments, setSplitPayments] = useState<
@@ -79,84 +79,77 @@ export function POSModals() {
     method: string,
     payments?: { method: string; amount: number }[],
   ) => {
+    if (cart.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+    if (!currentLocation?.id || currentLocation.id === "default") {
+      toast.error("Select a location before checkout");
+      return;
+    }
+
     setModal("processing");
+
     try {
-      // Use offline-capable processor
       const result = await processSale({
         items: cart,
         total,
-        subtotal, // Added logic
-        discount, // Pass discount if SalePayload supported it (it might not yet, but harmless)
+        subtotal,
+        discount,
         tax,
         paymentMethod: method,
-        payments, // Pass split payments
-        cashierId: "u1", // TODO: Session user
+        payments,
+        locationId: currentLocation.id,
         customerId: customer?.id,
-        redeemedPoints,
-      } as any); // Cast as any to bypass SalePayload strictness if fields missing
+        loyaltyPointsRedeemed: redeemedPoints,
+        loyaltyDiscount: pointsDiscount,
+        offers,
+      });
 
       if (!result.success) {
-        throw new Error("Sale processing failed completely.");
+        throw new Error(result.error || "Sale processing failed");
       }
 
-      // Create Inventory Transactions (Optimistic UI Update)
-      // Even if offline, we deduct stock locally in store
-      const transactions: InventoryTransaction[] = cart.map((item) => ({
-        id: `tx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        productId: item.originalProductId || item.id,
-        variantId:
-          item.originalProductId && item.id !== item.originalProductId
-            ? item.id
-            : undefined,
-        type: "OUT",
-        quantity: item.quantity,
-        reason: `Sale ${result.isOffline ? "(Offline)" : ""} #${result.localId?.substr(-6)}`,
-        referenceId: result.localId || `sale-${Date.now()}`,
-        performedBy: "u1", // Default user
-        timestamp: new Date().toISOString(),
-        locationId: currentLocation.id,
-      }));
+      // Invalidate relevant queries so data refreshes
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
 
-      addTransactions(transactions);
-      updateLocalStock(transactions);
+      // Build the receipt sale object from backend response
+      const now = new Date();
+      const saleData = result.saleData;
 
-      setTimeout(() => {
-        const now = new Date();
-        const saleId = result.localId || `sale-${Date.now()}`;
-        setLastSale({
-          id: saleId,
-          invoiceNo: `INV-${Date.now().toString().slice(-6)}`,
-          date: now.toISOString().split("T")[0],
-          time: now.toTimeString().split(" ")[0],
-          items: [...cart],
-          total,
-          subtotal,
-          tax,
-          discount: discount,
-          paymentMethod: method as any,
-          payments: payments,
-          status: "Completed",
-          cashierId: "u1",
-          customerId: customer?.id,
-          customerName: customer ? customer.name : "Guest",
-          loyaltyPointsRedeemed: redeemedPoints,
-          loyaltyPointsEarned: customer
-            ? Math.floor(
-                total *
-                  (customer.tierId === "tier-gold"
-                    ? 2
-                    : customer.tierId === "tier-silver"
-                      ? 1.5
-                      : 1),
-              )
-            : 0,
-        });
-        setModal("success");
-        clearCart();
-      }, 1500);
+      setLastSale({
+        id: result.saleId || `sale-${Date.now()}`,
+        invoiceNo:
+          result.invoiceNo ||
+          saleData?.invoiceNo ||
+          `INV-${Date.now().toString().slice(-6)}`,
+        date: now.toISOString().split("T")[0],
+        time: now.toTimeString().split(" ")[0],
+        items: [...cart],
+        total,
+        subtotal,
+        tax,
+        discount,
+        paymentMethod: method as Sale["paymentMethod"],
+        payments,
+        status: "Completed",
+        cashierId: saleData?.cashier?.id || "unknown",
+        customerId: customer?.id,
+        customerName: customer ? customer.name : "Guest",
+        loyaltyPointsRedeemed: redeemedPoints,
+        loyaltyPointsEarned: saleData?.loyaltyPointsEarned || 0,
+      });
+
+      setModal("success");
+      clearCart();
     } catch (e) {
       console.error(e);
-      toast.error("Sale failed to process.");
+      const errorMsg =
+        e instanceof Error ? e.message : "Sale failed to process.";
+      toast.error(errorMsg);
       setModal("none");
     }
   };
@@ -233,9 +226,7 @@ export function POSModals() {
                 {["Card", "Cash", "Digital"].map((m) => (
                   <button
                     key={m}
-                    onClick={() =>
-                      setModal(m === "Cash" ? "cash-detail" : "card-detail")
-                    }
+                    onClick={() => handleCheckout(m)}
                     className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
                   >
                     <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 group-hover:text-primary">
@@ -385,9 +376,14 @@ export function POSModals() {
               <h2 className="text-2xl font-black text-gray-900 mb-1">
                 Payment Successful!
               </h2>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-8">
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-2">
                 Transaction completed
               </p>
+              {lastSale?.invoiceNo && (
+                <p className="text-sm font-mono text-primary font-bold mb-6">
+                  {lastSale.invoiceNo}
+                </p>
+              )}
 
               <div className="flex gap-2 mb-4">
                 <Button
@@ -481,8 +477,9 @@ function SuspendedSalesList({ onClose }: { onClose: () => void }) {
     const restoredItems = sale.items.map((item) => ({
       ...item,
       sellingPrice: item.price,
-      originalProductId: item.id, // Best guess, might be variant ID
+      originalProductId: item.originalProductId,
     }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCart(restoredItems as any);
     if (sale.customerId) {
       const c = await db.customers.get(sale.customerId);
@@ -524,7 +521,7 @@ function SuspendedSalesList({ onClose }: { onClose: () => void }) {
                   Sale #{sale.id.substr(0, 8)}
                 </div>
                 <div className="text-xs text-gray-500">
-                  {formatDistanceToNow(new Date(sale.createdAt))} ago •{" "}
+                  {formatDistanceToNow(new Date(sale.createdAt))} ago &bull;{" "}
                   {sale.items.length} items
                 </div>
                 <div className="font-mono text-emerald-600 font-bold mt-1">
@@ -572,21 +569,22 @@ function MemberSearchModal({
     email: "",
   });
 
-  // Search effect
-  useEffect(() => {
-    if (!query) {
+  // Search handler
+  const handleSearch = (val: string) => {
+    setQuery(val);
+    if (!val) {
       setResults([]);
       return;
     }
     db.customers
       .where("phone")
-      .startsWith(query)
+      .startsWith(val)
       .or("name")
-      .startsWithIgnoreCase(query)
+      .startsWithIgnoreCase(val)
       .limit(5)
       .toArray()
       .then(setResults);
-  }, [query]);
+  };
 
   const handleCreate = async () => {
     if (!newCustomer.name || !newCustomer.phone) {
@@ -664,7 +662,7 @@ function MemberSearchModal({
           <Input
             placeholder="Search by name or phone..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             autoFocus
           />
 

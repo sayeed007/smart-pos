@@ -1,6 +1,8 @@
 "use client";
 
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { useSettingsStore } from "@/features/settings/store";
+import { useAuth } from "@/providers/auth-provider";
 import { Offer } from "@/types";
 import {
   ShoppingCart,
@@ -16,7 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { CartItemCard } from "./CartItemCard";
 import { toast } from "sonner";
@@ -26,8 +28,6 @@ import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
 interface CartPanelProps {
   offers: Offer[];
 }
-
-type PaymentMethod = "card" | "cash" | "wallet";
 
 export function CartPanel({ offers }: CartPanelProps) {
   const {
@@ -39,9 +39,13 @@ export function CartPanel({ offers }: CartPanelProps) {
     setCustomer,
     redeemedPoints,
     setRedeemedPoints,
+    paymentMethod,
+    setPaymentMethod,
   } = usePOSStore();
+  const settings = useSettingsStore();
+  const { user } = useAuth();
   const { t } = useTranslation("pos");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const taxRate = settings.taxRate / 100; // e.g. 10 -> 0.10
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.sellingPrice * item.quantity,
@@ -61,7 +65,7 @@ export function CartPanel({ offers }: CartPanelProps) {
   const discount = offerDiscount + pointsDiscount;
 
   const taxBase = Math.max(0, subtotal - discount);
-  const tax = taxBase * 0.08;
+  const tax = taxBase * taxRate;
   const total = taxBase + tax;
 
   const handleSuspend = async () => {
@@ -77,10 +81,13 @@ export function CartPanel({ offers }: CartPanelProps) {
           name: c.name,
           taxRate: c.taxRate || 0,
           sku: c.sku,
+          originalProductId: c.originalProductId,
+          categoryId: c.categoryId,
+          image: c.image,
         })),
         total,
         paymentMethod: "suspended",
-        cashierId: "u1",
+        cashierId: user?.id || "unknown",
         status: "pending",
         createdAt: new Date().toISOString(),
         customerId: customer?.id,
@@ -169,7 +176,7 @@ export function CartPanel({ offers }: CartPanelProps) {
                     <TicketPercent size={12} />
                     {customer.loyaltyPoints} pts
                   </span>
-                  <span>•</span>
+                  <span>&bull;</span>
                   <span>{t("cart.rewardsAvailable", "Rewards Available")}</span>
                 </div>
               </div>
@@ -251,10 +258,10 @@ export function CartPanel({ offers }: CartPanelProps) {
         ) : (
           cart.map((item) => (
             <CartItemCard
-              key={item.id || item.name}
+              key={item.id}
               item={item}
-              onUpdateQuantity={(delta) => updateQuantity(item.name, delta)}
-              onRemove={() => updateQuantity(item.name, -item.quantity)}
+              onUpdateQuantity={(delta) => updateQuantity(item.id, delta)}
+              onRemove={() => updateQuantity(item.id, -item.quantity)}
             />
           ))
         )}
@@ -281,7 +288,7 @@ export function CartPanel({ offers }: CartPanelProps) {
                     key={offer.id}
                     className="text-xs text-emerald-600 truncate"
                   >
-                    • {offer.name}
+                    &bull; {offer.name}
                   </p>
                 ))}
               </div>
@@ -308,7 +315,9 @@ export function CartPanel({ offers }: CartPanelProps) {
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground">
-            <span className="typo-regular-14">{t("cart.tax")} (8%)</span>
+            <span className="typo-regular-14">
+              {t("cart.tax")} ({settings.taxRate}%)
+            </span>
             <span className="typo-semibold-14 text-foreground">
               ${tax.toFixed(2)}
             </span>
@@ -389,7 +398,7 @@ export function CartPanel({ offers }: CartPanelProps) {
         <Button
           size="lg"
           className="w-full typo-semibold-14 bg-chart-1 hover:bg-chart-1/90 text-white shadow-lg shadow-chart-1/20"
-          onClick={() => setModal("processing")}
+          onClick={() => setModal("payment-method")}
         >
           {t("cart.completeSale")}
         </Button>

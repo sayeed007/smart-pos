@@ -1,13 +1,44 @@
 import { backendApi } from "@/lib/axios";
 import { unwrapEnvelope } from "./utils";
-import { Sale, CartItem } from "@/types";
+import { Sale } from "@/types";
 import { ApiEnvelope, ListQueryParams, PaginatedResult } from "@/types/backend";
 
+// ── Sale Line matching backend SaleLineInput ──
+export interface SaleLineDto {
+  productId: string;
+  variantId?: string;
+  quantity: number;
+  unitPrice: number;
+  discountAmount?: number;
+  offerId?: string;
+}
+
+// ── Payment matching backend PaymentInput ──
+export interface SalePaymentDto {
+  method:
+    | "CASH"
+    | "CARD"
+    | "DIGITAL_WALLET"
+    | "GIFT_CARD"
+    | "LOYALTY"
+    | "OTHER";
+  amount: number;
+  reference?: string;
+}
+
+// ── CreateSaleDto matching backend exactly ──
 export interface CreateSaleDto {
-  items: CartItem[];
-  paymentMethod: "Cash" | "Card" | "Digital" | "Split";
-  payments?: { method: string; amount: number }[];
+  locationId: string;
+  registerId?: string;
   customerId?: string;
+  shiftId?: string;
+  notes?: string;
+  isOffline?: boolean;
+  offlineId?: string;
+  loyaltyPointsRedeemed?: number;
+  loyaltyDiscount?: number;
+  lines: SaleLineDto[];
+  payments: SalePaymentDto[];
 }
 
 export class SalesService {

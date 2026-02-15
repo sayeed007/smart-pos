@@ -12,6 +12,7 @@ import {
   Package,
   RotateCcw,
   Settings,
+  ShoppingCart,
   Tag,
   Layers,
   Users,
@@ -42,6 +43,11 @@ export default function AdminLayout({
       name: t("sales"),
       icon: <FileText size={20} />,
       path: "/admin/sales",
+    },
+    {
+      name: "POS",
+      icon: <ShoppingCart size={20} />,
+      path: "/admin/pos",
     },
     {
       name: t("products"),

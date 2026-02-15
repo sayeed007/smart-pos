@@ -1,31 +1,44 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
-import { db } from "@/lib/db";
-import { Product, Category, Offer } from "@/types";
+import { useEffect } from "react";
+import { Offer } from "@/types";
 import { ProductGrid } from "./components/ProductGrid";
 import { CartPanel } from "./components/CartPanel";
 import { POSModals } from "./components/POSModals";
 import { Loader2 } from "lucide-react";
-
-import { useOfflineProducts } from "@/hooks/use-offline-products";
-
-// ...
+import { useProducts } from "@/hooks/api/products";
+import { useCategories } from "@/hooks/api/categories";
+import { useActiveOffers } from "@/hooks/api/offers";
+import { useLocations } from "@/hooks/api/locations";
+import { useLocationStore } from "@/features/locations/store";
 
 export default function POSFeature() {
-  const { data: products, isLoading: pLoading } = useOfflineProducts();
-
-  const { data: categories, isLoading: cLoading } = useQuery<Category[]>({
-    queryKey: ["categories"],
-    queryFn: async () => (await api.get("/categories")).data,
+  // Fetch products from the real backend
+  const { data: productsResult, isLoading: pLoading } = useProducts({
+    limit: 1000,
   });
+  const products = productsResult?.data || [];
 
-  const { data: offers = [] } = useQuery<Offer[]>({
-    queryKey: ["offers"],
-    queryFn: async () =>
-      await db.offers.where("status").equals("active").toArray(),
-  });
+  // Fetch categories from the real backend
+  const { data: categories, isLoading: cLoading } = useCategories();
+
+  // Fetch active offers from the real backend
+  const { data: activeOffers } = useActiveOffers();
+  const offers: Offer[] = activeOffers || [];
+
+  // Fetch real locations and populate the location store
+  const { data: locationsData } = useLocations();
+  const { setLocations } = useLocationStore();
+
+  useEffect(() => {
+    if (
+      locationsData &&
+      Array.isArray(locationsData) &&
+      locationsData.length > 0
+    ) {
+      setLocations(locationsData);
+    }
+  }, [locationsData, setLocations]);
 
   if (pLoading || cLoading) {
     return (
@@ -37,9 +50,12 @@ export default function POSFeature() {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen">
-      <ProductGrid products={products || []} categories={categories || []} />
+      <ProductGrid
+        products={products}
+        categories={Array.isArray(categories) ? categories : []}
+      />
       <CartPanel offers={offers} />
-      <POSModals />
+      <POSModals offers={offers} />
     </div>
   );
 }

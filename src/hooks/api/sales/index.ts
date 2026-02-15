@@ -38,8 +38,10 @@ export function useCreateSale() {
     mutationFn: (data: CreateSaleDto) => SalesService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales", "list"] });
-      queryClient.invalidateQueries({ queryKey: ["customers"] }); // Invalidate customers as loyalty points might change
-      queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate products as stock changes
+      queryClient.invalidateQueries({ queryKey: ["sales", "summary"] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
     },
   });
 }
@@ -51,7 +53,9 @@ export function useVoidSale() {
       SalesService.voidSale(id, reason),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["sales", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["sales", "summary"] });
       queryClient.invalidateQueries({ queryKey: ["sales", "detail", data.id] });
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
     },
   });
 }

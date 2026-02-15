@@ -2,24 +2,37 @@
 import { useState, useEffect } from "react";
 import { useCashStore } from "@/features/cash/store";
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { api } from "@/lib/axios";
+import { SalesService } from "@/lib/services/backend/sales.service";
 import { ZReportTemplate } from "@/features/reports/components/ZReportTemplate";
+
+
+interface SalesSummary {
+  totalSales: number;
+  cashSales: number;
+  cardSales: number;
+  refunds: number;
+  tax: number;
+  discount: number;
+}
 
 export function CashManagementModal() {
   const { currentShift, openShift, closeShift, checkCurrentShift } =
     useCashStore();
   const { setModal } = usePOSStore();
+  const { user } = useAuth();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"input" | "report">("input");
-  const [salesSummary, setSalesSummary] = useState<any>(null);
+  const [salesSummary, setSalesSummary] = useState<SalesSummary | null>(null);
 
   useEffect(() => {
     checkCurrentShift();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAction = async () => {
@@ -33,27 +46,33 @@ export function CashManagementModal() {
           // Fetch sales for this shift
           // For P1 MVP, we fetch all sales and filter client-side.
           // In production, use start_date query param.
-          const { data: sales } = await api.get("/sales");
+          const result = await SalesService.list({ limit: 1000 });
+          const sales = Array.isArray(result) ? result : result.data || [];
 
-          // Filter sales that happened after shift start
-          // Note: Ensure date comparison uses consistent ISO strings or timestamps
-          const shiftSales = sales.filter((s: any) => {
-            const saleDate = new Date(s.createdAt || s.date); // Handle different naming conventions
+          const shiftSales = sales.filter((s) => {
+            // Construct date from date+time fields if createdAt is missing on the interface
+            // The Sale interface guarantees date and time strings
+            const dateTimeStr =
+              "createdAt" in s ? (s as any).createdAt : `${s.date}T${s.time}`;
+            const saleDate = new Date(dateTimeStr);
             return saleDate >= new Date(currentShift.startTime);
           });
 
           // Calculate summary
           const summary = {
-            totalSales: shiftSales.reduce(
-              (acc: number, s: any) => acc + s.total,
-              0,
-            ),
+            totalSales: shiftSales.reduce((acc, s) => acc + s.total, 0),
             cashSales: shiftSales
-              .filter((s: any) => s.paymentMethod === "Cash")
-              .reduce((acc: number, s: any) => acc + s.total, 0),
+              .filter((s) => {
+                const m = (s.paymentMethod || "").toUpperCase();
+                return m === "CASH" || m === "Cash";
+              })
+              .reduce((acc, s) => acc + s.total, 0),
             cardSales: shiftSales
-              .filter((s: any) => s.paymentMethod === "Card")
-              .reduce((acc: number, s: any) => acc + s.total, 0),
+              .filter((s) => {
+                const m = (s.paymentMethod || "").toUpperCase();
+                return m === "CARD" || m === "Card";
+              })
+              .reduce((acc, s) => acc + s.total, 0),
             refunds: 0, // TODO: Filter 'Returned' status if available
             tax: shiftSales.reduce((acc: number, s: any) => acc + s.tax, 0),
             discount: shiftSales.reduce(
@@ -84,7 +103,7 @@ export function CashManagementModal() {
       setModal("none");
     } else {
       setLoading(true);
-      await openShift(val, "u1");
+      await openShift(val, user?.id || "unknown");
       setLoading(false);
       setModal("none");
     }

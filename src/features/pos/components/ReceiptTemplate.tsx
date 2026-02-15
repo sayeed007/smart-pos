@@ -10,6 +10,17 @@ interface ReceiptTemplateProps {
 export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
   const settings = useSettingsStore();
 
+  // Build a proper receipt date from the sale data
+  const receiptDate = (() => {
+    // Try to build from sale.date + sale.time (e.g. "2026-02-15" + "14:30:00")
+    if (sale.date && sale.time) {
+      const parsed = new Date(`${sale.date}T${sale.time}`);
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+    // Fallback to current time
+    return new Date();
+  })();
+
   return (
     <div
       id="receipt-print-area"
@@ -52,13 +63,8 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
       <div className="text-center mb-2 pb-2 border-b border-black border-dashed">
         <p className="font-bold">{settings.receiptHeader}</p>
         <div className="flex justify-between text-xs mt-1">
-          <span>{format(new Date(sale.id ? 0 : 0), "dd/MM/yyyy HH:mm")}</span>
-          {/* Timestamp logic: standard Sale interface doesn't have createdAt? 
-                        Let's assume sale.id is effectively timestamped or add date prop.
-                        Actually Dexie items have createdAt. Sale interface in types/index.ts usually has it? 
-                        Checking types later. For now using current date or placeholder.
-                    */}
-          <span>#{sale.id.slice(-6)}</span>
+          <span>{format(receiptDate, "dd/MM/yyyy HH:mm")}</span>
+          <span>#{sale.invoiceNo || sale.id.slice(-6)}</span>
         </div>
         {reprint && <p className="font-bold uppercase mt-1">*** REPRINT ***</p>}
       </div>

@@ -32,10 +32,15 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   } = usePOSStore();
   const { t } = useTranslation("pos");
 
+  // Dedup categories just in case
+  const uniqueCategories = Array.from(
+    new Map(categories.map((item) => [item.id, item])).values(),
+  );
+
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase());
+      (p.sku?.toLowerCase() || "").includes(search.toLowerCase());
     const matchesCategory =
       selectedCategory === "all" || p.categoryId === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -154,7 +159,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
           >
             {t("categoryAll")}
           </Button>
-          {[...categories, ...categories].map((cat, index) => (
+          {uniqueCategories.map((cat, index) => (
             <Button
               key={`${cat.id}-${index}`}
               variant="ghost"
