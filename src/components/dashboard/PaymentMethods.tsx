@@ -3,42 +3,34 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { Sale } from "@/types";
 
 import { MOCK_PAYMENT_STATS } from "@/lib/mock-data";
 
-interface PaymentMethodsProps {
-  sales: Sale[];
+interface PaymentMethodStats {
+  method: string;
+  count: number;
+  total: number;
 }
 
-export function PaymentMethods({ sales }: PaymentMethodsProps) {
+interface PaymentMethodsProps {
+  data?: PaymentMethodStats[];
+}
+
+export function PaymentMethods({ data }: PaymentMethodsProps) {
   const { t } = useTranslation("dashboard");
 
   // Aggregate actual sales or use dummy data
   const paymentStats = useMemo(() => {
-    if (sales && sales.length > 5) {
-      const stats = {
-        Cash: 0,
-        Card: 0,
-        Digital: 0,
-      };
-
-      sales.forEach((sale) => {
-        if (sale.paymentMethod === "Cash") stats.Cash += sale.total;
-        else if (sale.paymentMethod === "Card") stats.Card += sale.total;
-        else if (sale.paymentMethod === "Digital") stats.Digital += sale.total;
-      });
-
-      return [
-        { name: "Cash Payments", value: stats.Cash },
-        { name: "Card Payments", value: stats.Card },
-        { name: "Digital Wallet", value: stats.Digital },
-      ];
+    if (data && data.length > 0) {
+      return data.map((method) => ({
+        name: method.method, // Assuming backend returns localized or key
+        value: method.total,
+      }));
     }
 
     // Dummy data matching reference image
     return MOCK_PAYMENT_STATS;
-  }, [sales]);
+  }, [data]);
 
   return (
     <Card className="col-span-1 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full">

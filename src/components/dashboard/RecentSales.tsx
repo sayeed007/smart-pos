@@ -5,7 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sale } from "@/types";
 import { useTranslation } from "react-i18next";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 
@@ -44,9 +44,9 @@ export function RecentSales({ sales }: RecentSalesProps) {
           <div key={index} className="flex items-center justify-between group">
             <div className="flex items-center gap-4">
               <div className="relative h-12 w-12 rounded-lg bg-muted overflow-hidden shrink-0">
-                {sale.items?.[0]?.image ? (
-                  <Image
-                    src={sale.items[0].image}
+                {sale.lines?.[0]?.product?.imageUrl ? (
+                  <ServerImage
+                    src={sale.lines[0].product?.imageUrl || ""}
                     alt="Product"
                     fill
                     className="object-cover"
@@ -62,15 +62,18 @@ export function RecentSales({ sales }: RecentSalesProps) {
                   #{sale.invoiceNo || sale.id.substring(0, 8)}
                 </p>
                 <p className="typo-regular-12 text-muted-foreground">
-                  {formatDistanceToNow(new Date(sale.date || new Date()), {
-                    addSuffix: true,
-                  })}
+                  {formatDistanceToNow(
+                    new Date(sale.completedAt || sale.createdAt || new Date()),
+                    {
+                      addSuffix: true,
+                    },
+                  )}
                 </p>
               </div>
             </div>
             <div className="text-right space-y-1">
               <p className="typo-bold-14 text-foreground">
-                ${sale.total.toFixed(2)}
+                ${Number(sale.total || 0).toFixed(2)}
               </p>
               <p className="typo-medium-12 text-green-500">
                 {sale.status || "Completed"}

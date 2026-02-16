@@ -1,14 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   XAxis,
   YAxis,
@@ -26,10 +18,6 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data = [] }: RevenueChartProps) {
   const { t } = useTranslation("dashboard");
-  const [dateRange, setDateRange] = useState("7");
-
-  // Filter data based on selected date range
-  const filteredData = data.slice(-parseInt(dateRange));
 
   // Format date for display (e.g., "Mon", "Tue", etc.)
   const formatDate = (dateString: string) => {
@@ -38,7 +26,7 @@ export function RevenueChart({ data = [] }: RevenueChartProps) {
   };
 
   // Prepare chart data with formatted dates
-  const chartData = filteredData.map((item) => ({
+  const chartData = data.map((item) => ({
     ...item,
     displayDate: formatDate(item.date),
   }));
@@ -52,25 +40,9 @@ export function RevenueChart({ data = [] }: RevenueChartProps) {
               {t("charts.revenueOverview")}
             </CardTitle>
             <p className="typo-regular-12 text-muted-foreground mt-1">
-              {t("charts.last7Days")}
+              {t("charts.selectedRange", "Selected range")}
             </p>
           </div>
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-32 h-9 typo-regular-12 border-sidebar-border">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7" className="typo-regular-12">
-                {t("charts.last7days")}
-              </SelectItem>
-              <SelectItem value="14" className="typo-regular-12">
-                {t("charts.last14days")}
-              </SelectItem>
-              <SelectItem value="30" className="typo-regular-12">
-                {t("charts.last30days")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </CardHeader>
       <CardContent>

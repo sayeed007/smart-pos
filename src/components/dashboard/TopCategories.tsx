@@ -4,13 +4,16 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { MOCK_TOP_CATEGORIES_STATS } from "@/lib/mock-data";
-import { Sale } from "@/types";
-
-interface TopCategoriesProps {
-  sales: Sale[];
+interface TopCategoryData {
+  name: string;
+  value: number;
 }
 
-export function TopCategories({ sales }: TopCategoriesProps) {
+interface TopCategoriesProps {
+  data?: TopCategoryData[];
+}
+
+export function TopCategories({ data }: TopCategoriesProps) {
   const { t } = useTranslation("dashboard");
 
   // Predefined color palette for categories
@@ -27,8 +30,18 @@ export function TopCategories({ sales }: TopCategoriesProps) {
     "bg-teal-500",
   ];
 
-  // Dummy data matching the design
-  const categories = useMemo(() => MOCK_TOP_CATEGORIES_STATS, []);
+  // Use provided data or fallback to mock if empty/undefined
+  const categories = useMemo(() => {
+    if (data && data.length > 0) {
+      // Calculate percentages
+      const total = data.reduce((acc, cat) => acc + cat.value, 0);
+      return data.map((cat) => ({
+        ...cat,
+        percent: total > 0 ? (cat.value / total) * 100 : 0,
+      }));
+    }
+    return MOCK_TOP_CATEGORIES_STATS;
+  }, [data]);
 
   return (
     <Card className="col-span-3 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full">

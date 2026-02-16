@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { Product } from "@/types";
 import { ShoppingBag } from "lucide-react";
 
@@ -45,7 +45,7 @@ export function LowStockAlert({ products }: LowStockAlertProps) {
             <div className="flex items-center gap-4">
               <div className="relative h-12 w-12 rounded-lg bg-muted overflow-hidden shrink-0">
                 {item.image ? (
-                  <Image
+                  <ServerImage
                     src={item.image}
                     alt={item.name}
                     fill

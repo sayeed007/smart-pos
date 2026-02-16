@@ -1,10 +1,10 @@
 "use client";
+import { useState, useMemo } from "react";
+import { DateRange } from "react-day-picker";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
-import { Sale, Product } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { TopCategories } from "@/components/dashboard/TopCategories";
@@ -12,83 +12,75 @@ import { RecentSales } from "@/components/dashboard/RecentSales";
 import { LowStockAlert } from "@/components/dashboard/LowStockAlert";
 import { PaymentMethods } from "@/components/dashboard/PaymentMethods";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import {
+  useDashboardStats,
+  useRevenueChart,
+  useTopCategories,
+  usePaymentMethodStats,
+  useLowStockProducts,
+} from "@/hooks/useDashboard";
+import { useSales } from "@/hooks/api/sales";
 
-import { generateMockDailyRevenue, MOCK_STATS_CARDS } from "@/lib/mock-data";
+import { MOCK_STATS_CARDS } from "@/lib/mock-data";
 import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
-
-  const { data: sales, isLoading: salesLoading } = useQuery<Sale[]>({
-    queryKey: ["sales"],
-    queryFn: async () => (await api.get("/sales")).data,
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 30);
+    return { from: start, to: end };
   });
 
-  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
-    queryKey: ["products"],
-    queryFn: async () => (await api.get("/products")).data,
+  const { startDate, endDate } = useMemo(() => {
+    const end = date?.to ? new Date(date.to) : new Date();
+    const start = date?.from ? new Date(date.from) : new Date(end);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    return { startDate: start.toISOString(), endDate: end.toISOString() };
+  }, [date]);
+
+  const { data: stats } = useDashboardStats(startDate, endDate);
+  const { data: revenueData } = useRevenueChart(startDate, endDate);
+  const { data: topCategoriesData } = useTopCategories(5, startDate, endDate);
+  const { data: paymentMethodsData } = usePaymentMethodStats(
+    startDate,
+    endDate,
+  );
+
+  const { data: recentSalesData } = useSales({
+    page: 1,
+    limit: 5,
+    sortBy: "completedAt",
+    sortOrder: "desc",
+    startDate,
+    endDate,
   });
 
-  // Generate realistic dummy data for the last 30 days for better visualization
-  const dummySales = useMemo(() => generateMockDailyRevenue(30), []);
-
-  const isLoading = salesLoading || productsLoading;
-
-  if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/50" />
-      </div>
-    );
-  }
-
-  const totalRevenue = sales?.reduce((acc, sale) => acc + sale.total, 0) || 0;
-  const totalProducts = products?.length || 0;
-
-  const normalizedSales = sales?.map((s) => ({
-    date: new Date(s.createdAt).toISOString().split("T")[0],
-    total: s.total,
-  }));
-
-  const displayData =
-    normalizedSales?.length && normalizedSales.length > 7
-      ? normalizedSales
-      : dummySales;
-
-  // Prepare chart data (Revenue by Day)
-  const chartData = displayData
-    .reduce(
-      (
-        acc: { date: string; revenue: number }[],
-        item: { date: string; total: number },
-      ) => {
-        const existing = acc.find((d) => d.date === item.date);
-        if (existing) {
-          existing.revenue += item.total;
-        } else {
-          acc.push({ date: item.date, revenue: item.total });
-        }
-        return acc;
-      },
-      [],
-    )
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  // Stats cards configuration using centralized mock data
-  const lowStockCount = products?.filter(
-    (p) => p.stockQuantity <= (p.minStockLevel || 10),
-  ).length;
+  const { data: products } = useLowStockProducts(5);
 
   const statsCards = MOCK_STATS_CARDS.map((stat) => {
     let value = stat.value;
 
     if (stat.key === "totalSales") {
-      value = `$${totalRevenue.toFixed(2)}`;
+      value = `$${(stats?.totalRevenue || 0).toFixed(2)}`;
     } else if (stat.key === "totalProducts") {
-      value = totalProducts.toString();
-    } else if (stat.key === "lowStock" && typeof lowStockCount === "number") {
-      value = lowStockCount.toString();
+      value = (stats?.totalProducts || 0).toString();
+    } else if (stat.key === "lowStock") {
+      value = (stats?.lowStockCount || 0).toString();
+    } else if (stat.key === "totalOrders") {
+      value = (stats?.totalOrders || 0).toString();
     }
 
     return {
@@ -101,7 +93,47 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <PageHeader title={t("page.title")} description={t("page.subtitle")} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader title={t("page.title")} description={t("page.subtitle")} />
+        <div className="w-full sm:w-auto">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant="outline"
+                className={cn(
+                  "w-full sm:w-65 justify-start text-left font-normal bg-card",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "LLL dd, y")} -{" "}
+                      {format(date.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(date.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>{t("filters.pickDate", "Pick a date range")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -126,6 +158,7 @@ export default function DashboardPage() {
                     alt={stat.title}
                     width={32}
                     height={32}
+                    loading="eager"
                   />
                 </div>
               </div>
@@ -137,17 +170,17 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 h-full">
         {/* Revenue Chart */}
-        <RevenueChart data={chartData} />
+        <RevenueChart data={revenueData || []} />
 
         {/* Top Categories */}
-        <TopCategories sales={sales || []} />
+        <TopCategories data={topCategoriesData || []} />
       </div>
 
       {/* Recent Sales & Stats Section */}
       <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-        <RecentSales sales={sales || []} />
+        <RecentSales sales={recentSalesData?.data || []} />
         <LowStockAlert products={products || []} />
-        <PaymentMethods sales={sales || []} />
+        <PaymentMethods data={paymentMethodsData || []} />
       </div>
     </div>
   );
