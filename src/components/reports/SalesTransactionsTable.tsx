@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,14 +15,28 @@ import { Sale } from "@/types";
 
 interface SalesTransactionsProps {
   sales: Sale[] | undefined;
+  onExport?: () => void;
+  exporting?: boolean;
+  loading?: boolean;
 }
 
-export function SalesTransactionsTable({ sales }: SalesTransactionsProps) {
+export function SalesTransactionsTable({
+  sales,
+  onExport,
+  exporting,
+  loading,
+}: SalesTransactionsProps) {
+  const hasSales = Array.isArray(sales) && sales.length > 0;
+
   return (
     <Card className="border-0 shadow-sm rounded-xl">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Sales Transactions</CardTitle>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+          onClick={onExport}
+          disabled={!onExport || exporting}
+        >
           Export
         </Button>
       </CardHeader>
@@ -37,7 +52,16 @@ export function SalesTransactionsTable({ sales }: SalesTransactionsProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sales?.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading sales...
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : !hasSales ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
                   No sales data available
@@ -51,15 +75,15 @@ export function SalesTransactionsTable({ sales }: SalesTransactionsProps) {
                   </TableCell>
                   <TableCell>
                     {new Date(
-                      sale.date || sale.completedAt,
+                      sale.completedAt || sale.createdAt,
                     ).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {(sale.items || sale.lines)?.length || 0} items
+                    {sale.lines?.length || 0} items
                   </TableCell>
-                  <TableCell>{sale.paymentMethod || "Cash"}</TableCell>
+                  <TableCell>{sale.payments?.[0]?.method || "Cash"}</TableCell>
                   <TableCell className="text-right font-bold">
-                    ${sale.total.toFixed(2)}
+                    ${Number(sale.total || 0).toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))

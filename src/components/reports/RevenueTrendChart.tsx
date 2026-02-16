@@ -1,8 +1,16 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRevenueChart } from "@/hooks/useDashboard";
 import { useMemo } from "react";
+
+interface RevenueTrendPoint {
+  date: string;
+  revenue: number;
+}
+
+interface RevenueTrendChartProps {
+  data?: RevenueTrendPoint[];
+}
 import {
   Line,
   LineChart,
@@ -12,8 +20,8 @@ import {
   YAxis,
 } from "recharts";
 
-export function RevenueTrendChart() {
-  const { data: trendData } = useRevenueChart();
+export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
+  const trendData = data || [];
 
   const chartData = useMemo(() => {
     // Map backend 'revenue' to 'total' expected by chart, or just use 'revenue'
@@ -25,7 +33,7 @@ export function RevenueTrendChart() {
   }, [trendData]);
 
   return (
-    <Card className="rounded-[2.5rem] border-0 shadow-sm">
+    <Card className="rounded-xl border-0 shadow-sm">
       <CardHeader>
         <CardTitle>Revenue Trend</CardTitle>
       </CardHeader>

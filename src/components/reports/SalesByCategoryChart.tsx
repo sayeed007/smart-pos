@@ -1,17 +1,28 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTopCategories } from "@/hooks/useDashboard";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const COLORS = ["#f87171", "#3b82f6", "#fbbf24", "#34d399", "#a78bfa"];
 
-export function SalesByCategoryChart() {
-  const { data: categoryChartDataRaw } = useTopCategories();
-  const categoryChartData = categoryChartDataRaw || [];
+interface TopCategoryPoint {
+  name: string;
+  value: number;
+}
+
+interface SalesByCategoryChartProps {
+  data?: TopCategoryPoint[];
+}
+
+export function SalesByCategoryChart({ data }: SalesByCategoryChartProps) {
+  const categoryChartData = data || [];
+  const totalValue = categoryChartData.reduce(
+    (sum, entry) => sum + (Number(entry.value) || 0),
+    0,
+  );
 
   return (
-    <Card className="rounded-[2.5rem] border-0 shadow-sm">
+    <Card className="rounded-xl border-0 shadow-sm">
       <CardHeader>
         <CardTitle>Sales by Category</CardTitle>
       </CardHeader>
@@ -40,7 +51,12 @@ export function SalesByCategoryChart() {
           </ResponsiveContainer>
         </div>
         <div className="flex justify-center gap-4 mt-4 flex-wrap">
-          {categoryChartData.map((entry, index) => (
+          {categoryChartData.map((entry, index) => {
+            const percent =
+              totalValue > 0
+                ? ((Number(entry.value) || 0) / totalValue) * 100
+                : 0;
+            return (
             <div
               key={entry.name}
               className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase"
@@ -52,8 +68,12 @@ export function SalesByCategoryChart() {
                 }}
               ></div>
               {entry.name}
+              <span className="text-[11px] font-semibold text-gray-400">
+                {percent.toFixed(1)}%
+              </span>
             </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

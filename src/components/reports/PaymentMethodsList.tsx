@@ -2,30 +2,32 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sale } from "@/types";
 import { useMemo } from "react";
 
-interface PaymentMethodsListProps {
-  sales: Sale[] | undefined;
+interface PaymentMethodStat {
+  method: string;
+  count: number;
+  total: number;
 }
 
-export function PaymentMethodsList({ sales }: PaymentMethodsListProps) {
+interface PaymentMethodsListProps {
+  data?: PaymentMethodStat[];
+}
+
+export function PaymentMethodsList({ data }: PaymentMethodsListProps) {
   const paymentMethods = useMemo(() => {
-    if (!sales) return [];
-
-    const paymentMap = new Map<string, number>();
-
-    sales.forEach((sale) => {
-      // Payment Methods
-      const method = sale.paymentMethod || "Other";
-      paymentMap.set(method, (paymentMap.get(method) || 0) + sale.total);
-    });
-
-    return Array.from(paymentMap.entries()).map(([name, value]) => ({
-      name,
-      value,
+    if (!data) return [];
+    return data.map((method) => ({
+      name: method.method,
+      value: method.total,
     }));
-  }, [sales]);
+  }, [data]);
+
+  const formatMethod = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
 
   return (
     <Card className="border-0 shadow-sm rounded-xl">
@@ -42,7 +44,9 @@ export function PaymentMethodsList({ sales }: PaymentMethodsListProps) {
               key={method.name}
               className="flex items-center justify-between p-4 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors"
             >
-              <span className="font-medium">{method.name} Payments</span>
+              <span className="font-medium">
+                {formatMethod(method.name)} Payments
+              </span>
               <span className="font-bold text-lg">
                 $
                 {method.value.toLocaleString(undefined, {
