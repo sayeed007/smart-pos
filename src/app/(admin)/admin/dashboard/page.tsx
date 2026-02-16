@@ -204,10 +204,16 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 h-full">
         {/* Revenue Chart */}
-        <RevenueChart data={revenueData || []} />
+        <RevenueChart
+          data={revenueData || []}
+          className="col-span-full lg:col-span-4"
+        />
 
         {/* Top Categories */}
-        <TopCategories data={topCategoriesData || []} />
+        <TopCategories
+          data={topCategoriesData || []}
+          className="col-span-full lg:col-span-3"
+        />
       </div>
 
       {/* Recent Sales & Stats Section */}

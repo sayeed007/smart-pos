@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { PieChart } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { cn } from "@/lib/utils";
+
 interface TopCategoryData {
   name: string;
   value: number;
@@ -12,9 +14,10 @@ interface TopCategoryData {
 
 interface TopCategoriesProps {
   data?: TopCategoryData[];
+  className?: string;
 }
 
-export function TopCategories({ data }: TopCategoriesProps) {
+export function TopCategories({ data, className }: TopCategoriesProps) {
   const { t } = useTranslation("dashboard");
 
   // Predefined color palette for categories
@@ -45,7 +48,12 @@ export function TopCategories({ data }: TopCategoriesProps) {
   }, [data]);
 
   return (
-    <Card className="col-span-3 bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full">
+    <Card
+      className={cn(
+        "bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden h-full",
+        className,
+      )}
+    >
       <CardHeader>
         <CardTitle className="typo-bold-18 text-foreground">
           {t("charts.topCategories", "Top Categories")}

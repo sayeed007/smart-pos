@@ -11,12 +11,14 @@ import {
   AreaChart,
 } from "recharts";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface RevenueChartProps {
   data?: Array<{ date: string; revenue: number }>;
+  className?: string;
 }
 
-export function RevenueChart({ data = [] }: RevenueChartProps) {
+export function RevenueChart({ data = [], className }: RevenueChartProps) {
   const { t } = useTranslation("dashboard");
 
   // Format date for display (e.g., "Mon", "Tue", etc.)
@@ -32,7 +34,12 @@ export function RevenueChart({ data = [] }: RevenueChartProps) {
   }));
 
   return (
-    <Card className="col-span-4 bg-card rounded-xl border-0 shadow-sm overflow-hidden">
+    <Card
+      className={cn(
+        "bg-card rounded-xl border-0 shadow-sm overflow-hidden",
+        className,
+      )}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
