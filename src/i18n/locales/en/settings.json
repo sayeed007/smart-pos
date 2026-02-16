@@ -1,0 +1,47 @@
+{
+  "title": "Settings",
+  "subtitle": "Configure system settings & Receipts",
+  "search": "Search",
+  "tabs": {
+    "general": "General",
+    "pricing": "Pricing Strategy"
+  },
+  "sections": {
+    "store": {
+      "title": "Store Settings",
+      "name": "Store Name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "receipt": {
+      "title": "Receipt Content",
+      "header": "Receipt Header (Top Message)",
+      "footer": "Receipt Footer (Bottom Message)",
+      "placeholders": {
+        "header": "Welcome to our store!",
+        "footer": "Thank you for visiting!"
+      }
+    },
+    "currencyTax": {
+      "title": "Currency & Tax",
+      "currencyCode": "Currency Code",
+      "currencySymbol": "Currency Symbol",
+      "defaultTaxRate": "Default Tax Rate (%)"
+    },
+    "hardware": {
+      "title": "Hardware Configuration",
+      "paperWidth": "Printer Paper Width",
+      "80mm": "80mm (Standard Thermal)",
+      "58mm": "58mm (Small Thermal)",
+      "note": "Note",
+      "noteMessage": "Currently relying on Browser Print Dialog. Please ensure your system default printer is set correctly."
+    }
+  },
+  "toasts": {
+    "success": "Settings saved successfully"
+  },
+  "actions": {
+    "save": "Save Settings"
+  }
+}

@@ -34,6 +34,8 @@ import enReturns from "./locales/en/returns.json";
 import bnReturns from "./locales/bn/returns.json";
 import enUsers from "./locales/en/users.json";
 import bnUsers from "./locales/bn/users.json";
+import enSettings from "./locales/en/settings.json";
+import bnSettings from "./locales/bn/settings.json";
 
 // Initialize i18next
 i18n.use(initReactI18next).init({
@@ -49,6 +51,7 @@ i18n.use(initReactI18next).init({
       [I18N_NAMESPACES.offers]: enOffers,
       [I18N_NAMESPACES.returns]: enReturns,
       [I18N_NAMESPACES.users]: enUsers,
+      [I18N_NAMESPACES.settings]: enSettings,
       dashboard: enDashboard,
     },
     bn: {
@@ -62,6 +65,7 @@ i18n.use(initReactI18next).init({
       [I18N_NAMESPACES.offers]: bnOffers,
       [I18N_NAMESPACES.returns]: bnReturns,
       [I18N_NAMESPACES.users]: bnUsers,
+      [I18N_NAMESPACES.settings]: bnSettings,
       dashboard: bnDashboard,
     },
   },
@@ -79,6 +83,7 @@ i18n.use(initReactI18next).init({
     I18N_NAMESPACES.offers,
     I18N_NAMESPACES.returns,
     I18N_NAMESPACES.users,
+    I18N_NAMESPACES.settings,
     "dashboard",
   ],
 

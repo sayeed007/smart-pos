@@ -13,8 +13,10 @@ import { useSettingsStore } from "@/features/settings/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PriceBookManager } from "@/features/settings/components/PriceBookManager";
 import { PageHeader } from "@/components/ui/page-header";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsPage() {
+  const { t } = useTranslation(["settings", "common"]);
   const settings = useSettingsStore();
   const [localSettings, setLocalSettings] = useState(settings);
 
@@ -40,20 +42,24 @@ export default function SettingsPage() {
 
   const handleSave = () => {
     settings.updateSettings(localSettings);
-    toast.success("Settings saved successfully");
+    toast.success(t("toasts.success", "Settings saved successfully"));
   };
 
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="Settings"
-        description="Configure system settings & Receipts"
+        title={t("title", "Settings")}
+        description={t("subtitle", "Configure system settings & Receipts")}
       />
 
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="pricing">Pricing Strategy</TabsTrigger>
+          <TabsTrigger value="general">
+            {t("tabs.general", "General")}
+          </TabsTrigger>
+          <TabsTrigger value="pricing">
+            {t("tabs.pricing", "Pricing Strategy")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-6">
@@ -65,12 +71,14 @@ export default function SettingsPage() {
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <Store className="w-5 h-5" />
                   <CardTitle className="text-lg font-bold">
-                    Store Settings
+                    {t("sections.store.title", "Store Settings")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="storeName">Store Name</Label>
+                    <Label htmlFor="storeName">
+                      {t("sections.store.name", "Store Name")}
+                    </Label>
                     <Input
                       id="storeName"
                       value={localSettings.storeName}
@@ -81,7 +89,9 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
+                    <Label htmlFor="address">
+                      {t("sections.store.address", "Address")}
+                    </Label>
                     <Input
                       id="address"
                       value={localSettings.storeAddress}
@@ -92,7 +102,9 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">
+                      {t("sections.store.phone", "Phone")}
+                    </Label>
                     <Input
                       id="phone"
                       value={localSettings.storePhone}
@@ -103,7 +115,9 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">
+                      {t("sections.store.email", "Email")}
+                    </Label>
                     <Input
                       id="email"
                       value={localSettings.storeEmail}
@@ -121,12 +135,17 @@ export default function SettingsPage() {
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <FileText className="w-5 h-5" />
                   <CardTitle className="text-lg font-bold">
-                    Receipt Content
+                    {t("sections.receipt.title", "Receipt Content")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="header">Receipt Header (Top Message)</Label>
+                    <Label htmlFor="header">
+                      {t(
+                        "sections.receipt.header",
+                        "Receipt Header (Top Message)",
+                      )}
+                    </Label>
                     <Input
                       id="header"
                       value={localSettings.receiptHeader}
@@ -134,12 +153,18 @@ export default function SettingsPage() {
                         handleChange("receiptHeader", e.target.value)
                       }
                       className="bg-muted/30"
-                      placeholder="Welcome to our store!"
+                      placeholder={t(
+                        "sections.receipt.placeholders.header",
+                        "Welcome to our store!",
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="footer">
-                      Receipt Footer (Bottom Message)
+                      {t(
+                        "sections.receipt.footer",
+                        "Receipt Footer (Bottom Message)",
+                      )}
                     </Label>
                     <Textarea
                       id="footer"
@@ -148,7 +173,10 @@ export default function SettingsPage() {
                         handleChange("receiptFooter", e.target.value)
                       }
                       className="bg-muted/30 resize-none min-h-[80px]"
-                      placeholder="Thank you for visiting!"
+                      placeholder={t(
+                        "sections.receipt.placeholders.footer",
+                        "Thank you for visiting!",
+                      )}
                     />
                   </div>
                 </CardContent>
@@ -162,12 +190,14 @@ export default function SettingsPage() {
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <DollarSign className="w-5 h-5" />
                   <CardTitle className="text-lg font-bold">
-                    Currency & Tax
+                    {t("sections.currencyTax.title", "Currency & Tax")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="currency">Currency Code</Label>
+                    <Label htmlFor="currency">
+                      {t("sections.currencyTax.currencyCode", "Currency Code")}
+                    </Label>
                     <Input
                       id="currency"
                       value={localSettings.currency}
@@ -176,7 +206,12 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="symbol">Currency Symbol</Label>
+                    <Label htmlFor="symbol">
+                      {t(
+                        "sections.currencyTax.currencySymbol",
+                        "Currency Symbol",
+                      )}
+                    </Label>
                     <Input
                       id="symbol"
                       value={localSettings.currencySymbol}
@@ -187,7 +222,12 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="tax">Default Tax Rate (%)</Label>
+                    <Label htmlFor="tax">
+                      {t(
+                        "sections.currencyTax.defaultTaxRate",
+                        "Default Tax Rate (%)",
+                      )}
+                    </Label>
                     <Input
                       type="number"
                       id="tax"
@@ -206,12 +246,14 @@ export default function SettingsPage() {
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <Printer className="w-5 h-5" />
                   <CardTitle className="text-lg font-bold">
-                    Hardware Configuration
+                    {t("sections.hardware.title", "Hardware Configuration")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="paperWidth">Printer Paper Width</Label>
+                    <Label htmlFor="paperWidth">
+                      {t("sections.hardware.paperWidth", "Printer Paper Width")}
+                    </Label>
                     <select
                       id="paperWidth"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -220,15 +262,21 @@ export default function SettingsPage() {
                         handleChange("paperWidth", e.target.value)
                       }
                     >
-                      <option value="80mm">80mm (Standard Thermal)</option>
-                      <option value="58mm">58mm (Small Thermal)</option>
+                      <option value="80mm">
+                        {t("sections.hardware.80mm", "80mm (Standard Thermal)")}
+                      </option>
+                      <option value="58mm">
+                        {t("sections.hardware.58mm", "58mm (Small Thermal)")}
+                      </option>
                     </select>
                   </div>
 
                   <div className="p-4 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">
-                    <strong>Note:</strong> Currently relying on Browser Print
-                    Dialog. Please ensure your system default printer is set
-                    correctly.
+                    <strong>{t("sections.hardware.note", "Note")}:</strong>{" "}
+                    {t(
+                      "sections.hardware.noteMessage",
+                      "Currently relying on Browser Print Dialog. Please ensure your system default printer is set correctly.",
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -241,7 +289,7 @@ export default function SettingsPage() {
               className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 px-8"
             >
               <Save className="w-4 h-4 mr-2" />
-              Save Settings
+              {t("actions.save", "Save Settings")}
             </Button>
           </div>
         </TabsContent>
