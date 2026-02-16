@@ -28,7 +28,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
           {t("charts.recentSales", "Recent Sales")}
         </CardTitle>
         <Link
-          href="/sales"
+          href="/admin/sales"
           className="typo-semibold-14 text-blue-500 hover:text-blue-600 transition-colors"
         >
           {t("sales.viewAll", "View All")}

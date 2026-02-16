@@ -1,9 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { Sale, Category } from "@/types";
 import { useSales, useSalesSummary } from "@/hooks/api/sales";
+import { useCategories } from "@/hooks/api/categories";
 import { DateRange } from "react-day-picker";
 import {
   Table,
@@ -24,7 +23,7 @@ import {
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { format, startOfDay, endOfDay } from "date-fns";
+import { format, startOfDay, endOfDay, startOfMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -57,9 +56,12 @@ const CATEGORY_MAP: Record<string, string> = {
 
 export default function SalesHistoryPage() {
   const { t } = useTranslation("sales");
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    const now = new Date();
+    return {
+      from: startOfMonth(now),
+      to: now,
+    };
   });
 
   const handleDateChange = (val: DateRange | undefined) => {
@@ -86,10 +88,7 @@ export default function SalesHistoryPage() {
   const { data: summary, isLoading: summaryLoading } =
     useSalesSummary(dateParams);
 
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ["categories"],
-    queryFn: async () => (await api.get("/categories")).data,
-  });
+  const { data: categories } = useCategories();
 
   const handleViewInvoice = (saleId: string) => {
     const sale = sales?.data?.find((s) => s.id === saleId);
