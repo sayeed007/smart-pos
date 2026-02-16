@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search } from "lucide-react";
 
@@ -38,13 +38,16 @@ const ALL_TYPES = [
   "category_discount",
 ] as const;
 
-const optionalNumber = (schema: z.ZodType<number, z.ZodTypeDef, unknown>) =>
-  z.preprocess((value) => {
-    if (value === "" || value === null || value === undefined) {
-      return undefined;
-    }
-    return value;
-  }, schema.optional());
+const optionalNumber = <T extends z.ZodType<number>>(schema: T) =>
+  z.preprocess(
+    (value) => {
+      if (value === "" || value === null || value === undefined) {
+        return undefined;
+      }
+      return value;
+    },
+    schema.optional(),
+  ) as z.ZodType<number | undefined>;
 
 const offerSchema = z
   .object({
@@ -464,8 +467,10 @@ export function OfferForm({
     ],
   );
 
+  const resolver = zodResolver(offerSchema) as Resolver<OfferFormValues>;
+
   const form = useForm<OfferFormValues>({
-    resolver: zodResolver(offerSchema),
+    resolver,
     defaultValues,
   });
 
@@ -625,7 +630,10 @@ export function OfferForm({
                 <FormLabel>
                   {t("fields.type")} <span className="text-destructive">*</span>
                 </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value ?? undefined}
+                >
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={t("fields.type")} />
@@ -749,7 +757,10 @@ export function OfferForm({
                   {t("fields.selectCategory")}{" "}
                   <span className="text-destructive">*</span>
                 </FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value ?? undefined}
+                >
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={t("fields.selectCategory")} />

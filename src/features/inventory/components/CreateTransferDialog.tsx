@@ -26,7 +26,7 @@ import { useProducts } from "@/hooks/api/products";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Minus, Package, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, Resolver, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -81,8 +81,10 @@ export function CreateTransferDialog({
 
   type ItemFormValues = z.infer<typeof itemSchema>;
 
+  const resolver = zodResolver(itemSchema) as Resolver<ItemFormValues>;
+
   const form = useForm<ItemFormValues>({
-    resolver: zodResolver(itemSchema),
+    resolver,
     defaultValues: {
       productId: "",
       variantId: "none",
