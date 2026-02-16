@@ -13,7 +13,11 @@
   "placeholders": {
     "name": "e.g. Dresses",
     "description": "Short description of the category",
-    "icon": "Icon Name"
+    "icon": "Icon Name",
+    "selectIcon": "Select an icon"
+  },
+  "validation": {
+    "nameRequired": "Name is required"
   },
   "noCategories": "No categories found",
   "createSuccess": "Category created successfully",

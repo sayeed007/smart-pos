@@ -11,46 +11,66 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Return } from "@/types";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 interface ReturnListTableProps {
   returns: Return[] | undefined;
   isLoading: boolean;
-  onEdit: (ret: Return) => void;
   onDelete: (ret: Return) => void;
+  onInvoiceClick?: (ret: Return) => void;
 }
+
+import { useTranslation } from "react-i18next";
 
 export function ReturnListTable({
   returns,
   isLoading,
-  onEdit,
   onDelete,
+  onInvoiceClick,
 }: ReturnListTableProps) {
+  const { t } = useTranslation(["returns", "common"]);
+
   return (
     <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
       <Table>
         <TableHeader className="bg-muted border-0">
           <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
-            <TableHead>Invoice No</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Reason</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Refund Amount</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>{t("table.invoiceNo", "Invoice No")}</TableHead>
+            <TableHead>{t("table.date", "Date")}</TableHead>
+            <TableHead>{t("table.customer", "Customer")}</TableHead>
+            <TableHead>{t("table.reason", "Reason")}</TableHead>
+            <TableHead>{t("table.status", "Status")}</TableHead>
+            <TableHead className="text-right">
+              {t("table.refundAmount", "Refund Amount")}
+            </TableHead>
+            <TableHead className="text-right">
+              {t("table.actions", "Actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {returns?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="h-24 text-center">
-                No returns found.
+                {t("table.noReturns", "No returns found.")}
               </TableCell>
             </TableRow>
           ) : (
             returns?.map((ret) => (
               <TableRow key={ret.id}>
-                <TableCell className="font-medium">{ret.invoiceNo}</TableCell>
+                <TableCell className="font-medium">
+                  {onInvoiceClick && ret.saleId ? (
+                    <button
+                      type="button"
+                      onClick={() => onInvoiceClick(ret)}
+                      className="text-primary hover:underline font-semibold"
+                    >
+                      {ret.invoiceNo}
+                    </button>
+                  ) : (
+                    ret.invoiceNo
+                  )}
+                </TableCell>
                 <TableCell>{new Date(ret.date).toLocaleDateString()}</TableCell>
                 <TableCell>{ret.customerName || "N/A"}</TableCell>
                 <TableCell>{ret.reason}</TableCell>
@@ -64,7 +84,7 @@ export function ReturnListTable({
                           : "destructive"
                     }
                   >
-                    {ret.status}
+                    {t(`status.${ret.status}`, ret.status)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right font-bold">
@@ -72,14 +92,6 @@ export function ReturnListTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(ret)}
-                      className="h-8 w-8 text-muted-foreground hover:text-primary"
-                    >
-                      <Edit size={16} />
-                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

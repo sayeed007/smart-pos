@@ -1,0 +1,46 @@
+{
+  "title": "User Management",
+  "subtitle": "Manage system users and permissions",
+  "addUser": "Add User",
+  "editUser": "Edit User",
+  "searchPlaceholder": "Search by name or email...",
+  "table": {
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "noUsers": "No users found"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "cashier": "Cashier"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "role": "Role",
+    "status": "Status",
+    "selectRole": "Select a role",
+    "selectStatus": "Select status"
+  },
+  "toasts": {
+    "created": "User created successfully",
+    "updated": "User updated successfully",
+    "deleted": "User deleted successfully",
+    "createError": "Failed to create user",
+    "updateError": "Failed to update user",
+    "deleteError": "Failed to delete user"
+  },
+  "deleteDialog": {
+    "title": "Delete User?",
+    "description": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+    "confirm": "Delete"
+  }
+}

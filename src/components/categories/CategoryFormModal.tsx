@@ -23,12 +23,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import { z } from "zod";
-
-const formSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  icon: z.string().optional(),
-});
 
 interface CategoryFormModalProps {
   open: boolean;
@@ -45,7 +41,20 @@ export function CategoryFormModal({
 }: CategoryFormModalProps) {
   const { t } = useTranslation(["categories", "common"]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, {
+          message: t("validation.nameRequired", "Name is required"),
+        }),
+        icon: z.string().optional(),
+      }),
+    [t],
+  );
+
+  type FormValues = z.infer<typeof formSchema>;
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: categoryToEdit?.name || "",
@@ -53,7 +62,13 @@ export function CategoryFormModal({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  // Update default values when categoryToEdit changes
+  // Note: react-hook-form doesn't automatically update defaultValues when prop changes unless specific logic is added,
+  // but since we remount component with key={open ? ...} in parent, it might be fine.
+  // We can add a useEffect if needed, or rely on parent key prop.
+  // The original code passed defaultValues to useForm directly.
+
+  const onSubmit = (values: FormValues) => {
     onSave({
       ...categoryToEdit,
       name: values.name,

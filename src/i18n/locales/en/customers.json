@@ -46,5 +46,6 @@
     "customerError": "Failed to save customer",
     "deleteError": "Failed to delete customer"
   },
+  "confirmDeleteTitle": "Delete Customer?",
   "confirmDelete": "Are you sure you want to delete {{name}}?"
 }

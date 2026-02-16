@@ -5,7 +5,10 @@ import { UsersTab } from "@/components/people/UsersTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams, useRouter } from "next/navigation";
 
+import { useTranslation } from "react-i18next";
+
 export default function PeoplePage() {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -23,16 +26,23 @@ export default function PeoplePage() {
     <div className="space-y-6 p-6">
       {/* Page Header */}
       <div>
-        <h1 className="typo-bold-24 text-foreground tracking-tight">People</h1>
+        <h1 className="typo-bold-24 text-foreground tracking-tight">
+          {t("people", "People")}
+        </h1>
         <p className="typo-regular-14 text-muted-foreground mt-1">
-          Manage your organization&apos;s users and customers
+          {t(
+            "peopleSubtitle",
+            "Manage your organization's users and customers",
+          )}
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
         <TabsList>
-          <TabsTrigger value="customers">Customers</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="customers">
+            {t("customers", "Customers")}
+          </TabsTrigger>
+          <TabsTrigger value="users">{t("users", "Users")}</TabsTrigger>
         </TabsList>
         <TabsContent value="customers" className="mt-6">
           <CustomersTab />

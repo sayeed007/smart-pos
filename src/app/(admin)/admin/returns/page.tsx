@@ -4,11 +4,13 @@ import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { ReturnListTable } from "@/components/returns/ReturnListTable";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { Return } from "@/types";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useReturns, useCreateReturn } from "@/hooks/api/returns";
+import { useSale } from "@/hooks/api/sales";
 import {
   Pagination,
   PaginationContent,
@@ -18,8 +20,10 @@ import {
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ReturnsPage() {
+  const { t } = useTranslation(["returns", "common"]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [search, setSearch] = useState("");
@@ -36,6 +40,10 @@ export default function ReturnsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReturn, setSelectedReturn] = useState<Return | null>(null);
   const [returnToDelete, setReturnToDelete] = useState<Return | null>(null);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null);
+
+  const { data: saleDetails } = useSale(selectedSaleId || "");
 
   // Map API response to UI model
   const returns: Return[] = (returnsData?.data || []).map(
@@ -47,7 +55,7 @@ export default function ReturnsPage() {
       // Map items from return lines
       items: (ret.lines || []).map((line: any) => ({
         id: line.saleLineId,
-        name: line.product?.name || "Unknown Product",
+        name: line.product?.name || t("form.unknownProduct", "Unknown Product"),
         quantity: Number(line.quantity),
         sellingPrice: Number(line.refundAmount) / Number(line.quantity), // Approximate unit price from total
         sku: line.product?.sku || "",
@@ -66,13 +74,16 @@ export default function ReturnsPage() {
       status: (ret.status.charAt(0).toUpperCase() +
         ret.status.slice(1).toLowerCase()) as any,
       processedBy: ret.processedBy,
-      customerName: ret.customer?.name || "Walk-in Customer",
+      customerName:
+        ret.customer?.name || t("form.walkInCustomer", "Walk-in Customer"),
     }),
   );
 
-  const handleCreateReturn = (data: Partial<Return> & { restock?: boolean }) => {
+  const handleCreateReturn = (
+    data: Partial<Return> & { restock?: boolean },
+  ) => {
     if (!data.saleId || !data.items) {
-      toast.error("Invalid return data");
+      toast.error(t("validation.invalidData", "Invalid return data"));
       return;
     }
 
@@ -88,11 +99,18 @@ export default function ReturnsPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Return processed successfully");
+          toast.success(
+            t("validation.success", "Return processed successfully"),
+          );
           setIsModalOpen(false);
         },
         onError: (err) => {
-          toast.error("Failed to process return. Ensure sale exists.");
+          toast.error(
+            t(
+              "validation.failure",
+              "Failed to process return. Ensure sale exists.",
+            ),
+          );
           console.error(err);
         },
       },
@@ -101,7 +119,9 @@ export default function ReturnsPage() {
 
   const handleUpdateReturn = (data: Partial<Return>) => {
     // Update not implemented in backend yet (only Create).
-    toast.info("Update return feature coming soon");
+    toast.info(
+      t("validation.updateComingSoon", "Update return feature coming soon"),
+    );
     setIsModalOpen(false);
   };
 
@@ -109,9 +129,20 @@ export default function ReturnsPage() {
     setReturnToDelete(ret);
   };
 
+  const handleInvoiceOpen = (ret: Return) => {
+    if (!ret.saleId) {
+      toast.error(t("validation.noSale", "Sale not found for this return"));
+      return;
+    }
+    setSelectedSaleId(ret.saleId);
+    setInvoiceOpen(true);
+  };
+
   const confirmDeleteReturn = () => {
     // Delete not implemented in backend yet.
-    toast.info("Delete return feature coming soon");
+    toast.info(
+      t("validation.deleteComingSoon", "Delete return feature coming soon"),
+    );
     setReturnToDelete(null);
   };
 
@@ -120,10 +151,10 @@ export default function ReturnsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">
-            Returns & Refunds
+            {t("title", "Returns & Refunds")}
           </h1>
           <p className="text-gray-400 font-medium mt-1">
-            Process returns and refunds
+            {t("subtitle", "Process returns and refunds")}
           </p>
         </div>
         <div className="flex gap-2">
@@ -131,7 +162,7 @@ export default function ReturnsPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search returns..."
+              placeholder={t("searchPlaceholder", "Search returns...")}
               className="pl-8 w-[250px]"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -144,7 +175,7 @@ export default function ReturnsPage() {
             }}
             icon={Plus}
           >
-            Create Return
+            {t("addReturn", "Create Return")}
           </PrimaryActionButton>
         </div>
       </div>
@@ -152,11 +183,8 @@ export default function ReturnsPage() {
       <ReturnListTable
         returns={returns}
         isLoading={isLoading}
-        onEdit={(ret) => {
-          setSelectedReturn(ret);
-          setIsModalOpen(true);
-        }}
         onDelete={handleDeleteReturn}
+        onInvoiceClick={handleInvoiceOpen}
       />
 
       <Pagination>
@@ -176,8 +204,10 @@ export default function ReturnsPage() {
 
           <PaginationItem>
             <span className="text-sm font-medium text-muted-foreground px-4">
-              Page {returnsData?.meta?.page || 1} of{" "}
-              {returnsData?.meta?.totalPages || 1}
+              {t("page", {
+                current: returnsData?.meta?.page || 1,
+                total: returnsData?.meta?.totalPages || 1,
+              })}
             </span>
           </PaginationItem>
 
@@ -216,11 +246,22 @@ export default function ReturnsPage() {
       <ConfirmationDialog
         open={!!returnToDelete}
         onOpenChange={(open) => !open && setReturnToDelete(null)}
-        title="Delete Return?"
-        description={`Are you sure you want to delete return #${returnToDelete?.invoiceNo}?`}
+        title={t("deleteTitle", "Delete Return?")}
+        description={t("deleteDescription", {
+          invoiceNo: returnToDelete?.invoiceNo || "",
+        })}
         onConfirm={confirmDeleteReturn}
-        confirmLabel="Delete"
+        confirmLabel={t("deleteButton", "Delete")}
         variant="destructive"
+      />
+
+      <InvoiceDetailsModal
+        isOpen={invoiceOpen}
+        onClose={() => {
+          setInvoiceOpen(false);
+          setSelectedSaleId(null);
+        }}
+        sale={saleDetails || null}
       />
     </div>
   );

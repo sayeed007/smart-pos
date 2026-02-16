@@ -63,7 +63,7 @@ export default function CategoriesPage() {
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error(t("common:error", "An error occurred"));
+      toast.error(t("common:errorMessage", "An error occurred"));
     }
   };
 

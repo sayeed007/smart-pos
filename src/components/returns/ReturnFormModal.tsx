@@ -38,6 +38,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useRefundableSales } from "@/hooks/api/returns";
+import { useTranslation } from "react-i18next";
 
 interface RefundableSaleLine {
   saleLineId: string;
@@ -76,6 +77,7 @@ export function ReturnFormModal({
   onSubmit,
   initialData,
 }: ReturnFormModalProps) {
+  const { t } = useTranslation(["returns", "common"]);
   const [saleSearch, setSaleSearch] = useState("");
   const [saleOpen, setSaleOpen] = useState(false);
   const [selectedSale, setSelectedSale] = useState<RefundableSale | null>(null);
@@ -86,11 +88,12 @@ export function ReturnFormModal({
   const [status, setStatus] = useState<Return["status"]>("Pending");
   const [restock, setRestock] = useState(true);
 
-  const { data: refundableSales, isFetching: isSearching } =
-    useRefundableSales({
+  const { data: refundableSales, isFetching: isSearching } = useRefundableSales(
+    {
       search: saleSearch || undefined,
       limit: 10,
-    });
+    },
+  );
 
   useEffect(() => {
     if (initialData) {
@@ -147,15 +150,22 @@ export function ReturnFormModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSale && !initialData) {
-      toast.error("Please select a sale first.");
+      toast.error(t("validation.selectSale", "Please select a sale first."));
       return;
     }
     if (returnableLines.length === 0) {
-      toast.error("No returnable items found.");
+      toast.error(
+        t("validation.noReturnableItems", "No returnable items found."),
+      );
       return;
     }
     if (!reason.trim()) {
-      toast.error("Please provide a reason for the return.");
+      toast.error(
+        t(
+          "validation.provideReason",
+          "Please provide a reason for the return.",
+        ),
+      );
       return;
     }
 
@@ -182,7 +192,9 @@ export function ReturnFormModal({
       .filter((item): item is CartItem => !!item);
 
     if (itemsToReturn.length === 0) {
-      toast.error("Please select items to return.");
+      toast.error(
+        t("validation.selectItems", "Please select items to return."),
+      );
       return;
     }
 
@@ -197,7 +209,8 @@ export function ReturnFormModal({
       status,
       customerName: initialData
         ? initialData.customerName
-        : selectedSale?.customerName || "Walk-in Customer",
+        : selectedSale?.customerName ||
+          t("form.walkInCustomer", "Walk-in Customer"),
       processedBy: "u1", // Current user mock
     };
 
@@ -209,18 +222,23 @@ export function ReturnFormModal({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit Return" : "Create New Return"}
+            {isEdit
+              ? t("form.editTitle", "Edit Return")
+              : t("form.createTitle", "Create New Return")}
           </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update return details and status."
-              : "Process a return for a completed sale."}
+              ? t("form.editDescription", "Update return details and status.")
+              : t(
+                  "form.createDescription",
+                  "Process a return for a completed sale.",
+                )}
           </DialogDescription>
         </DialogHeader>
 
         {!isEdit && (
           <div className="grid gap-2">
-            <Label>Refundable Invoice</Label>
+            <Label>{t("form.refundableInvoice", "Refundable Invoice")}</Label>
             <Popover open={saleOpen} onOpenChange={setSaleOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -231,16 +249,17 @@ export function ReturnFormModal({
                 >
                   {selectedSale
                     ? `${selectedSale.invoiceNo} - ${
-                        selectedSale.customerName || "Walk-in Customer"
+                        selectedSale.customerName ||
+                        t("form.walkInCustomer", "Walk-in Customer")
                       }`
-                    : "Select invoice..."}
+                    : t("form.selectInvoice", "Select invoice...")}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="p-0" align="start">
                 <Command>
                   <CommandInput
-                    placeholder="Search invoice..."
+                    placeholder={t("form.searchInvoice", "Search invoice...")}
                     value={saleSearch}
                     onValueChange={setSaleSearch}
                   />
@@ -249,10 +268,13 @@ export function ReturnFormModal({
                       {isSearching ? (
                         <span className="inline-flex items-center gap-2">
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          Searching...
+                          {t("form.searching", "Searching...")}
                         </span>
                       ) : (
-                        "No refundable invoices found."
+                        t(
+                          "form.noInvoicesFound",
+                          "No refundable invoices found.",
+                        )
                       )}
                     </CommandEmpty>
                     <CommandGroup>
@@ -272,7 +294,12 @@ export function ReturnFormModal({
                               {sale.invoiceNo}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {sale.customerName || "Walk-in Customer"} -{" "}
+                              {sale.customerName ||
+                                t(
+                                  "form.walkInCustomer",
+                                  "Walk-in Customer",
+                                )}{" "}
+                              -{" "}
                               {new Date(sale.completedAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -291,7 +318,7 @@ export function ReturnFormModal({
 
         {isEdit && (
           <div className="grid gap-2">
-            <Label>Invoice No</Label>
+            <Label>{t("table.invoiceNo", "Invoice No")}</Label>
             <div className="text-sm font-medium">{saleSearch}</div>
           </div>
         )}
@@ -299,7 +326,9 @@ export function ReturnFormModal({
         {(selectedSale || isEdit) && (
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <div className="border rounded-md p-3 max-h-[260px] overflow-y-auto">
-              <Label className="mb-2 block">Select Items to Return</Label>
+              <Label className="mb-2 block">
+                {t("form.selectItemsToReturn", "Select Items to Return")}
+              </Label>
               <div className="space-y-3">
                 {returnableLines.map((line) => {
                   const qty = returnQuantities[line.saleLineId] || 0;
@@ -311,12 +340,12 @@ export function ReturnFormModal({
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <div className="text-sm font-medium">
-                            {line.name}
-                          </div>
+                          <div className="text-sm font-medium">{line.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            Sold: {line.soldQuantity} | Returned:{" "}
-                            {line.alreadyReturnedQuantity} | Returnable:{" "}
+                            {t("form.sold", "Sold")}: {line.soldQuantity} |{" "}
+                            {t("form.returned", "Returned")}:{" "}
+                            {line.alreadyReturnedQuantity} |{" "}
+                            {t("form.returnable", "Returnable")}:{" "}
                             {line.returnableQuantity}
                           </div>
                         </div>
@@ -327,7 +356,7 @@ export function ReturnFormModal({
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label htmlFor={`qty-${line.saleLineId}`}>
-                            Return Qty
+                            {t("form.returnQty", "Return Qty")}
                           </Label>
                           <Input
                             id={`qty-${line.saleLineId}`}
@@ -353,7 +382,7 @@ export function ReturnFormModal({
                           />
                         </div>
                         <div className="space-y-1">
-                          <Label>Unit Refund</Label>
+                          <Label>{t("form.unitRefund", "Unit Refund")}</Label>
                           <div className="h-10 rounded-md border bg-muted/40 px-3 flex items-center text-sm">
                             ${line.unitRefund.toFixed(2)}
                           </div>
@@ -364,7 +393,10 @@ export function ReturnFormModal({
                 })}
                 {returnableLines.length === 0 && (
                   <div className="text-sm text-muted-foreground">
-                    No returnable items for this sale.
+                    {t(
+                      "form.noReturnableItemsForSale",
+                      "No returnable items for this sale.",
+                    )}
                   </div>
                 )}
               </div>
@@ -372,26 +404,44 @@ export function ReturnFormModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="reason">Reason for Return</Label>
+                <Label htmlFor="reason">
+                  {t("form.reasonForReturn", "Reason for Return")}
+                </Label>
                 <Textarea
                   id="reason"
-                  placeholder="Defective, Wrong Size, etc."
+                  placeholder={t(
+                    "form.reasonPlaceholder",
+                    "Defective, Wrong Size, etc.",
+                  )}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                 />
               </div>
               {isEdit && (
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={status} onValueChange={(v: any) => setStatus(v)}>
+                  <Label htmlFor="status">{t("form.status", "Status")}</Label>
+                  <Select
+                    value={status}
+                    onValueChange={(v: any) => setStatus(v)}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Status" />
+                      <SelectValue
+                        placeholder={t("form.selectStatus", "Select Status")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Approved">Approved</SelectItem>
-                      <SelectItem value="Rejected">Rejected</SelectItem>
-                      <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="Pending">
+                        {t("status.Pending", "Pending")}
+                      </SelectItem>
+                      <SelectItem value="Approved">
+                        {t("status.Approved", "Approved")}
+                      </SelectItem>
+                      <SelectItem value="Rejected">
+                        {t("status.Rejected", "Rejected")}
+                      </SelectItem>
+                      <SelectItem value="Completed">
+                        {t("status.Completed", "Completed")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -405,12 +455,16 @@ export function ReturnFormModal({
                   checked={restock}
                   onCheckedChange={(checked) => setRestock(!!checked)}
                 />
-                <Label htmlFor="restock">Restock returned items</Label>
+                <Label htmlFor="restock">
+                  {t("form.restockReturnedItems", "Restock returned items")}
+                </Label>
               </div>
             )}
 
             <div className="flex justify-between items-center bg-muted/50 p-3 rounded-lg">
-              <span className="font-semibold text-sm">Total Refund Amount</span>
+              <span className="font-semibold text-sm">
+                {t("form.totalRefundAmount", "Total Refund Amount")}
+              </span>
               <span className="font-bold text-xl">
                 ${refundAmount.toFixed(2)}
               </span>
@@ -418,10 +472,12 @@ export function ReturnFormModal({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+                {t("form.cancel", "Cancel")}
               </Button>
               {!isEdit && (
-                <Button type="submit">Process Return</Button>
+                <Button type="submit">
+                  {t("form.processReturn", "Process Return")}
+                </Button>
               )}
             </DialogFooter>
           </form>

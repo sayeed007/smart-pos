@@ -46,5 +46,6 @@
     "customerError": "গ্রাহক সংরক্ষণ করতে ব্যর্থ",
     "deleteError": "গ্রাহক মুছে ফেলতে ব্যর্থ"
   },
+  "confirmDeleteTitle": "গ্রাহক মুছবেন?",
   "confirmDelete": "আপনি কি নিশ্চিত যে {{name}} মুছে ফেলতে চান?"
 }

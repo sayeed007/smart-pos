@@ -43,7 +43,10 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+import { useTranslation } from "react-i18next";
+
 export function UsersTab() {
+  const { t } = useTranslation(["users", "common"]);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -82,10 +85,11 @@ export function UsersTab() {
     try {
       await deleteMutation.mutateAsync(userToDelete.id);
       setUserToDelete(null);
-      toast.success("User deleted successfully");
+      setUserToDelete(null);
+      toast.success(t("toasts.deleted", "User deleted successfully"));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete user");
+      toast.error(t("toasts.deleteError", "Failed to delete user"));
     }
   };
 
@@ -110,13 +114,14 @@ export function UsersTab() {
         {
           onSuccess: () => {
             setIsDialogOpen(false);
-            toast.success("User updated successfully");
+            toast.success(t("toasts.updated", "User updated successfully"));
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onError: (error: any) => {
             console.error(error);
             toast.error(
-              error?.response?.data?.message || "Failed to update user",
+              error?.response?.data?.message ||
+                t("toasts.updateError", "Failed to update user"),
             );
           },
         },
@@ -126,13 +131,14 @@ export function UsersTab() {
       await createMutation.mutateAsync(payload, {
         onSuccess: () => {
           setIsDialogOpen(false);
-          toast.success("User created successfully");
+          toast.success(t("toasts.created", "User created successfully"));
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
           console.error(error);
           toast.error(
-            error?.response?.data?.message || "Failed to create user",
+            error?.response?.data?.message ||
+              t("toasts.createError", "Failed to create user"),
           );
         },
       });
@@ -144,14 +150,14 @@ export function UsersTab() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="typo-bold-18 text-foreground tracking-tight">
-            User Management
+            {t("title", "User Management")}
           </h2>
           <p className="typo-regular-14 text-muted-foreground mt-1">
-            Manage system users and permissions
+            {t("subtitle", "Manage system users and permissions")}
           </p>
         </div>
         <PrimaryActionButton onClick={handleCreate} icon={Plus}>
-          Add User
+          {t("addUser", "Add User")}
         </PrimaryActionButton>
       </div>
 
@@ -161,11 +167,15 @@ export function UsersTab() {
         <Table>
           <TableHeader className="bg-muted border-0">
             <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
-              <TableHead className="w-62.5">User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-62.5">
+                {t("table.user", "User")}
+              </TableHead>
+              <TableHead>{t("table.email", "Email")}</TableHead>
+              <TableHead>{t("table.role", "Role")}</TableHead>
+              <TableHead>{t("table.status", "Status")}</TableHead>
+              <TableHead className="text-right">
+                {t("table.actions", "Actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -185,7 +195,9 @@ export function UsersTab() {
                       size={48}
                       className="mb-4 text-muted-foreground/30"
                     />
-                    <p className="typo-semibold-14">No users found</p>
+                    <p className="typo-semibold-14">
+                      {t("table.noUsers", "No users found")}
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -226,9 +238,12 @@ export function UsersTab() {
                               : "bg-gray-100 text-gray-700 hover:bg-gray-100/80"
                         }`}
                       >
-                        {typeof user.role === "object"
-                          ? (user.role as { name: string }).name
-                          : user.role}
+                        {t(
+                          `roles.${(typeof user.role === "object" ? user.role.name : user.role).toLowerCase()}`,
+                          typeof user.role === "object"
+                            ? user.role.name
+                            : user.role,
+                        )}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -244,7 +259,7 @@ export function UsersTab() {
                             : ""
                         }
                       >
-                        {user.status}
+                        {t(`status.${user.status.toLowerCase()}`, user.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -298,7 +313,10 @@ export function UsersTab() {
               </PaginationItem>
               <PaginationItem>
                 <span className="text-sm font-medium text-muted-foreground px-4">
-                  Page {meta.page} of {meta.totalPages}
+                  {t("common:page", "Page {{current}} of {{total}}", {
+                    current: meta.page,
+                    total: meta.totalPages,
+                  })}
                 </span>
               </PaginationItem>
               <PaginationItem>
@@ -333,9 +351,13 @@ export function UsersTab() {
       <ConfirmationDialog
         open={!!userToDelete}
         onOpenChange={(open) => !open && setUserToDelete(null)}
-        title="Delete User?"
-        description={`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("deleteDialog.title", "Delete User?")}
+        description={t(
+          "deleteDialog.description",
+          "Are you sure you want to delete {{name}}? This action cannot be undone.",
+          { name: userToDelete?.name },
+        )}
+        confirmLabel={t("deleteDialog.confirm", "Delete")}
         onConfirm={handleConfirmDelete}
         loading={deleteMutation.isPending}
         variant="destructive"
