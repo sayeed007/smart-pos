@@ -68,9 +68,41 @@ const STATS_CONFIG = [
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
-  // ... (state) ...
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 30);
+    return { from: start, to: end };
+  });
 
-  // ... (hook calls) ...
+  const { startDate, endDate } = useMemo(() => {
+    const end = date?.to ? new Date(date.to) : new Date();
+    const start = date?.from ? new Date(date.from) : new Date(end);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    return { startDate: start.toISOString(), endDate: end.toISOString() };
+  }, [date]);
+
+  const { data: stats } = useDashboardStats(startDate, endDate);
+  const { data: revenueData } = useRevenueChart(startDate, endDate);
+  const { data: topCategoriesData } = useTopCategories(5, startDate, endDate);
+  const { data: paymentMethodsData } = usePaymentMethodStats(
+    startDate,
+    endDate,
+  );
+
+  const { data: recentSalesData } = useSales({
+    page: 1,
+    limit: 5,
+    sortBy: "completedAt",
+    sortOrder: "desc",
+    startDate,
+    endDate,
+  });
+
+  const { data: products } = useLowStockProducts(5);
 
   const statsCards = STATS_CONFIG.map((stat) => {
     let value = "0";

@@ -8,7 +8,6 @@ import { SalesTransactionsTable } from "@/components/reports/SalesTransactionsTa
 import { StatsCards } from "@/components/reports/StatsCards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/lib/axios";
-import { MOCK_CATEGORIES, MOCK_PRODUCTS, MOCK_SALES } from "@/lib/mock-data";
 import { Category, Product, Sale } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -16,21 +15,27 @@ import { PageHeader } from "@/components/ui/page-header";
 
 export default function ReportsPage() {
   const { data: sales, isLoading: sLoading } = useQuery<Sale[]>({
-    queryKey: ["sales"],
-    queryFn: async () => (await api.get("/sales")).data,
-    initialData: MOCK_SALES,
+    queryKey: ["sales", "all"], // distinct key
+    queryFn: async () => {
+      const res = await api.get("/sales", { params: { limit: 1000 } }); // Fetch more sales for report
+      return res.data.data;
+    },
   });
 
   const { data: products, isLoading: pLoading } = useQuery<Product[]>({
-    queryKey: ["products"],
-    queryFn: async () => (await api.get("/products")).data,
-    initialData: MOCK_PRODUCTS,
+    queryKey: ["products", "all"],
+    queryFn: async () => {
+      const res = await api.get("/products", { params: { limit: 1000 } });
+      return res.data.data;
+    },
   });
 
   const { data: categories, isLoading: cLoading } = useQuery<Category[]>({
     queryKey: ["categories"],
-    queryFn: async () => (await api.get("/categories")).data,
-    initialData: MOCK_CATEGORIES,
+    queryFn: async () => {
+      const res = await api.get("/categories");
+      return Array.isArray(res.data) ? res.data : res.data.data;
+    },
   });
 
   if (sLoading || pLoading || cLoading) {

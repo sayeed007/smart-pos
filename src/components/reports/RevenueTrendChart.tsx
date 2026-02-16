@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateMockDailyRevenue } from "@/lib/mock-data";
+import { useRevenueChart } from "@/hooks/useDashboard";
 import { useMemo } from "react";
 import {
   Line,
@@ -13,7 +13,16 @@ import {
 } from "recharts";
 
 export function RevenueTrendChart() {
-  const trendData = useMemo(() => generateMockDailyRevenue(30), []);
+  const { data: trendData } = useRevenueChart();
+
+  const chartData = useMemo(() => {
+    // Map backend 'revenue' to 'total' expected by chart, or just use 'revenue'
+    if (!trendData) return [];
+    return trendData.map((d) => ({
+      date: d.date,
+      total: d.revenue,
+    }));
+  }, [trendData]);
 
   return (
     <Card className="rounded-[2.5rem] border-0 shadow-sm">
@@ -23,7 +32,7 @@ export function RevenueTrendChart() {
       <CardContent>
         <div className="h-75 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={trendData}>
+            <LineChart data={chartData}>
               <XAxis
                 dataKey="date"
                 stroke="#888888"

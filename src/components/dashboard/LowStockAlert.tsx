@@ -52,7 +52,7 @@ export function LowStockAlert({ products }: LowStockAlertProps) {
                 )}
               </div>
               <div className="space-y-1">
-                <p className="typo-medium-14 text-foreground truncate max-w-[120px]">
+                <p className="typo-medium-14 text-foreground truncate max-w-30">
                   {item.name}
                 </p>
                 <p className="typo-regular-12 text-muted-foreground">

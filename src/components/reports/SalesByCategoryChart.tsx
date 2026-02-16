@@ -1,13 +1,14 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_TOP_CATEGORIES_STATS } from "@/lib/mock-data";
+import { useTopCategories } from "@/hooks/useDashboard";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const COLORS = ["#f87171", "#3b82f6", "#fbbf24", "#34d399", "#a78bfa"];
 
 export function SalesByCategoryChart() {
-  const categoryChartData = MOCK_TOP_CATEGORIES_STATS;
+  const { data: categoryChartDataRaw } = useTopCategories();
+  const categoryChartData = categoryChartDataRaw || [];
 
   return (
     <Card className="rounded-[2.5rem] border-0 shadow-sm">
