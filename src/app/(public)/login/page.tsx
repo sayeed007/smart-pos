@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/api/auth";
 import { cn } from "@/lib/utils";
 import { mapBackendRoleToUiRole, useAuth } from "@/providers/auth-provider";
-import { User, UserRole } from "@/types";
+import { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Shield, Smartphone, Store } from "lucide-react";
 import { useState } from "react";
@@ -24,7 +24,6 @@ import * as z from "zod";
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
-  role: z.nativeEnum(UserRole),
 });
 
 export default function LoginPage() {
@@ -32,13 +31,17 @@ export default function LoginPage() {
   const loginMutation = useLogin();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const isDev = process.env.NODE_ENV === "development";
+  const devAdminEmail = process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL ?? "";
+  const devAdminPassword = process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD ?? "";
+  const devCashierEmail = process.env.NEXT_PUBLIC_DEV_CASHIER_EMAIL ?? "";
+  const devCashierPassword = process.env.NEXT_PUBLIC_DEV_CASHIER_PASSWORD ?? "";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "admin@aura-demo.com",
-      password: "SecureP@ss123",
-      role: UserRole.CASHIER,
+      email: isDev ? devAdminEmail || "admin@aura-demo.com" : "",
+      password: isDev ? devAdminPassword || "SecureP@ss123" : "",
     },
   });
 
@@ -52,10 +55,7 @@ export default function LoginPage() {
       },
       {
         onSuccess: (data) => {
-          const resolvedRole = mapBackendRoleToUiRole(
-            data.user.roles.map((r: any) => r.name),
-            values.role,
-          );
+          const resolvedRole = mapBackendRoleToUiRole(data.user.roles);
 
           const user: User = {
             id: data.user.id,
@@ -123,63 +123,6 @@ export default function LoginPage() {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              {/* Role Selection - Custom Cards */}
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                      Select Role
-                    </FormLabel>
-                    <FormControl>
-                      <div className="grid grid-cols-2 gap-3">
-                        {[
-                          {
-                            value: UserRole.CASHIER,
-                            label: "Cashier",
-                            icon: Store,
-                          },
-                          {
-                            value: UserRole.ADMIN,
-                            label: "Admin",
-                            icon: Shield,
-                          },
-                        ].map((role) => {
-                          const Icon = role.icon;
-                          const isSelected = field.value === role.value;
-                          return (
-                            <div
-                              key={role.value}
-                              onClick={() => field.onChange(role.value)}
-                              className={cn(
-                                "cursor-pointer rounded-xl p-3 border-2 transition-all duration-200 flex flex-col items-center gap-1.5",
-                                isSelected
-                                  ? "border-[#f87171] bg-red-50 text-[#f87171]"
-                                  : "border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:bg-gray-50",
-                              )}
-                            >
-                              <Icon
-                                size={20}
-                                className={cn(
-                                  isSelected
-                                    ? "text-[#f87171]"
-                                    : "text-gray-300",
-                                )}
-                              />
-                              <span className="font-bold text-xs tracking-wide">
-                                {role.label}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="space-y-3">
                 <FormField
                   control={form.control}
@@ -256,6 +199,25 @@ export default function LoginPage() {
           <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest">
             Protected by Aura Security
           </p>
+          {isDev && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
+              <p className="font-bold uppercase tracking-widest text-[10px] text-amber-700">
+                Dev Credentials
+              </p>
+              <div className="mt-2 space-y-1">
+                <p>
+                  <span className="font-semibold">Admin:</span>{" "}
+                  {devAdminEmail || "admin@aura-demo.com"} /{" "}
+                  {devAdminPassword || "SecureP@ss123"}
+                </p>
+                <p>
+                  <span className="font-semibold">Cashier:</span>{" "}
+                  {devCashierEmail || "cashier@aura-demo.com"} /{" "}
+                  {devCashierPassword || "Cashier@123!"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

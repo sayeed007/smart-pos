@@ -92,9 +92,10 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
 
   // Columns: <1280(xl)=2, >=1280=3, >=1536(2xl)=4
   const getColumns = (width: number) => {
-    if (width >= 1536) return 4; // 2xl
-    if (width >= 1280) return 3; // xl
-    return 2; // Default (grid-cols-2)
+    if (width >= 1536) return 8;
+    if (width >= 1280) return 6;
+    if (width >= 768) return 4;
+    return 3; // Default (grid-cols-3)
   };
 
   const columns = getColumns(containerWidth);
@@ -103,10 +104,12 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   // Estimate Row Height:
   // Card Width = (ContainerWidth - (Gap * (Columns - 1))) / Columns
   // Card Height = Card Width (Image Aspect Square) + Approx 120px (Content)
-  // Gap = 16px (gap-4)
+  // Gap = 16px (gap-4), Row gap = 16px vertical spacing between rows
   const GAP = 16;
+  const ROW_GAP = 16;
   const cardWidth = (containerWidth - GAP * (columns - 1)) / columns;
-  const estimateRowHeight = cardWidth + 120; // 120px for text/price content
+  const estimateRowHeight = cardWidth + 120 + ROW_GAP; // 120px for text/price content + row gap
+  const bottomSpacer = Math.max(48, Math.round(estimateRowHeight * 0.35));
 
   const rowVirtualizer = useVirtualizer({
     count: rows,
@@ -182,7 +185,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
       {/* Virtualized Products Grid */}
       <div
         ref={parentRef}
-        className="flex-1 w-full overflow-y-auto p-4"
+        className="flex-1 w-full overflow-y-auto p-4 pb-10"
         style={{ contain: "strict" }}
       >
         <div
@@ -209,6 +212,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
                 style={{
                   transform: `translateY(${virtualRow.start}px)`,
                   gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                  paddingBottom: `${ROW_GAP}px`,
                 }}
               >
                 {rowProducts.map((p) => (
@@ -222,6 +226,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
             );
           })}
         </div>
+        <div style={{ height: bottomSpacer }} />
         {filteredProducts.length === 0 && (
           <div className="flex h-full items-center justify-center text-muted-foreground">
             No products found

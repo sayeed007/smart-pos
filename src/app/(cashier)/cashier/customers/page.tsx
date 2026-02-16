@@ -1,30 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
-import { Customer } from "@/types";
-import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
-import { CustomerSearchBar } from "@/components/customers/CustomerSearchBar";
 import { CustomerListTable } from "@/components/customers/CustomerListTable";
+import { CustomerSearchBar } from "@/components/customers/CustomerSearchBar";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import {
+  useCustomers,
+  useCreateCustomer,
+  useUpdateCustomer,
+  useDeleteCustomer,
+} from "@/hooks/api/customers";
+import { Customer } from "@/types";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
+import { CustomerFormValues } from "@/lib/validations/customer";
+import { useDebounce } from "use-debounce";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function CustomersPage() {
   const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null,
@@ -32,65 +37,44 @@ export default function CustomersPage() {
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
     null,
   );
-  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
   const { t } = useTranslation("customers");
 
-  const { data: customers, isLoading } = useQuery<Customer[]>({
-    queryKey: ["customers", search],
-    queryFn: async () => (await api.get(`/customers?search=${search}`)).data,
+  // Use real API hooks
+  const { data: customersData, isLoading } = useCustomers({
+    search: debouncedSearch,
+    page,
+    limit: 10,
   });
+  const customers = customersData?.data || [];
+  const meta = customersData?.meta;
 
-  const createMutation = useMutation({
-    mutationFn: async (newCustomer: Partial<Customer>) => {
-      return api.post("/customers", newCustomer);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setIsDialogOpen(false);
-      setSelectedCustomer(null);
-      toast.success(t("toasts.customerCreated"));
-    },
-    onError: () => toast.error(t("toasts.customerError")),
-  });
+  const createMutation = useCreateCustomer();
+  const updateMutation = useUpdateCustomer();
+  const deleteMutation = useDeleteCustomer();
 
-  const updateMutation = useMutation({
-    mutationFn: async (updatedCustomer: Partial<Customer>) => {
-      return api.put(`/customers/${updatedCustomer.id}`, updatedCustomer);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setIsDialogOpen(false);
-      setSelectedCustomer(null);
-      toast.success(t("toasts.customerUpdated"));
-    },
-    onError: () => toast.error(t("toasts.customerError")),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (customerId: string) => {
-      return api.delete(`/customers/${customerId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      toast.success(t("toasts.customerDeleted"));
-    },
-    onError: () => toast.error(t("toasts.deleteError")),
-  });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const customerData = {
-      id: selectedCustomer?.id,
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-    };
-
+  const handleSubmit = async (values: CustomerFormValues) => {
     if (selectedCustomer) {
-      updateMutation.mutate(customerData);
+      updateMutation.mutate(
+        { id: selectedCustomer.id, data: values },
+        {
+          onSuccess: () => {
+            setIsDialogOpen(false);
+            setSelectedCustomer(null);
+            toast.success(t("toasts.customerUpdated"));
+          },
+          onError: () => toast.error(t("toasts.customerError")),
+        },
+      );
     } else {
-      createMutation.mutate(customerData);
+      createMutation.mutate(values, {
+        onSuccess: () => {
+          setIsDialogOpen(false);
+          setSelectedCustomer(null);
+          toast.success(t("toasts.customerCreated"));
+        },
+        onError: () => toast.error(t("toasts.customerError")),
+      });
     }
   };
 
@@ -118,123 +102,79 @@ export default function CustomersPage() {
     }
   };
 
-  const filteredCustomers = customers?.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.phone?.toLowerCase().includes(search.toLowerCase()) ||
-      customer.email?.toLowerCase().includes(search.toLowerCase()),
-  );
-
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="typo-bold-18 text-foreground tracking-tight">
-            {t("page.title")}
-          </h1>
-          <p className="typo-regular-14 text-muted-foreground mt-1">
-            {t("page.subtitle")}
-          </p>
-        </div>
-        <Button
-          onClick={handleAddClick}
-          className="bg-chart-1 hover:bg-chart-1/90 typo-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all"
-        >
-          <Plus className="w-4 h-4 mr-2" />
+      <PageHeader title={t("page.title")} description={t("page.subtitle")}>
+        <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
           {t("addCustomer")}
-        </Button>
-      </div>
+        </PrimaryActionButton>
+      </PageHeader>
 
-      {/* Search Bar */}
       <CustomerSearchBar value={search} onChange={setSearch} />
 
-      {/* Customers Table */}
       <CustomerListTable
-        customers={filteredCustomers}
+        customers={customers}
         isLoading={isLoading}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
       />
 
+      {/* Pagination Controls */}
+      {meta && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasPreviousPage) {
+                      setPage((p) => Math.max(1, p - 1));
+                    }
+                  }}
+                  className={
+                    !meta.hasPreviousPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <span className="text-sm font-medium text-muted-foreground px-4">
+                  Page {meta.page} of {meta.totalPages}
+                </span>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (meta.hasNextPage) {
+                      setPage((p) => p + 1);
+                    }
+                  }}
+                  className={
+                    !meta.hasNextPage
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
       {/* Add/Edit Customer Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="typo-bold-18">
-              {selectedCustomer ? t("dialog.editTitle") : t("dialog.addTitle")}
-            </DialogTitle>
-            <DialogDescription className="typo-regular-14">
-              {selectedCustomer
-                ? t("dialog.editDescription")
-                : t("dialog.addDescription")}
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="typo-semibold-14">
-                {t("fields.fullName")}
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={selectedCustomer?.name}
-                required
-                className="h-10"
-                placeholder={t("fields.enterName")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="typo-semibold-14">
-                {t("fields.phoneNumber")}
-              </Label>
-              <Input
-                id="phone"
-                name="phone"
-                defaultValue={selectedCustomer?.phone}
-                required
-                className="h-10"
-                placeholder={t("fields.enterPhone")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="typo-semibold-14">
-                {t("fields.emailAddress")}
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={selectedCustomer?.email}
-                required
-                className="h-10"
-                placeholder={t("fields.enterEmail")}
-              />
-            </div>
-            <DialogFooter className="gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="typo-semibold-14"
-              >
-                {t("actions.cancel")}
-              </Button>
-              <Button
-                type="submit"
-                className="bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {createMutation.isPending || updateMutation.isPending
-                  ? t("actions.saving")
-                  : selectedCustomer
-                    ? t("actions.update")
-                    : t("actions.save")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <CustomerFormDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        customer={selectedCustomer}
+        onSubmit={handleSubmit}
+        isLoading={createMutation.isPending || updateMutation.isPending}
+      />
 
       <ConfirmationDialog
         open={!!customerToDelete}

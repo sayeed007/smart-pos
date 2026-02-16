@@ -19,11 +19,22 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
+type BackendRole = string | { name?: string | null } | null | undefined;
+
 export const mapBackendRoleToUiRole = (
-  backendRoles: string[] | undefined,
+  backendRoles: BackendRole[] | undefined,
   fallback?: UserRole,
 ): UserRole => {
-  const normalized = (backendRoles ?? []).map((role) => role.toLowerCase());
+  const normalized = (backendRoles ?? [])
+    .map((role) => {
+      if (typeof role === "string") return role;
+      if (role && typeof role === "object" && typeof role.name === "string") {
+        return role.name;
+      }
+      return "";
+    })
+    .filter(Boolean)
+    .map((role) => role.toLowerCase());
 
   if (normalized.includes("admin")) return UserRole.ADMIN;
   if (normalized.includes("manager")) return UserRole.MANAGER;

@@ -13,9 +13,9 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <Card
       onClick={() => onClick(product)}
-      className="rounded-xl p-3 border-border hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
+      className="rounded-xl p-4 border-border hover:border-primary transition-all cursor-pointer group flex flex-col shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0 h-full"
     >
-      <div className="relative aspect-square rounded-lg overflow-hidden mb-2 bg-muted">
+      <div className="relative aspect-square rounded-lg overflow-hidden mb-3 bg-muted">
         {product.image ? (
           <ServerImage
             src={product.image}
@@ -30,13 +30,13 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
           </div>
         )}
       </div>
-      <h3 className=" text-foreground typo-semibold-14 mb-1 line-clamp-1">
+      <h3 className=" text-foreground typo-semibold-14 mb-2 line-clamp-1">
         {product.name}
       </h3>
-      <p className="typo-regular-12 text-muted-foreground mb-1 uppercase tracking-wide">
+      <p className="typo-regular-12 text-muted-foreground mb-2 uppercase tracking-wide">
         {product.sku}
       </p>
-      <div className="mt-2 flex justify-between items-center">
+      <div className="mt-3 flex justify-between items-center">
         <div className="text-chart-1 typo-bold-18">
           ${product.sellingPrice.toFixed(2)}
         </div>
