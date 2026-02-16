@@ -9,8 +9,6 @@ import { ServerImage } from "@/components/ui/server-image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 
-import { MOCK_RECENT_SALES_DASHBOARD } from "@/lib/mock-data";
-
 interface RecentSalesProps {
   sales: Sale[];
 }
@@ -18,12 +16,8 @@ interface RecentSalesProps {
 export function RecentSales({ sales }: RecentSalesProps) {
   const { t } = useTranslation("dashboard");
 
-  // Generate some realistic dummy sales if the list is empty or short
   const displaySales = useMemo(() => {
-    if (sales.length >= 4) return sales.slice(0, 4);
-
-    // Use fallback mock data
-    return MOCK_RECENT_SALES_DASHBOARD;
+    return sales ? sales.slice(0, 4) : [];
   }, [sales]);
 
   return (

@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { MOCK_TOP_CATEGORIES_STATS } from "@/lib/mock-data";
 interface TopCategoryData {
   name: string;
   value: number;
@@ -30,7 +29,7 @@ export function TopCategories({ data }: TopCategoriesProps) {
     "bg-teal-500",
   ];
 
-  // Use provided data or fallback to mock if empty/undefined
+  // Use provided data or return empty if undefined
   const categories = useMemo(() => {
     if (data && data.length > 0) {
       // Calculate percentages
@@ -40,7 +39,7 @@ export function TopCategories({ data }: TopCategoriesProps) {
         percent: total > 0 ? (cat.value / total) * 100 : 0,
       }));
     }
-    return MOCK_TOP_CATEGORIES_STATS;
+    return [];
   }, [data]);
 
   return (

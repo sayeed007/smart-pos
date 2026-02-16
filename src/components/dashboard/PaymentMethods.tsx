@@ -4,8 +4,6 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 
-import { MOCK_PAYMENT_STATS } from "@/lib/mock-data";
-
 interface PaymentMethodStats {
   method: string;
   count: number;
@@ -28,8 +26,7 @@ export function PaymentMethods({ data }: PaymentMethodsProps) {
       }));
     }
 
-    // Dummy data matching reference image
-    return MOCK_PAYMENT_STATS;
+    return [];
   }, [data]);
 
   return (

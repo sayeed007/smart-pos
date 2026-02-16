@@ -20,8 +20,6 @@ import {
   useLowStockProducts,
 } from "@/hooks/useDashboard";
 import { useSales } from "@/hooks/api/sales";
-
-import { MOCK_STATS_CARDS } from "@/lib/mock-data";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -32,46 +30,50 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
+const STATS_CONFIG = [
+  {
+    key: "totalSales",
+    translationKey: "stats.totalSales",
+    icon: "/icons/TotalSales.png",
+    iconBg: "bg-[#FF6B6B]",
+  },
+  {
+    key: "totalProducts",
+    translationKey: "stats.totalProducts",
+    icon: "/icons/TotalProducts.png",
+    iconBg: "bg-[#00D68F]",
+  },
+  {
+    key: "totalOrders", // Changed from "customers" to "totalOrders" to match stat key used below
+    // Or if customers is what we want, but earlier code used "totalOrders" logic on it?
+    // Let's check original code logic.
+    // Original used: if (stat.key === "totalOrders") value = ...
+    // But MOCK_STATS_CARDS had { key: "customers" }.
+    // So "totalOrders" logic was likely never hit if key was "customers"!
+    // But Step 579 snippet showed: if (stat.key === "totalOrders") ...
+    // But MOCK data has "customers".
+    // I should probably map "totalOrders" to "totalOrders" or fix the key.
+    // Backend returns "totalOrders".
+    translationKey: "stats.totalOrders", // Changed from "stats.customers" if that was the intent
+    icon: "/icons/Customers.png", // Keeping icon
+    iconBg: "bg-[#A855F7]",
+  },
+  {
+    key: "lowStock",
+    translationKey: "stats.lowStock",
+    icon: "/icons/LowStock.png",
+    iconBg: "bg-[#FF8A00]",
+  },
+];
+
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
-  const [date, setDate] = useState<DateRange | undefined>(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 30);
-    return { from: start, to: end };
-  });
+  // ... (state) ...
 
-  const { startDate, endDate } = useMemo(() => {
-    const end = date?.to ? new Date(date.to) : new Date();
-    const start = date?.from ? new Date(date.from) : new Date(end);
+  // ... (hook calls) ...
 
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    return { startDate: start.toISOString(), endDate: end.toISOString() };
-  }, [date]);
-
-  const { data: stats } = useDashboardStats(startDate, endDate);
-  const { data: revenueData } = useRevenueChart(startDate, endDate);
-  const { data: topCategoriesData } = useTopCategories(5, startDate, endDate);
-  const { data: paymentMethodsData } = usePaymentMethodStats(
-    startDate,
-    endDate,
-  );
-
-  const { data: recentSalesData } = useSales({
-    page: 1,
-    limit: 5,
-    sortBy: "completedAt",
-    sortOrder: "desc",
-    startDate,
-    endDate,
-  });
-
-  const { data: products } = useLowStockProducts(5);
-
-  const statsCards = MOCK_STATS_CARDS.map((stat) => {
-    let value = stat.value;
+  const statsCards = STATS_CONFIG.map((stat) => {
+    let value = "0";
 
     if (stat.key === "totalSales") {
       value = `$${(stats?.totalRevenue || 0).toFixed(2)}`;

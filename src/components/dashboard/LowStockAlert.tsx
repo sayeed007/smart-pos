@@ -7,8 +7,6 @@ import { ServerImage } from "@/components/ui/server-image";
 import { Product } from "@/types";
 import { ShoppingBag } from "lucide-react";
 
-import { MOCK_LOW_STOCK_ITEMS } from "@/lib/mock-data";
-
 interface LowStockAlertProps {
   products: Product[];
 }
@@ -16,17 +14,13 @@ interface LowStockAlertProps {
 export function LowStockAlert({ products }: LowStockAlertProps) {
   const { t } = useTranslation("dashboard");
 
-  // Dummy data matching reference image
   const lowStockItems = useMemo(() => {
     if (products && products.length > 0) {
-      // Filter actual low stock items if available
       return products
         .filter((p) => p.stockQuantity <= (p.minStockLevel || 10))
         .slice(0, 4);
     }
-
-    // Fallback dummy data
-    return MOCK_LOW_STOCK_ITEMS;
+    return [];
   }, [products]);
 
   return (
