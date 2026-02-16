@@ -38,7 +38,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
@@ -319,12 +319,12 @@ export default function SalesHistoryPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0 border border-border">
                             {item.image ? (
-                              <Image
+                              <ServerImage
                                 src={item.image}
                                 alt={item.productName}
                                 width={40}
                                 height={40}
-                                className="w-full h-full object-cover"
+                                className="object-cover"
                               />
                             ) : (
                               <Package className="w-5 h-5 text-muted-foreground" />
