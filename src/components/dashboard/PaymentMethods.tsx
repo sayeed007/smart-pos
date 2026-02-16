@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { CreditCard } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface PaymentMethodStats {
   method: string;
@@ -39,12 +40,10 @@ export function PaymentMethods({ data }: PaymentMethodsProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {paymentStats.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-            <CreditCard className="h-10 w-10 mb-2 opacity-20" />
-            <p className="text-sm font-medium">
-              {t("charts.noPaymentData", "No payment data available")}
-            </p>
-          </div>
+          <EmptyState
+            icon={CreditCard}
+            title={t("charts.noPaymentData", "No payment data available")}
+          />
         ) : (
           paymentStats.map((method, index) => (
             <div

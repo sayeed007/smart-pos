@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { ServerImage } from "@/components/ui/server-image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface RecentSalesProps {
   sales: Sale[];
@@ -35,12 +36,10 @@ export function RecentSales({ sales }: RecentSalesProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {displaySales.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-            <ShoppingBag className="h-10 w-10 mb-2 opacity-20" />
-            <p className="text-sm font-medium">
-              {t("charts.noRecentSales", "No recent sales found")}
-            </p>
-          </div>
+          <EmptyState
+            icon={ShoppingBag}
+            title={t("charts.noRecentSales", "No recent sales found")}
+          />
         ) : (
           displaySales.map((sale, index) => (
             <div

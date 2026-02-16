@@ -7,6 +7,8 @@ import { ServerImage } from "@/components/ui/server-image";
 import { Product } from "@/types";
 import { ShoppingBag } from "lucide-react";
 
+import { EmptyState } from "@/components/ui/empty-state";
+
 interface LowStockAlertProps {
   products: Product[];
 }
@@ -35,12 +37,10 @@ export function LowStockAlert({ products }: LowStockAlertProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {lowStockItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-            <ShoppingBag className="h-10 w-10 mb-2 opacity-20" />
-            <p className="text-sm font-medium">
-              {t("charts.noLowStock", "No items are low on stock")}
-            </p>
-          </div>
+          <EmptyState
+            icon={ShoppingBag}
+            title={t("charts.noLowStock", "No items are low on stock")}
+          />
         ) : (
           lowStockItems.map((item, index) => (
             <div key={index} className="flex items-center justify-between">

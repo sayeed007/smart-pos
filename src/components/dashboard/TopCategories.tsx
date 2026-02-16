@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { PieChart } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 interface TopCategoryData {
   name: string;
   value: number;
@@ -52,12 +53,10 @@ export function TopCategories({ data }: TopCategoriesProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-            <PieChart className="h-10 w-10 mb-2 opacity-20" />
-            <p className="text-sm font-medium">
-              {t("charts.noCategoryData", "No category data available")}
-            </p>
-          </div>
+          <EmptyState
+            icon={PieChart}
+            title={t("charts.noCategoryData", "No category data available")}
+          />
         ) : (
           categories.map((category, index) => (
             <div key={index} className="space-y-2">
