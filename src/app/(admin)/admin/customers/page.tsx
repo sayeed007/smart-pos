@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
 import { CustomerFormValues } from "@/lib/validations/customer";
 import { useDebounce } from "use-debounce";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
@@ -93,19 +94,11 @@ export default function AdminCustomersPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="typo-bold-18 text-foreground tracking-tight">
-            {t("page.title")}
-          </h1>
-          <p className="typo-regular-14 text-muted-foreground mt-1">
-            {t("page.subtitle")}
-          </p>
-        </div>
+      <PageHeader title={t("page.title")} description={t("page.subtitle")}>
         <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
           {t("addCustomer")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       <CustomerSearchBar value={search} onChange={setSearch} />
 

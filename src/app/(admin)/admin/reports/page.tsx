@@ -12,6 +12,7 @@ import { MOCK_CATEGORIES, MOCK_PRODUCTS, MOCK_SALES } from "@/lib/mock-data";
 import { Category, Product, Sale } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function ReportsPage() {
   const { data: sales, isLoading: sLoading } = useQuery<Sale[]>({
@@ -42,14 +43,10 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-8 p-6">
-      <div>
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-          Sales Reports
-        </h1>
-        <p className="text-gray-400 font-medium">
-          View detailed sales analytics
-        </p>
-      </div>
+      <PageHeader
+        title="Sales Reports"
+        description="View detailed sales analytics"
+      />
 
       {/* Stats Cards */}
       <StatsCards sales={sales} />

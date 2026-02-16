@@ -14,6 +14,7 @@ import {
   useCreateCategory,
   useUpdateCategory,
 } from "@/hooks/api/categories";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function CategoriesPage() {
   const { t } = useTranslation(["categories", "common"]);
@@ -78,19 +79,14 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="typo-bold-18 tracking-tight text-foreground">
-            {t("title", "Categories")}
-          </h1>
-          <p className="typo-regular-16 text-muted-foreground">
-            {t("subtitle", "Product categories overview")}
-          </p>
-        </div>
+      <PageHeader
+        title={t("title", "Categories")}
+        description={t("subtitle", "Product categories overview")}
+      >
         <PrimaryActionButton onClick={handleAdd} icon={Plus}>
           {t("addCategory", "Add Category")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       {/* Categories Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

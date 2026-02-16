@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 import { generateMockDailyRevenue, MOCK_STATS_CARDS } from "@/lib/mock-data";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
@@ -100,15 +101,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
-      <div>
-        <h1 className="typo-bold-18 text-foreground tracking-tight">
-          {t("page.title")}
-        </h1>
-        <p className="typo-regular-14 text-muted-foreground mt-1">
-          {t("page.subtitle")}
-        </p>
-      </div>
+      <PageHeader title={t("page.title")} description={t("page.subtitle")} />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

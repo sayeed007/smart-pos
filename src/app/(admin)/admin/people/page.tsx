@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function PeoplePage() {
   const { t } = useTranslation("common");
@@ -25,17 +26,13 @@ export default function PeoplePage() {
   return (
     <div className="space-y-6 p-6">
       {/* Page Header */}
-      <div>
-        <h1 className="typo-bold-24 text-foreground tracking-tight">
-          {t("people", "People")}
-        </h1>
-        <p className="typo-regular-14 text-muted-foreground mt-1">
-          {t(
-            "peopleSubtitle",
-            "Manage your organization's users and customers",
-          )}
-        </p>
-      </div>
+      <PageHeader
+        title={t("people", "People")}
+        description={t(
+          "peopleSubtitle",
+          "Manage your organization's users and customers",
+        )}
+      />
 
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
         <TabsList>

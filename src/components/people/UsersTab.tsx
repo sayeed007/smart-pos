@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/pagination";
 
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "@/components/ui/page-header";
 
 export function UsersTab() {
   const { t } = useTranslation(["users", "common"]);
@@ -147,19 +148,14 @@ export function UsersTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="typo-bold-18 text-foreground tracking-tight">
-            {t("title", "User Management")}
-          </h2>
-          <p className="typo-regular-14 text-muted-foreground mt-1">
-            {t("subtitle", "Manage system users and permissions")}
-          </p>
-        </div>
+      <PageHeader
+        title={t("title", "User Management")}
+        description={t("subtitle", "Manage system users and permissions")}
+      >
         <PrimaryActionButton onClick={handleCreate} icon={Plus}>
           {t("addUser", "Add User")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       <UserSearchBar value={search} onChange={setSearch} />
 

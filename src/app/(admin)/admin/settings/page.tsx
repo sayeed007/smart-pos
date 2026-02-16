@@ -12,6 +12,7 @@ import { useSettingsStore } from "@/features/settings/store";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PriceBookManager } from "@/features/settings/components/PriceBookManager";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function SettingsPage() {
   const settings = useSettingsStore();
@@ -44,14 +45,10 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-black text-foreground tracking-tight">
-          Settings
-        </h1>
-        <p className="text-muted-foreground font-medium mt-1">
-          Configure system settings & Receipts
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Configure system settings & Receipts"
+      />
 
       <Tabs defaultValue="general" className="space-y-4">
         <TabsList>

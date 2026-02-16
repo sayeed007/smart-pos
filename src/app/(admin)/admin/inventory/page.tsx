@@ -18,6 +18,7 @@ import { Location } from "@/types";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function InventoryPage() {
   const { t } = useTranslation("inventory");
@@ -42,15 +43,12 @@ export default function InventoryPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-400 mx-auto animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {t("subtitleWithLocation", { location: selectedLocation.name })}
-          </p>
-        </div>
+      <PageHeader
+        title={t("title")}
+        description={t("subtitleWithLocation", {
+          location: selectedLocation.name,
+        })}
+      >
         <div className="flex items-center gap-2">
           {/* Location Selector */}
           <div className="flex items-center gap-2 min-w-50">
@@ -74,7 +72,7 @@ export default function InventoryPage() {
           <StockAdjustmentDialog defaultLocationId={effectiveLocationId} />
           <CreateTransferDialog />
         </div>
-      </div>
+      </PageHeader>
 
       <Tabs defaultValue="ledger" className="space-y-4">
         <TabsList>

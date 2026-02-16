@@ -19,6 +19,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { ProductListTable } from "@/components/products/ProductListTable";
 import { ProductFilterBar } from "@/components/products/ProductFilterBar";
+import { PageHeader } from "@/components/ui/page-header";
 
 export function ProductsPageContent() {
   const [search, setSearch] = useState("");
@@ -113,19 +114,11 @@ export function ProductsPageContent() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="typo-bold-18 text-foreground tracking-tight">
-            {t("page.title")}
-          </h1>
-          <p className="typo-regular-14 text-muted-foreground mt-1">
-            {t("page.subtitle")}
-          </p>
-        </div>
+      <PageHeader title={t("page.title")} description={t("page.subtitle")}>
         <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
           {t("page.addProduct")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       {/* Filter Bar */}
       <ProductFilterBar search={search} onSearchChange={setSearch} />

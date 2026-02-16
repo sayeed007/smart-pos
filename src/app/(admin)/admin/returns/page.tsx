@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function ReturnsPage() {
   const { t } = useTranslation(["returns", "common"]);
@@ -148,15 +149,10 @@ export default function ReturnsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">
-            {t("title", "Returns & Refunds")}
-          </h1>
-          <p className="text-gray-400 font-medium mt-1">
-            {t("subtitle", "Process returns and refunds")}
-          </p>
-        </div>
+      <PageHeader
+        title={t("title", "Returns & Refunds")}
+        description={t("subtitle", "Process returns and refunds")}
+      >
         <div className="flex gap-2">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -178,7 +174,7 @@ export default function ReturnsPage() {
             {t("addReturn", "Create Return")}
           </PrimaryActionButton>
         </div>
-      </div>
+      </PageHeader>
 
       <ReturnListTable
         returns={returns}

@@ -44,6 +44,7 @@ import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/ui/page-header";
 
 // Mock mapping if categories aren't populated in items
 const CATEGORY_MAP: Record<string, string> = {
@@ -176,12 +177,7 @@ export default function SalesHistoryPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
-        </div>
-      </div>
+      <PageHeader title={t("title")} description={t("subtitle")} />
 
       {/* Date Filter - DateRangePicker */}
       <div className="flex items-center gap-2">

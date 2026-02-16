@@ -25,6 +25,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { PageHeader } from "@/components/ui/page-header";
 
 export function CustomersTab() {
   const [search, setSearch] = useState("");
@@ -107,19 +108,11 @@ export function CustomersTab() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="typo-bold-18 text-foreground tracking-tight">
-            {t("page.title")}
-          </h2>
-          <p className="typo-regular-14 text-muted-foreground mt-1">
-            {t("page.subtitle")}
-          </p>
-        </div>
+      <PageHeader title={t("page.title")} description={t("page.subtitle")}>
         <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
           {t("addCustomer")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       <CustomerSearchBar value={search} onChange={setSearch} />
 

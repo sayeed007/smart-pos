@@ -36,6 +36,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function OffersPage() {
   const { t } = useTranslation(["offers", "common"]);
@@ -164,19 +165,11 @@ export default function OffersPage() {
   return (
     <div className="space-y-6 p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="typo-bold-18 tracking-tight text-foreground">
-            {t("title")}
-          </h1>
-          <p className="typo-regular-16 text-muted-foreground">
-            {t("subtitle")}
-          </p>
-        </div>
+      <PageHeader title={t("title")} description={t("subtitle")}>
         <PrimaryActionButton onClick={handleAdd} icon={Plus}>
           {t("createOffer")}
         </PrimaryActionButton>
-      </div>
+      </PageHeader>
 
       {/* Search Bar */}
       <div className="relative">

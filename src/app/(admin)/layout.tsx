@@ -45,7 +45,7 @@ export default function AdminLayout({
       path: "/admin/sales",
     },
     {
-      name: "POS",
+      name: t("pos", "POS"),
       icon: <ShoppingCart size={20} />,
       path: "/admin/pos",
     },
@@ -70,7 +70,7 @@ export default function AdminLayout({
       path: "/admin/offers",
     },
     {
-      name: "People",
+      name: t("people", "People"),
       icon: <Users size={20} />,
       path: "/admin/people",
     },
