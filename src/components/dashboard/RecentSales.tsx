@@ -34,47 +34,61 @@ export function RecentSales({ sales }: RecentSalesProps) {
         </Link>
       </CardHeader>
       <CardContent className="space-y-6">
-        {displaySales.map((sale, index) => (
-          <div key={index} className="flex items-center justify-between group">
-            <div className="flex items-center gap-4">
-              <div className="relative h-12 w-12 rounded-lg bg-muted overflow-hidden shrink-0">
-                {sale.lines?.[0]?.product?.imageUrl ? (
-                  <ServerImage
-                    src={sale.lines[0].product?.imageUrl || ""}
-                    alt="Product"
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800">
-                    <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-              <div className="space-y-1">
-                <p className="typo-medium-14 text-foreground">
-                  #{sale.invoiceNo || sale.id.substring(0, 8)}
-                </p>
-                <p className="typo-regular-12 text-muted-foreground">
-                  {formatDistanceToNow(
-                    new Date(sale.completedAt || sale.createdAt || new Date()),
-                    {
-                      addSuffix: true,
-                    },
-                  )}
-                </p>
-              </div>
-            </div>
-            <div className="text-right space-y-1">
-              <p className="typo-bold-14 text-foreground">
-                ${Number(sale.total || 0).toFixed(2)}
-              </p>
-              <p className="typo-medium-12 text-green-500">
-                {sale.status || "Completed"}
-              </p>
-            </div>
+        {displaySales.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
+            <ShoppingBag className="h-10 w-10 mb-2 opacity-20" />
+            <p className="text-sm font-medium">
+              {t("charts.noRecentSales", "No recent sales found")}
+            </p>
           </div>
-        ))}
+        ) : (
+          displaySales.map((sale, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="relative h-12 w-12 rounded-lg bg-muted overflow-hidden shrink-0">
+                  {sale.lines?.[0]?.product?.imageUrl ? (
+                    <ServerImage
+                      src={sale.lines[0].product?.imageUrl || ""}
+                      alt="Product"
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800">
+                      <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <p className="typo-medium-14 text-foreground">
+                    #{sale.invoiceNo || sale.id.substring(0, 8)}
+                  </p>
+                  <p className="typo-regular-12 text-muted-foreground">
+                    {formatDistanceToNow(
+                      new Date(
+                        sale.completedAt || sale.createdAt || new Date(),
+                      ),
+                      {
+                        addSuffix: true,
+                      },
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right space-y-1">
+                <p className="typo-bold-14 text-foreground">
+                  ${Number(sale.total || 0).toFixed(2)}
+                </p>
+                <p className="typo-medium-12 text-green-500">
+                  {sale.status || "Completed"}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

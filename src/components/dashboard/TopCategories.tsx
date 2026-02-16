@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { PieChart } from "lucide-react";
 interface TopCategoryData {
   name: string;
   value: number;
@@ -50,24 +51,33 @@ export function TopCategories({ data }: TopCategoriesProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {categories.map((category, index) => (
-          <div key={index} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="typo-medium-14 text-foreground">
-                {category.name}
-              </span>
-              <span className="typo-bold-14 text-foreground">
-                ${category.value.toLocaleString()}
-              </span>
-            </div>
-            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-              <div
-                className={`h-full rounded-full ${COLORS[index % COLORS.length]}`}
-                style={{ width: `${category.percent}%` }}
-              />
-            </div>
+        {categories.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
+            <PieChart className="h-10 w-10 mb-2 opacity-20" />
+            <p className="text-sm font-medium">
+              {t("charts.noCategoryData", "No category data available")}
+            </p>
           </div>
-        ))}
+        ) : (
+          categories.map((category, index) => (
+            <div key={index} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="typo-medium-14 text-foreground">
+                  {category.name}
+                </span>
+                <span className="typo-bold-14 text-foreground">
+                  ${category.value.toLocaleString()}
+                </span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${COLORS[index % COLORS.length]}`}
+                  style={{ width: `${category.percent}%` }}
+                />
+              </div>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );

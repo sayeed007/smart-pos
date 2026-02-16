@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { CreditCard } from "lucide-react";
 
 interface PaymentMethodStats {
   method: string;
@@ -37,23 +38,32 @@ export function PaymentMethods({ data }: PaymentMethodsProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {paymentStats.map((method, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-          >
-            <span className="typo-medium-14 text-foreground">
-              {t(method.name.toLowerCase().replace(" ", "."), method.name)}
-            </span>
-            <span className="typo-bold-16 text-foreground">
-              $
-              {method.value.toLocaleString(undefined, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })}
-            </span>
+        {paymentStats.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
+            <CreditCard className="h-10 w-10 mb-2 opacity-20" />
+            <p className="text-sm font-medium">
+              {t("charts.noPaymentData", "No payment data available")}
+            </p>
           </div>
-        ))}
+        ) : (
+          paymentStats.map((method, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+            >
+              <span className="typo-medium-14 text-foreground">
+                {t(method.name.toLowerCase().replace(" ", "."), method.name)}
+              </span>
+              <span className="typo-bold-16 text-foreground">
+                $
+                {method.value.toLocaleString(undefined, {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                })}
+              </span>
+            </div>
+          ))
+        )}
       </CardContent>
     </Card>
   );
