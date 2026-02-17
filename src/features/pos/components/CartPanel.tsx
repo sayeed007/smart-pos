@@ -3,7 +3,7 @@
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { useSettingsStore } from "@/features/settings/store";
 import { useAuth } from "@/providers/auth-provider";
-import { Offer } from "@/types";
+import { Offer, Customer, Product } from "@/types";
 import {
   ShoppingCart,
   TicketPercent,
@@ -18,12 +18,27 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { CartItemCard } from "./CartItemCard";
 import { toast } from "sonner";
-import { db } from "@/lib/db";
 import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ProductSearchCombobox } from "./ProductSearchCombobox";
+import { db } from "@/lib/db";
 
 interface CartPanelProps {
   offers: Offer[];
@@ -41,6 +56,11 @@ export function CartPanel({ offers }: CartPanelProps) {
     setRedeemedPoints,
     paymentMethod,
     setPaymentMethod,
+    excludedOfferIds,
+    toggleOffer,
+    setExcludedOffers,
+    addToCart,
+    selectProduct,
   } = usePOSStore();
   const settings = useSettingsStore();
   const { user } = useAuth();
@@ -52,10 +72,79 @@ export function CartPanel({ offers }: CartPanelProps) {
     0,
   );
 
+  const [customerOpen, setCustomerOpen] = useState(false);
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [customerResults, setCustomerResults] = useState<Customer[]>([]);
+
+  useEffect(() => {
+    if (!customerOpen) return;
+    let active = true;
+
+    const loadCustomers = async () => {
+      const query = customerQuery.trim();
+      let results: Customer[] = [];
+
+      if (!query) {
+        results = await db.customers.limit(6).toArray();
+      } else {
+        const phoneMatches = await db.customers
+          .where("phone")
+          .startsWith(query)
+          .limit(6)
+          .toArray();
+        const nameMatches = await db.customers
+          .filter((c) => c.name.toLowerCase().includes(query.toLowerCase()))
+          .limit(6)
+          .toArray();
+        const map = new Map<string, Customer>();
+        phoneMatches.forEach((c) => map.set(c.id, c));
+        nameMatches.forEach((c) => map.set(c.id, c));
+        results = Array.from(map.values());
+      }
+
+      if (active) setCustomerResults(results);
+    };
+
+    loadCustomers().catch((error) =>
+      console.error("Customer search failed", error),
+    );
+
+    return () => {
+      active = false;
+    };
+  }, [customerQuery, customerOpen]);
+
+  const handleProductClick = (product: Product) => {
+    if (product.type === "variable") {
+      selectProduct(product);
+      setModal("variant-selector");
+    } else {
+      addToCart(product);
+    }
+  };
+
+  useEffect(() => {
+    if (offers.length === 0) {
+      if (excludedOfferIds.length) setExcludedOffers([]);
+      return;
+    }
+    const filtered = excludedOfferIds.filter((id) =>
+      offers.some((offer) => offer.id === id),
+    );
+    if (filtered.length !== excludedOfferIds.length) {
+      setExcludedOffers(filtered);
+    }
+  }, [offers, excludedOfferIds, setExcludedOffers]);
+
+  const activeOffers = useMemo(
+    () => offers.filter((offer) => !excludedOfferIds.includes(offer.id)),
+    [offers, excludedOfferIds],
+  );
+
   // Calculate Auto-Discounts from Offers
   const { totalDiscount: offerDiscount, appliedOffers } = useMemo(
-    () => calculateCartDiscounts(cart, offers),
-    [cart, offers],
+    () => calculateCartDiscounts(cart, activeOffers),
+    [cart, activeOffers],
   );
 
   // Points Logic
@@ -111,8 +200,8 @@ export function CartPanel({ offers }: CartPanelProps) {
   return (
     <div className="w-full lg:w-[320px] xl:w-96 shrink-0 bg-background flex flex-col shadow-xl border-l border-border h-screen sticky top-0 z-30">
       {/* Header Section */}
-      <div className="p-4 pb-2 shrink-0 bg-background z-10">
-        <div className="flex items-center justify-between mb-4 border-b border-border pb-2">
+      <div className="p-4 pb-2 shrink-0 bg-background z-10 space-y-3">
+        <div className="flex items-center justify-between border-b border-border pb-2">
           <h2 className="typo-bold-18 text-foreground">{t("cart.title")}</h2>
 
           <div className="flex gap-2">
@@ -160,6 +249,13 @@ export function CartPanel({ offers }: CartPanelProps) {
           </div>
         </div>
 
+        {/* Product Search - Mobile & Desktop */}
+        <ProductSearchCombobox
+          onSelect={handleProductClick}
+          placeholder="Search products..."
+          className="h-11"
+        />
+
         {/* Customer Selection */}
         <div className="mb-4">
           {customer ? (
@@ -190,17 +286,88 @@ export function CartPanel({ offers }: CartPanelProps) {
               </Button>
             </div>
           ) : (
-            <Button
-              variant="outline"
-              className="w-full justify-between border-dashed hover:border-solid hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-muted-foreground"
-              onClick={() => setModal("member")}
-            >
-              <span className="flex items-center gap-2">
-                <User size={16} />
-                {t("cart.selectCustomer", "Add Customer to Sale")}
-              </span>
-              <ChevronRight size={16} className="opacity-50" />
-            </Button>
+            <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between border-dashed hover:border-solid hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-muted-foreground h-11"
+                >
+                  <span className="flex items-center gap-2">
+                    <User size={16} />
+                    {t("cart.selectCustomer", "Add Customer to Sale")}
+                  </span>
+                  <ChevronRight size={16} className="opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-80" align="start">
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder="Search by name or phone..."
+                    value={customerQuery}
+                    onValueChange={setCustomerQuery}
+                    className="h-11"
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      {customerQuery
+                        ? "No customers found."
+                        : "Type to search customers."}
+                    </CommandEmpty>
+                    {customerResults.length > 0 && (
+                      <CommandGroup
+                        heading={
+                          customerQuery ? "Search Results" : "Recent Customers"
+                        }
+                      >
+                        {customerResults.map((c) => (
+                          <CommandItem
+                            key={c.id}
+                            onSelect={() => {
+                              setCustomer(c);
+                              setCustomerOpen(false);
+                              setCustomerQuery("");
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <div className="flex flex-col flex-1">
+                              <span className="text-sm font-semibold">
+                                {c.name}
+                              </span>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                                <span>{c.phone}</span>
+                                {c.loyaltyPoints > 0 && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="text-amber-600 font-medium flex items-center gap-0.5">
+                                      <TicketPercent size={10} />
+                                      {c.loyaltyPoints} pts
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+                  </CommandList>
+                </Command>
+                <div className="border-t p-2 bg-muted/30">
+                  <Button
+                    variant="outline"
+                    className="w-full bg-background hover:bg-primary hover:text-white transition-colors"
+                    onClick={() => {
+                      setCustomerOpen(false);
+                      setCustomerQuery("");
+                      setModal("member");
+                    }}
+                  >
+                    <User size={14} className="mr-2" />
+                    Create New Customer
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
 
@@ -270,7 +437,66 @@ export function CartPanel({ offers }: CartPanelProps) {
       {/* Footer / Payment Section */}
       <div className="p-4 bg-background border-t border-border shrink-0 space-y-4">
         {/* Offers Section */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
+          {offers.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all h-10"
+                >
+                  <span className="flex items-center gap-2">
+                    <TicketPercent size={16} />
+                    <span className="text-sm font-medium">
+                      Active Offers ({activeOffers.length}/{offers.length})
+                    </span>
+                  </span>
+                  <ChevronRight size={16} className="opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-85" align="end">
+                <div className="p-3 border-b bg-muted/30">
+                  <h4 className="font-semibold text-sm text-foreground">
+                    Select Offers to Apply
+                  </h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Uncheck offers you want to exclude
+                  </p>
+                </div>
+                <div className="p-3 space-y-2 max-h-80 overflow-y-auto">
+                  {offers.map((offer) => {
+                    const checked = !excludedOfferIds.includes(offer.id);
+                    return (
+                      <div
+                        key={offer.id}
+                        className={cn(
+                          "flex items-start gap-3 rounded-lg border p-3 transition-all cursor-pointer hover:bg-muted/50",
+                          checked
+                            ? "border-primary/30 bg-primary/5"
+                            : "border-border/60 bg-background",
+                        )}
+                        onClick={() => toggleOffer(offer.id)}
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => toggleOffer(offer.id)}
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-foreground">
+                            {offer.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 capitalize">
+                            {offer.type.replace(/_/g, " ")}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
           {appliedOffers.length > 0 ? (
             <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100 space-y-2 animate-in fade-in slide-in-from-bottom-2">
               <div className="flex items-center justify-between">
@@ -293,12 +519,12 @@ export function CartPanel({ offers }: CartPanelProps) {
                 ))}
               </div>
             </div>
-          ) : offers.length > 0 && cart.length > 0 ? (
+          ) : activeOffers.length > 0 && cart.length > 0 ? (
             <div className="text-[10px] text-muted-foreground text-center py-1">
-              {offers.length} offers active
+              {activeOffers.length} offers active
             </div>
           ) : null}
-        </div>
+        </div> */}
 
         {/* Totals Breakdown */}
         <div className="space-y-2">

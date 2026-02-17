@@ -8,6 +8,7 @@ interface POSState {
   search: string;
   selectedCategory: string;
   isProcessingPayment: boolean;
+  excludedOfferIds: string[];
   activeModal:
     | "none"
     | "size"
@@ -38,6 +39,8 @@ interface POSState {
   // Actions
   setSearch: (query: string) => void;
   setCategory: (id: string) => void;
+  toggleOffer: (offerId: string) => void;
+  setExcludedOffers: (offerIds: string[]) => void;
   addToCart: (product: Product, variant?: Variant) => void;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, delta: number) => void;
@@ -53,6 +56,7 @@ export const usePOSStore = create<POSState>((set) => ({
   search: "",
   selectedCategory: "all",
   isProcessingPayment: false,
+  excludedOfferIds: [],
   activeModal: "none",
 
   setCart: (cart) => set({ cart }),
@@ -69,6 +73,13 @@ export const usePOSStore = create<POSState>((set) => ({
 
   setSearch: (query) => set({ search: query }),
   setCategory: (id) => set({ selectedCategory: id }),
+  toggleOffer: (offerId) =>
+    set((state) => ({
+      excludedOfferIds: state.excludedOfferIds.includes(offerId)
+        ? state.excludedOfferIds.filter((id) => id !== offerId)
+        : [...state.excludedOfferIds, offerId],
+    })),
+  setExcludedOffers: (offerIds) => set({ excludedOfferIds: offerIds }),
 
   addToCart: (product, variant) =>
     set((state) => {

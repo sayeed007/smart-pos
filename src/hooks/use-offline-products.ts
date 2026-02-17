@@ -1,12 +1,12 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { db } from "@/lib/db";
 import { Product, PriceOverride } from "@/types";
 import { toast } from "sonner";
 
 import { useLocationStore } from "@/features/locations/store";
 import { syncProductsToLocal } from "@/lib/db";
+import { ProductsService } from "@/lib/services/backend/products.service";
 
 export function useOfflineProducts() {
     const { currentLocation } = useLocationStore();
@@ -19,9 +19,26 @@ export function useOfflineProducts() {
             // 1. Try Online First
             try {
                 if (navigator.onLine) {
-                    const res = await api.get("/products");
+                    const limit = 100;
+                    const firstPage = await ProductsService.list({ page: 1, limit });
+                    const totalPages = firstPage?.meta?.totalPages ?? 1;
+
+                    const remainingPages =
+                        totalPages > 1
+                            ? await Promise.all(
+                                Array.from({ length: totalPages - 1 }, (_, idx) =>
+                                    ProductsService.list({ page: idx + 2, limit }),
+                                ),
+                              )
+                            : [];
+
+                    const allProducts = [
+                        ...(firstPage.data || []),
+                        ...remainingPages.flatMap((page) => page.data || []),
+                    ];
+
                     // Sync to local DB (using helper that handles inventoryLevels)
-                    await syncProductsToLocal(res.data);
+                    await syncProductsToLocal(allProducts);
                 }
             } catch (error) {
                 console.warn("Online fetch failed, falling back to DB", error);

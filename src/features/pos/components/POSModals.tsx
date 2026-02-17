@@ -48,6 +48,7 @@ export function POSModals({ offers = [] }: POSModalsProps) {
     setCustomer,
     customer,
     redeemedPoints,
+    excludedOfferIds,
   } = usePOSStore();
 
   const subtotal = cart.reduce(
@@ -55,7 +56,13 @@ export function POSModals({ offers = [] }: POSModalsProps) {
     0,
   );
 
-  const { totalDiscount: offerDiscount } = calculateCartDiscounts(cart, offers);
+  const activeOffers = offers.filter(
+    (offer) => !excludedOfferIds.includes(offer.id),
+  );
+  const { totalDiscount: offerDiscount } = calculateCartDiscounts(
+    cart,
+    activeOffers,
+  );
   const pointsDiscount = redeemedPoints / 100;
   const discount = offerDiscount + pointsDiscount;
 
@@ -103,7 +110,7 @@ export function POSModals({ offers = [] }: POSModalsProps) {
         customerId: customer?.id,
         loyaltyPointsRedeemed: redeemedPoints,
         loyaltyDiscount: pointsDiscount,
-        offers,
+        offers: activeOffers,
       });
 
       if (!result.success) {

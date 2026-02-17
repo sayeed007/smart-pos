@@ -6,38 +6,15 @@ import { ProductGrid } from "./components/ProductGrid";
 import { CartPanel } from "./components/CartPanel";
 import { POSModals } from "./components/POSModals";
 import { Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { useCategories } from "@/hooks/api/categories";
 import { useActiveOffers } from "@/hooks/api/offers";
 import { useLocations } from "@/hooks/api/locations";
 import { useLocationStore } from "@/features/locations/store";
-import { ProductsService } from "@/lib/services/backend/products.service";
+import { useOfflineProducts } from "@/hooks/use-offline-products";
 
 export default function POSFeature() {
-  // Fetch products from the real backend (paginated, capped at 100 per page)
-  const { data: products = [], isLoading: pLoading } = useQuery({
-    queryKey: ["products", "pos"],
-    queryFn: async () => {
-      const limit = 100;
-      const firstPage = await ProductsService.list({ page: 1, limit });
-      const totalPages = firstPage?.meta?.totalPages ?? 1;
-
-      if (totalPages <= 1) {
-        return firstPage.data || [];
-      }
-
-      const remainingPages = await Promise.all(
-        Array.from({ length: totalPages - 1 }, (_, index) =>
-          ProductsService.list({ page: index + 2, limit }),
-        ),
-      );
-
-      return [
-        ...(firstPage.data || []),
-        ...remainingPages.flatMap((page) => page.data || []),
-      ];
-    },
-  });
+  // Fetch products from local DB (synced from backend)
+  const { data: products = [], isLoading: pLoading } = useOfflineProducts();
 
   // Fetch categories from the real backend
   const { data: categories, isLoading: cLoading } = useCategories();
@@ -69,12 +46,20 @@ export default function POSFeature() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen">
-      <ProductGrid
-        products={products}
-        categories={Array.isArray(categories) ? categories : []}
-      />
-      <CartPanel offers={offers} />
+    <div className="flex flex-col lg:flex-row h-screen overflow-hidden">
+      {/* ProductGrid - Hidden on mobile (< lg), visible on desktop */}
+      <div className="hidden lg:flex lg:flex-1 min-w-0 h-full">
+        <ProductGrid
+          products={products}
+          categories={Array.isArray(categories) ? categories : []}
+        />
+      </div>
+
+      {/* CartPanel - Full screen on mobile, sidebar on desktop */}
+      <div className="flex-1 lg:flex-initial lg:w-[320px] xl:w-96 shrink-0">
+        <CartPanel offers={offers} />
+      </div>
+
       <POSModals offers={offers} />
     </div>
   );

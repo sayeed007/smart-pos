@@ -4,11 +4,10 @@ import { useState, useRef, MouseEvent, useEffect } from "react";
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { cn } from "@/lib/utils";
 import { Product, Category } from "@/types";
-import { Scan } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
+import { ProductSearchCombobox } from "./ProductSearchCombobox";
 
 interface ProductGridProps {
   products: Product[];
@@ -23,7 +22,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 export function ProductGrid({ products, categories }: ProductGridProps) {
   const {
     search,
-    setSearch,
     selectedCategory,
     setCategory,
     addToCart,
@@ -124,26 +122,20 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   });
 
   return (
-    <div className="flex-1 min-w-0 max-w-full flex flex-col h-full overflow-hidden space-y-4">
-      {/* Search & Categories */}
-      <div className="flex flex-col gap-3 p-3 bg-card shadow-sm shrink-0">
-        <div className="relative group shrink-0">
-          <Scan
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary"
-            size={20}
-          />
-          <Input
-            type="text"
-            placeholder={t("productSearch")}
-            className="bg-background w-full pl-10 pr-4 h-10 rounded-lg border-transparent focus-visible:ring-1 focus-visible:ring-primary shadow-sm placeholder:text-muted-foreground transition-all text-sm font-medium"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+    <div className="flex-1 min-w-0 max-w-full flex flex-col h-full overflow-hidden">
+      {/* Search & Categories - Sticky Header */}
+      <div className="flex flex-col gap-3 p-3 bg-card/98 backdrop-blur-md shadow-md shrink-0 sticky top-0 z-30 border-b border-border/50">
+        {/* Search with Dropdown */}
+        <ProductSearchCombobox
+          onSelect={handleProductClick}
+          placeholder={t("productSearch")}
+          className="h-12"
+        />
 
+        {/* Categories - Horizontal Scroll */}
         <div
           ref={scrollRef}
-          className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 shrink-0 mask-fade-right cursor-grab active:cursor-grabbing select-none"
+          className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 shrink-0 mask-fade-right cursor-grab active:cursor-grabbing select-none"
           onMouseDown={handleMouseDown}
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}
@@ -153,11 +145,10 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
             variant="ghost"
             onClick={() => setCategory("all")}
             className={cn(
-              "px-3 py-1.5 h-auto rounded-lg transition-all shrink-0 font-medium hover:bg-transparent",
+              "px-3 py-2 h-auto rounded-lg transition-all shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
               selectedCategory === "all"
-                ? "bg-chart-1 hover:bg-chart-1/90 text-white! shadow-md shadow-chart-1/20 font-bold"
-                : "bg-card text-muted-foreground hover:bg-muted border border-border",
-              "text-xs",
+                ? "bg-chart-1 hover:bg-chart-1/90 text-white shadow-md shadow-chart-1/30"
+                : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",
             )}
           >
             {t("categoryAll")}
@@ -168,14 +159,13 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
               variant="ghost"
               onClick={() => setCategory(cat.id)}
               className={cn(
-                "px-3 py-1.5 h-auto rounded-lg transition-all whitespace-nowrap shrink-0 font-medium hover:bg-transparent",
+                "px-3 py-2 h-auto rounded-lg transition-all whitespace-nowrap shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
                 selectedCategory === cat.id
-                  ? "bg-chart-1 hover:bg-chart-1/90 text-white! shadow-md shadow-chart-1/20 font-bold"
-                  : "bg-card text-muted-foreground hover:bg-muted border border-border",
-                "text-xs",
+                  ? "bg-chart-1 hover:bg-chart-1/90 text-white shadow-md shadow-chart-1/30"
+                  : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",
               )}
             >
-              <span className="mr-2">{cat.icon}</span>
+              <span className="mr-1.5">{cat.icon}</span>
               {cat.name}
             </Button>
           ))}

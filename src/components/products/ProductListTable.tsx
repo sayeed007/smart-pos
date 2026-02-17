@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,6 +17,7 @@ import {
   SquarePen,
   Trash2,
   ArrowUpDown,
+  Barcode,
 } from "lucide-react";
 import { ServerImage } from "@/components/ui/server-image";
 import { ProductDeleteDialog } from "@/components/products/ProductDeleteDialog";
@@ -44,6 +45,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import JsBarcode from "jsbarcode";
 
 interface ProductListTableProps {
   products: Product[];
@@ -68,6 +79,215 @@ export function ProductListTable({
 }: ProductListTableProps) {
   const { t } = useTranslation("products");
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [printOpen, setPrintOpen] = useState(false);
+  const [printProduct, setPrintProduct] = useState<Product | null>(null);
+  const [simpleQty, setSimpleQty] = useState(1);
+  const [variantSelections, setVariantSelections] = useState<
+    Record<string, { checked: boolean; qty: number; disabled: boolean }>
+  >({});
+
+  const resolveBarcode = (barcode?: string, barcodes?: string[]) =>
+    barcode?.trim() || barcodes?.[0]?.trim() || "";
+
+  const escapeHtml = (value: string) =>
+    value.replace(/[&<>"']/g, (char) => {
+      switch (char) {
+        case "&":
+          return "&amp;";
+        case "<":
+          return "&lt;";
+        case ">":
+          return "&gt;";
+        case '"':
+          return "&quot;";
+        case "'":
+          return "&#39;";
+        default:
+          return char;
+      }
+    });
+
+  const openPrintDialog = (product: Product) => {
+    setPrintProduct(product);
+    if (product.type === "variable") {
+      const selections: Record<
+        string,
+        { checked: boolean; qty: number; disabled: boolean }
+      > = {};
+      (product.variants || []).forEach((variant) => {
+        const barcode = resolveBarcode(variant.barcode, variant.barcodes);
+        const disabled = !barcode;
+        selections[variant.id] = {
+          checked: !disabled,
+          qty: 1,
+          disabled,
+        };
+      });
+      setVariantSelections(selections);
+    } else {
+      setSimpleQty(1);
+      setVariantSelections({});
+    }
+    setPrintOpen(true);
+  };
+
+  const renderBarcodeSvg = (value: string) => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    JsBarcode(svg, value, {
+      format: "CODE128",
+      displayValue: true,
+      fontSize: 10,
+      height: 40,
+      margin: 0,
+    });
+    return svg.outerHTML;
+  };
+
+  const handlePrint = () => {
+    if (!printProduct) return;
+
+    const labels: Array<{
+      name: string;
+      sku: string;
+      barcode: string;
+    }> = [];
+
+    if (printProduct.type === "variable") {
+      (printProduct.variants || []).forEach((variant) => {
+        const selection = variantSelections[variant.id];
+        if (!selection?.checked || selection.qty <= 0) return;
+        const barcode = resolveBarcode(variant.barcode, variant.barcodes);
+        if (!barcode) return;
+        const qty = Math.max(1, Math.floor(selection.qty));
+        for (let i = 0; i < qty; i += 1) {
+          labels.push({
+            name: `${printProduct.name} - ${variant.name}`,
+            sku: variant.sku,
+            barcode,
+          });
+        }
+      });
+    } else {
+      const barcode = resolveBarcode(
+        printProduct.barcode,
+        printProduct.barcodes,
+      );
+      if (!barcode) {
+        return;
+      }
+      const qty = Math.max(1, Math.floor(simpleQty || 1));
+      for (let i = 0; i < qty; i += 1) {
+        labels.push({
+          name: printProduct.name,
+          sku: printProduct.sku,
+          barcode,
+        });
+      }
+    }
+
+    if (labels.length === 0) return;
+
+    const content = labels
+      .map((label) => {
+        const svg = renderBarcodeSvg(label.barcode);
+        const safeName = escapeHtml(label.name);
+        const safeSku = escapeHtml(label.sku || "-");
+        return `
+          <div class="label">
+            <div class="title">${safeName}</div>
+            <div class="sku">SKU: ${safeSku}</div>
+            ${svg}
+          </div>
+        `;
+      })
+      .join("");
+
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) return;
+
+    printWindow.document.write(`<!doctype html>
+      <html>
+        <head>
+          <title>Print Barcodes</title>
+          <style>
+            * { box-sizing: border-box; }
+            body { margin: 0; padding: 16px; font-family: Arial, sans-serif; }
+            .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+            .label {
+              width: 220px;
+              border: 1px solid #eee;
+              padding: 10px;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+              align-items: center;
+              text-align: center;
+              page-break-inside: avoid;
+            }
+            .title { font-size: 12px; font-weight: 600; }
+            .sku { font-size: 10px; color: #666; }
+            svg { width: 200px; height: 60px; }
+            @media print {
+              body { padding: 0; }
+              .label { border: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="grid">${content}</div>
+        </body>
+      </html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
+
+  const canPrint = useMemo(() => {
+    if (!printProduct) return false;
+    if (printProduct.type === "variable") {
+      return Object.values(variantSelections).some(
+        (selection) => selection.checked && selection.qty > 0,
+      );
+    }
+    return Boolean(
+      resolveBarcode(printProduct.barcode, printProduct.barcodes),
+    );
+  }, [printProduct, variantSelections]);
+
+  const variantSelectionStats = useMemo(() => {
+    const selections = Object.values(variantSelections);
+    const selectable = selections.filter((selection) => !selection.disabled);
+    const selected = selectable.filter((selection) => selection.checked);
+    return {
+      selectableCount: selectable.length,
+      selectedCount: selected.length,
+    };
+  }, [variantSelections]);
+
+  const selectAllState = useMemo<"indeterminate" | boolean>(() => {
+    if (variantSelectionStats.selectableCount === 0) return false;
+    if (variantSelectionStats.selectedCount === 0) return false;
+    if (
+      variantSelectionStats.selectedCount ===
+      variantSelectionStats.selectableCount
+    ) {
+      return true;
+    }
+    return "indeterminate";
+  }, [variantSelectionStats]);
+
+  const handleSelectAllVariants = (checked: boolean) => {
+    setVariantSelections((prev) => {
+      const next: typeof prev = {};
+      Object.entries(prev).forEach(([id, selection]) => {
+        next[id] = selection.disabled
+          ? selection
+          : { ...selection, checked };
+      });
+      return next;
+    });
+  };
 
   // Columns Definition
   const columns: ColumnDef<Product>[] = [
@@ -167,7 +387,7 @@ export function ProductListTable({
 
         return (
           <div className="text-muted-foreground typo-regular-14">
-            {product.sku || "—"}
+            {product.sku || "-"}
           </div>
         );
       },
@@ -393,6 +613,16 @@ export function ProductListTable({
               <SquarePen className="w-4 h-4" />
             </Button>
 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="cursor-pointer h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+              onClick={() => openPrintDialog(product)}
+              title="Print barcode"
+            >
+              <Barcode className="w-4 h-4" />
+            </Button>
+
             {onDelete && (
               <ProductDeleteDialog
                 product={product}
@@ -537,6 +767,141 @@ export function ProductListTable({
           </PaginationContent>
         </Pagination>
       </div>
+
+      <Dialog open={printOpen} onOpenChange={setPrintOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Print Barcodes</DialogTitle>
+          </DialogHeader>
+
+          {printProduct ? (
+            printProduct.type === "variable" ? (
+              <div className="space-y-3">
+                {(printProduct.variants || []).length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No variants available.
+                  </p>
+                )}
+                {(printProduct.variants || []).length > 0 && (
+                  <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={selectAllState}
+                        disabled={variantSelectionStats.selectableCount === 0}
+                        onCheckedChange={(checked) =>
+                          handleSelectAllVariants(checked === true)
+                        }
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        Select all
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {variantSelectionStats.selectedCount}/
+                      {variantSelectionStats.selectableCount} selected
+                    </span>
+                  </div>
+                )}
+                {(printProduct.variants || []).map((variant) => {
+                  const selection = variantSelections[variant.id];
+                  const barcode = resolveBarcode(
+                    variant.barcode,
+                    variant.barcodes,
+                  );
+                  return (
+                    <div
+                      key={variant.id}
+                      className="flex items-center gap-3 rounded-lg border border-border p-3"
+                    >
+                      <Checkbox
+                        checked={selection?.checked || false}
+                        disabled={selection?.disabled}
+                        onCheckedChange={(checked) =>
+                          setVariantSelections((prev) => ({
+                            ...prev,
+                            [variant.id]: {
+                              checked: checked === true,
+                              qty: prev[variant.id]?.qty || 1,
+                              disabled: prev[variant.id]?.disabled || false,
+                            },
+                          }))
+                        }
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold">{variant.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {variant.sku || "-"} - {barcode || "No barcode"}
+                        </p>
+                      </div>
+                      <Input
+                        type="number"
+                        min={1}
+                        className="w-20"
+                        value={selection?.qty || 1}
+                        disabled={selection?.disabled || false}
+                        onChange={(e) =>
+                          setVariantSelections((prev) => ({
+                            ...prev,
+                            [variant.id]: {
+                              checked: prev[variant.id]?.checked ?? true,
+                              qty: Math.max(
+                                1,
+                                Math.floor(Number(e.target.value) || 1),
+                              ),
+                              disabled: prev[variant.id]?.disabled || false,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="rounded-lg border border-border p-3">
+                  <p className="text-sm font-semibold">{printProduct.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {printProduct.sku || "-"} -{" "}
+                    {resolveBarcode(
+                      printProduct.barcode,
+                      printProduct.barcodes,
+                    ) || "No barcode"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">Copies</span>
+                  <Input
+                    type="number"
+                    min={1}
+                    className="w-24"
+                    value={simpleQty}
+                    onChange={(e) =>
+                      setSimpleQty(
+                        Math.max(1, Math.floor(Number(e.target.value) || 1)),
+                      )
+                    }
+                  />
+                </div>
+                {!resolveBarcode(printProduct.barcode, printProduct.barcodes) && (
+                  <p className="text-xs text-destructive">
+                    No barcode available for this product.
+                  </p>
+                )}
+              </div>
+            )
+          ) : null}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPrintOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePrint} disabled={!canPrint}>
+              Print
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
