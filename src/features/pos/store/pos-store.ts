@@ -9,6 +9,7 @@ interface POSState {
   selectedCategory: string;
   isProcessingPayment: boolean;
   excludedOfferIds: string[];
+  modalData: any;
   activeModal:
     | "none"
     | "size"
@@ -45,7 +46,7 @@ interface POSState {
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, delta: number) => void;
   clearCart: () => void;
-  setModal: (modal: POSState["activeModal"]) => void;
+  setModal: (modal: POSState["activeModal"], data?: any) => void;
   selectProduct: (product: Product | null) => void;
   setProcessing: (status: boolean) => void;
   setCart: (cart: CartItem[]) => void;
@@ -57,6 +58,7 @@ export const usePOSStore = create<POSState>((set) => ({
   selectedCategory: "all",
   isProcessingPayment: false,
   excludedOfferIds: [],
+  modalData: null,
   activeModal: "none",
 
   setCart: (cart) => set({ cart }),
@@ -140,7 +142,8 @@ export const usePOSStore = create<POSState>((set) => ({
 
   clearCart: () => set({ cart: [], customer: null, redeemedPoints: 0 }),
 
-  setModal: (modal) => set({ activeModal: modal }),
+  setModal: (modal, data = null) =>
+    set({ activeModal: modal, modalData: data }),
   selectProduct: (product) => set({ selectedProduct: product }),
   setProcessing: (status) => set({ isProcessingPayment: status }),
 }));

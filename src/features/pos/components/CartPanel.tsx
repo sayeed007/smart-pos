@@ -1,44 +1,29 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
 import { useSettingsStore } from "@/features/settings/store";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
-import { Offer, Customer, Product } from "@/types";
+import { Offer, Product } from "@/types";
 import {
+  Banknote,
+  CreditCard,
+  ListRestart,
+  PauseCircle,
   ShoppingCart,
   TicketPercent,
-  CreditCard,
-  Banknote,
   Wallet,
-  PauseCircle,
-  ListRestart,
-  User,
-  ChevronRight,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useMemo, useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { CartItemCard } from "./CartItemCard";
 import { toast } from "sonner";
-import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Checkbox } from "@/components/ui/checkbox";
+import { CartItemCard } from "./CartItemCard";
+
+import { CustomerSearchCombobox } from "./CustomerSearchCombobox";
 import { ProductSearchCombobox } from "./ProductSearchCombobox";
-import { db } from "@/lib/db";
 
 interface CartPanelProps {
   offers: Offer[];
@@ -71,48 +56,6 @@ export function CartPanel({ offers }: CartPanelProps) {
     (sum, item) => sum + item.sellingPrice * item.quantity,
     0,
   );
-
-  const [customerOpen, setCustomerOpen] = useState(false);
-  const [customerQuery, setCustomerQuery] = useState("");
-  const [customerResults, setCustomerResults] = useState<Customer[]>([]);
-
-  useEffect(() => {
-    if (!customerOpen) return;
-    let active = true;
-
-    const loadCustomers = async () => {
-      const query = customerQuery.trim();
-      let results: Customer[] = [];
-
-      if (!query) {
-        results = await db.customers.limit(6).toArray();
-      } else {
-        const phoneMatches = await db.customers
-          .where("phone")
-          .startsWith(query)
-          .limit(6)
-          .toArray();
-        const nameMatches = await db.customers
-          .filter((c) => c.name.toLowerCase().includes(query.toLowerCase()))
-          .limit(6)
-          .toArray();
-        const map = new Map<string, Customer>();
-        phoneMatches.forEach((c) => map.set(c.id, c));
-        nameMatches.forEach((c) => map.set(c.id, c));
-        results = Array.from(map.values());
-      }
-
-      if (active) setCustomerResults(results);
-    };
-
-    loadCustomers().catch((error) =>
-      console.error("Customer search failed", error),
-    );
-
-    return () => {
-      active = false;
-    };
-  }, [customerQuery, customerOpen]);
 
   const handleProductClick = (product: Product) => {
     if (product.type === "variable") {
@@ -286,88 +229,14 @@ export function CartPanel({ offers }: CartPanelProps) {
               </Button>
             </div>
           ) : (
-            <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between border-dashed hover:border-solid hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-muted-foreground h-11"
-                >
-                  <span className="flex items-center gap-2">
-                    <User size={16} />
-                    {t("cart.selectCustomer", "Add Customer to Sale")}
-                  </span>
-                  <ChevronRight size={16} className="opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-0 w-80" align="start">
-                <Command shouldFilter={false}>
-                  <CommandInput
-                    placeholder="Search by name or phone..."
-                    value={customerQuery}
-                    onValueChange={setCustomerQuery}
-                    className="h-11"
-                  />
-                  <CommandList>
-                    <CommandEmpty>
-                      {customerQuery
-                        ? "No customers found."
-                        : "Type to search customers."}
-                    </CommandEmpty>
-                    {customerResults.length > 0 && (
-                      <CommandGroup
-                        heading={
-                          customerQuery ? "Search Results" : "Recent Customers"
-                        }
-                      >
-                        {customerResults.map((c) => (
-                          <CommandItem
-                            key={c.id}
-                            onSelect={() => {
-                              setCustomer(c);
-                              setCustomerOpen(false);
-                              setCustomerQuery("");
-                            }}
-                            className="cursor-pointer"
-                          >
-                            <div className="flex flex-col flex-1">
-                              <span className="text-sm font-semibold">
-                                {c.name}
-                              </span>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                                <span>{c.phone}</span>
-                                {c.loyaltyPoints > 0 && (
-                                  <>
-                                    <span>•</span>
-                                    <span className="text-amber-600 font-medium flex items-center gap-0.5">
-                                      <TicketPercent size={10} />
-                                      {c.loyaltyPoints} pts
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
-                  </CommandList>
-                </Command>
-                <div className="border-t p-2 bg-muted/30">
-                  <Button
-                    variant="outline"
-                    className="w-full bg-background hover:bg-primary hover:text-white transition-colors"
-                    onClick={() => {
-                      setCustomerOpen(false);
-                      setCustomerQuery("");
-                      setModal("member");
-                    }}
-                  >
-                    <User size={14} className="mr-2" />
-                    Create New Customer
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <CustomerSearchCombobox
+              onSelect={(c) => setCustomer(c)}
+              className="h-11"
+              placeholder={t(
+                "cart.selectCustomer",
+                "Search customers (mobile/name)...",
+              )}
+            />
           )}
         </div>
 

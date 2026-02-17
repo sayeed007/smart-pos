@@ -124,6 +124,10 @@ db.version(8).stores({
   offers: "id, type, status, startDate, endDate",
 });
 
+db.version(9).stores({
+  customers: "id, name, phone, email, tierId",
+});
+
 // Helper function to sync Products (Simple strategy: Overwrite local with remote on load)
 export const syncProductsToLocal = async (products: Product[]) => {
   try {

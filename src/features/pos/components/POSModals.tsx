@@ -6,6 +6,7 @@ import { usePOSStore } from "@/features/pos/store/pos-store";
 import { useSettingsStore } from "@/features/settings/store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Input } from "@/components/ui/input";
 import {
   CheckCircle2,
@@ -49,6 +50,7 @@ export function POSModals({ offers = [] }: POSModalsProps) {
     customer,
     redeemedPoints,
     excludedOfferIds,
+    modalData,
   } = usePOSStore();
 
   const subtotal = cart.reduce(
@@ -480,8 +482,8 @@ export function POSModals({ offers = [] }: POSModalsProps) {
               onSelect={(c) => {
                 setCustomer(c);
                 setModal("none");
-                toast.success(`Customer ${c.name} selected`);
               }}
+              initialPhone={modalData?.phone}
             />
           )}
         </DialogContent>
@@ -581,18 +583,21 @@ function SuspendedSalesList({ onClose }: { onClose: () => void }) {
 function MemberSearchModal({
   onSelect,
   onClose,
+  initialPhone,
 }: {
   onSelect: (c: Customer) => void;
   onClose: () => void;
+  initialPhone?: string;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Customer[]>([]);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(!!initialPhone);
   const [newCustomer, setNewCustomer] = useState({
     name: "",
-    phone: "",
+    phone: initialPhone || "",
     email: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Search handler
   const handleSearch = (val: string) => {
@@ -617,25 +622,44 @@ function MemberSearchModal({
       return;
     }
 
-    const id = `cust-${Date.now()}`;
-    const customer: Customer = {
-      id,
-      name: newCustomer.name,
-      phone: newCustomer.phone,
-      email: newCustomer.email || "",
-      totalSpent: 0,
-      loyaltyPoints: 0,
-      tierId: "tier-bronze", // Default tier
-      history: [],
-    };
+    setIsLoading(true);
+    try {
+      // Check for duplicate phone
+      const existing = await db.customers
+        .where("phone")
+        .equals(newCustomer.phone)
+        .first();
 
-    await db.customers.add(customer);
-    onSelect(customer);
-    toast.success("Customer Created");
+      if (existing) {
+        toast.error("Customer with this phone already exists");
+        return;
+      }
+
+      const id = `cust-${Date.now()}`;
+      const customer: Customer = {
+        id,
+        name: newCustomer.name,
+        phone: newCustomer.phone,
+        email: newCustomer.email || "",
+        totalSpent: 0,
+        loyaltyPoints: 0,
+        tierId: "tier-bronze", // Default tier
+        history: [],
+      };
+
+      await db.customers.add(customer);
+      onSelect(customer);
+      toast.success("Customer Created");
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to create customer");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-[400px]">
+    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-black text-gray-900 tracking-tight">
           {isCreating ? "New Customer" : "Select Customer"}
@@ -674,12 +698,17 @@ function MemberSearchModal({
               variant="outline"
               className="flex-1"
               onClick={() => setIsCreating(false)}
+              disabled={isLoading}
             >
               Back
             </Button>
-            <Button className="flex-1" onClick={handleCreate}>
-              Create Customer
-            </Button>
+            <PrimaryActionButton
+              className="flex-1"
+              onClick={handleCreate}
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating..." : "Create Customer"}
+            </PrimaryActionButton>
           </div>
         </div>
       ) : (

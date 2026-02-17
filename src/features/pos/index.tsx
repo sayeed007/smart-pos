@@ -11,10 +11,14 @@ import { useActiveOffers } from "@/hooks/api/offers";
 import { useLocations } from "@/hooks/api/locations";
 import { useLocationStore } from "@/features/locations/store";
 import { useOfflineProducts } from "@/hooks/use-offline-products";
+import { useOfflineCustomers } from "@/hooks/use-offline-customers";
 
 export default function POSFeature() {
   // Fetch products from local DB (synced from backend)
   const { data: products = [], isLoading: pLoading } = useOfflineProducts();
+
+  // Sync customers to local DB
+  useOfflineCustomers();
 
   // Fetch categories from the real backend
   const { data: categories, isLoading: cLoading } = useCategories();
