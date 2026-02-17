@@ -41,7 +41,7 @@ function loadTranslation(locale, file) {
     try {
         const content = fs.readFileSync(filePath, 'utf8');
         return JSON.parse(content);
-    } catch (error) {
+    } catch {
         return null;
     }
 }
@@ -61,8 +61,11 @@ function validateTranslations() {
 
     log(`📂 Found locales: ${locales.join(', ')}\n`, 'blue');
 
-    // Use the first locale as the reference
-    const referenceLocale = locales[0];
+    // Use 'en' as reference if available, otherwise use first
+    let referenceLocale = 'en';
+    if (!locales.includes(referenceLocale)) {
+        referenceLocale = locales[0];
+    }
     const translationFiles = getTranslationFiles(path.join(LOCALES_DIR, referenceLocale));
 
     log(`📄 Found ${translationFiles.length} translation files\n`, 'blue');
@@ -72,7 +75,6 @@ function validateTranslations() {
 
     // Check each translation file
     for (const file of translationFiles) {
-        const fileName = file.replace('.json', '');
         log(`\n📝 Checking ${file}...`, 'cyan');
 
         // Load reference translation

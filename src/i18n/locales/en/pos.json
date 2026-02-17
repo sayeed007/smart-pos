@@ -17,7 +17,8 @@
     "applyOffers": "Apply Offers",
     "appliedOffers": "Applied Offers",
     "completeSale": "Complete Sale",
-    "each": "each"
+    "each": "each",
+    "selectCustomer": "Add Customer to Sale"
   },
   "product": {
     "outOfStock": "Out of Stock",

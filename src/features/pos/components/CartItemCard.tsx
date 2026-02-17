@@ -31,7 +31,11 @@ export function CartItemCard({
           </p>
         </div>
         <button
-          onClick={onRemove}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
           className="text-muted-foreground/40 hover:text-destructive transition-colors absolute top-3 right-3"
         >
           <Trash2 size={16} color="red" />
@@ -45,7 +49,10 @@ export function CartItemCard({
             variant="outline"
             size="icon"
             className="h-8 w-8 rounded-lg border-border hover:bg-muted"
-            onClick={() => onUpdateQuantity(-1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateQuantity(-1);
+            }}
           >
             <Minus size={14} />
           </Button>
@@ -56,7 +63,10 @@ export function CartItemCard({
             variant="outline"
             size="icon"
             className="h-8 w-8 rounded-lg border-border hover:bg-muted"
-            onClick={() => onUpdateQuantity(1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateQuantity(1);
+            }}
           >
             <Plus size={14} />
           </Button>

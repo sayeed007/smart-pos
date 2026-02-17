@@ -17,7 +17,8 @@
     "applyOffers": "অফার প্রয়োগ করুন",
     "appliedOffers": "প্রয়োগকৃত অফারসমূহ",
     "completeSale": "বিক্রয় সম্পূর্ণ করুন",
-    "each": "প্রতিটি"
+    "each": "প্রতিটি",
+    "selectCustomer": "বিক্রয়ে গ্রাহক যোগ করুন"
   },
   "product": {
     "outOfStock": "স্টকে নেই",
