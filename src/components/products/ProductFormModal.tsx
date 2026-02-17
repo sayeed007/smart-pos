@@ -20,13 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, Trash2 } from "lucide-react";
+import { CopyPlus, Wand2, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { ServerImage } from "@/components/ui/server-image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
 
 export interface ProductFormData {
   id?: string;
@@ -56,14 +57,14 @@ export interface ProductSubmissionData extends Omit<
 }
 
 const defaultFormData: ProductFormData = {
-  name: "Men's Premium Performance T-shirt – Offline",
-  categoryId: "87465a08-7e41-43d6-b5e5-ad9a48033e6e",
-  sku: "73431",
-  barcode: "73431",
-  costPrice: 550,
-  sellingPrice: 900,
+  name: "",
+  categoryId: "",
+  sku: "",
+  barcode: "",
+  costPrice: 0,
+  sellingPrice: 0,
   taxRate: 0,
-  stockQuantity: 20,
+  stockQuantity: 0,
   minStockLevel: 10,
   status: "active",
   type: "simple",
@@ -73,23 +74,75 @@ const defaultFormData: ProductFormData = {
   barcodes: "",
 };
 
-// const defaultFormData: ProductFormData = {
-//   name: "",
-//   categoryId: "",
-//   sku: "",
-//   barcode: "",
-//   costPrice: 0,
-//   sellingPrice: 0,
-//   taxRate: 0,
-//   stockQuantity: 0,
-//   minStockLevel: 10,
-//   status: "active",
-//   type: "simple",
-//   variants: [],
-//   uom: "pcs",
-//   allowDecimals: false,
-//   barcodes: "",
-// };
+const numberField = (label: string) =>
+  z
+    .number({ invalid_type_error: `${label} is required` })
+    .refine((value) => !Number.isNaN(value), {
+      message: `${label} is required`,
+    })
+    .min(0, { message: `${label} must be at least 0` });
+
+const productSchema = z
+  .object({
+    name: z.string().min(1, { message: "Name is required" }),
+    categoryId: z.string().min(1, { message: "Category is required" }),
+    sku: z.string().optional(),
+    barcode: z.string().optional(),
+    costPrice: numberField("Cost price"),
+    sellingPrice: numberField("Selling price"),
+    taxRate: z.number().optional(),
+    stockQuantity: numberField("Stock quantity"),
+    minStockLevel: z.number().optional(),
+    status: z.enum(["active", "inactive"]),
+    image: z.any().optional(),
+    type: z.enum(["simple", "variable"]),
+    variants: z.array(z.any()),
+    uom: z.string().optional(),
+    allowDecimals: z.boolean(),
+    barcodes: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === "simple" && (!data.sku || data.sku.trim().length === 0)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["sku"],
+        message: "SKU is required",
+      });
+    }
+    if (
+      data.type === "simple" &&
+      (!data.sellingPrice || data.sellingPrice <= 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["sellingPrice"],
+        message: "Selling price is required for simple products",
+      });
+    }
+    if (
+      data.type === "variable" &&
+      (!data.variants || data.variants.length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["variants"],
+        message: "At least one variant is required for variable products",
+      });
+    }
+    if (data.type === "variable" && Array.isArray(data.variants)) {
+      const missingBarcode = data.variants.find(
+        (variant: any) =>
+          !variant?.barcode || variant.barcode.trim().length === 0,
+      );
+      if (missingBarcode) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["variants"],
+          message: "Variant barcode is required for all variants",
+        });
+      }
+    }
+  });
 
 interface ProductFormModalProps {
   open: boolean;
@@ -108,6 +161,7 @@ export function ProductFormModal({
 }: ProductFormModalProps) {
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
   const [isSaving, setIsSaving] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const { t } = useTranslation("products");
 
   // Variant temporary state
@@ -115,11 +169,20 @@ export function ProductFormModal({
     name: "",
     sku: "",
     price: 0,
+    costPrice: 0,
+    barcode: "",
     stockQuantity: 0,
   });
 
+  const generateBarcodeValue = () => {
+    const timestamp = Date.now().toString().slice(-8);
+    const random = Math.floor(1000 + Math.random() * 9000);
+    return `${timestamp}${random}`;
+  };
+
   useEffect(() => {
     if (open) {
+      setFieldErrors({});
       if (productToEdit) {
         setFormData({
           id: productToEdit.id,
@@ -141,48 +204,44 @@ export function ProductFormModal({
           barcodes: productToEdit.barcodes?.join("\n") || "",
         });
       } else {
-        setFormData(defaultFormData);
+        setFormData({
+          ...defaultFormData,
+          categoryId: categories[0]?.id ?? "",
+        });
       }
     }
-  }, [open, productToEdit]);
+  }, [open, productToEdit, categories]);
 
   const handleSave = async () => {
-    // Validation
-    if (!formData.name || !formData.categoryId || !formData.sku) {
+    const validation = productSchema.safeParse(formData);
+    if (!validation.success) {
+      const errors = validation.error.flatten().fieldErrors;
+      setFieldErrors(errors);
       toast.error(
-        t("validation.required", "Name, Category and SKU are required"),
+        validation.error.issues[0]?.message || "Please fix the errors",
       );
       return;
     }
 
-    if (formData.type === "simple" && !formData.sellingPrice) {
-      toast.error(
-        t(
-          "validation.priceRequired",
-          "Selling price is required for simple products",
-        ),
-      );
-      return;
-    }
-
-    if (formData.type === "variable" && formData.variants.length === 0) {
-      toast.error(
-        t(
-          "validation.variantsRequired",
-          "At least one variant is required for variable products",
-        ),
-      );
-      return;
-    }
+    setFieldErrors({});
 
     setIsSaving(true);
     try {
+      const fallbackSku =
+        formData.type === "variable"
+          ? formData.variants[0]?.sku?.trim() || ""
+          : "";
+      const normalizedVariants = formData.variants.map((variant) => ({
+        ...variant,
+        barcode: variant.barcode?.trim() || variant.barcodes?.[0]?.trim() || "",
+      }));
       const submissionData = {
         ...formData,
+        sku: formData.sku?.trim() || fallbackSku,
+        variants: normalizedVariants,
         barcodes: formData.barcodes.split("\n").filter((b) => b.trim() !== ""),
       };
       await onSave(submissionData);
-      onOpenChange(false);
     } catch (error) {
       console.error("Error saving product:", error);
     } finally {
@@ -191,8 +250,8 @@ export function ProductFormModal({
   };
 
   const addVariant = () => {
-    if (!newVariant.name || !newVariant.sku) {
-      toast.error("Variant Name and SKU are required");
+    if (!newVariant.name || !newVariant.sku || !newVariant.barcode) {
+      toast.error("Variant Name, SKU and Barcode are required");
       return;
     }
     const variant: Variant = {
@@ -201,6 +260,8 @@ export function ProductFormModal({
       name: newVariant.name,
       sku: newVariant.sku,
       price: newVariant.price || 0,
+      costPrice: newVariant.costPrice || 0,
+      barcode: newVariant.barcode,
       stockQuantity: newVariant.stockQuantity || 0,
       attributes: {},
     };
@@ -209,7 +270,14 @@ export function ProductFormModal({
       ...formData,
       variants: [...formData.variants, variant],
     });
-    setNewVariant({ name: "", sku: "", price: 0, stockQuantity: 0 });
+    setNewVariant({
+      name: "",
+      sku: "",
+      price: 0,
+      costPrice: 0,
+      barcode: "",
+      stockQuantity: 0,
+    });
   };
 
   const removeVariant = (id: string) => {
@@ -236,7 +304,7 @@ export function ProductFormModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name" className="typo-semibold-14">
-                {t("fields.name")} *
+                {t("fields.name")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="name"
@@ -246,10 +314,13 @@ export function ProductFormModal({
                   setFormData({ ...formData, name: e.target.value })
                 }
               />
+              {fieldErrors.name?.[0] && (
+                <p className="text-xs text-red-500">{fieldErrors.name[0]}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="category" className="typo-semibold-14">
-                {t("fields.category")} *
+                {t("fields.category")} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.categoryId}
@@ -268,6 +339,11 @@ export function ProductFormModal({
                   ))}
                 </SelectContent>
               </Select>
+              {fieldErrors.categoryId?.[0] && (
+                <p className="text-xs text-red-500">
+                  {fieldErrors.categoryId[0]}
+                </p>
+              )}
             </div>
           </div>
 
@@ -299,7 +375,10 @@ export function ProductFormModal({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sku" className="typo-semibold-14">
-                    {t("fields.sku")} *
+                    {t("fields.sku")}{" "}
+                    {formData.type === "simple" && (
+                      <span className="text-red-500">*</span>
+                    )}
                   </Label>
                   <Input
                     id="sku"
@@ -309,19 +388,38 @@ export function ProductFormModal({
                       setFormData({ ...formData, sku: e.target.value })
                     }
                   />
+                  {fieldErrors.sku?.[0] && (
+                    <p className="text-xs text-red-500">{fieldErrors.sku[0]}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="barcode" className="typo-semibold-14">
                     {t("fields.barcode")}
                   </Label>
-                  <Input
-                    id="barcode"
-                    placeholder={t("fields.barcodePlaceholder")}
-                    value={formData.barcode}
-                    onChange={(e) =>
-                      setFormData({ ...formData, barcode: e.target.value })
-                    }
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="barcode"
+                      placeholder={t("fields.barcodePlaceholder")}
+                      value={formData.barcode}
+                      onChange={(e) =>
+                        setFormData({ ...formData, barcode: e.target.value })
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="px-3"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          barcode: generateBarcodeValue(),
+                        })
+                      }
+                      title="Generate barcode"
+                    >
+                      <Wand2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -345,7 +443,8 @@ export function ProductFormModal({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sellingPrice" className="typo-semibold-14">
-                    {t("fields.sellingPrice")} *
+                    {t("fields.sellingPrice")}{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="sellingPrice"
@@ -359,6 +458,11 @@ export function ProductFormModal({
                       })
                     }
                   />
+                  {fieldErrors.sellingPrice?.[0] && (
+                    <p className="text-xs text-red-500">
+                      {fieldErrors.sellingPrice[0]}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -439,9 +543,11 @@ export function ProductFormModal({
               <h3 className="font-semibold text-sm">Variants</h3>
 
               {/* Add Variant Inline Form */}
-              <div className="grid grid-cols-5 gap-2 items-end">
+              <div className="grid grid-cols-4 gap-2">
                 <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">Variant Name (e.g. Red/L)</Label>
+                  <Label className="text-xs">
+                    Variant (e.g. Red/L) <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newVariant.name}
                     onChange={(e) =>
@@ -451,11 +557,61 @@ export function ProductFormModal({
                   />
                 </div>
                 <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">SKU</Label>
+                  <Label className="text-xs">
+                    SKU <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     value={newVariant.sku}
                     onChange={(e) =>
                       setNewVariant({ ...newVariant, sku: e.target.value })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs">
+                    Barcode <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={newVariant.barcode}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          barcode: e.target.value,
+                        })
+                      }
+                      className="h-8 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-8 px-2"
+                      onClick={() =>
+                        setNewVariant({
+                          ...newVariant,
+                          barcode: generateBarcodeValue(),
+                        })
+                      }
+                      title="Generate barcode"
+                    >
+                      <Wand2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 items-end">
+                <div className="col-span-1 space-y-1">
+                  <Label className="text-xs">Cost</Label>
+                  <Input
+                    type="number"
+                    value={newVariant.costPrice}
+                    onChange={(e) =>
+                      setNewVariant({
+                        ...newVariant,
+                        costPrice: parseFloat(e.target.value),
+                      })
                     }
                     className="h-8 text-xs"
                   />
@@ -506,29 +662,59 @@ export function ProductFormModal({
                     No variants added.
                   </p>
                 )}
+                {fieldErrors.variants?.[0] && (
+                  <p className="text-xs text-red-500">
+                    {fieldErrors.variants[0]}
+                  </p>
+                )}
                 {formData.variants.map((variant) => (
                   <div
                     key={variant.id}
                     className="flex items-center justify-between p-2 bg-card border rounded text-sm"
                   >
-                    <div className="grid grid-cols-4 gap-4 flex-1">
+                    <div className="grid grid-cols-6 gap-4 flex-1">
                       <span className="font-medium truncate">
                         {variant.name}
                       </span>
                       <span className="text-muted-foreground truncate">
                         {variant.sku}
                       </span>
+                      <span className="text-muted-foreground truncate">
+                        {variant.barcode || "—"}
+                      </span>
                       <span>${variant.price}</span>
+                      <span className="text-muted-foreground">
+                        Cost: ${variant.costPrice ?? 0}
+                      </span>
                       <span>Qty: {variant.stockQuantity}</span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 text-destructive"
-                      onClick={() => removeVariant(variant.id)}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground"
+                        onClick={() =>
+                          setNewVariant({
+                            name: `${variant.name} Copy`,
+                            sku: "",
+                            price: variant.price,
+                            costPrice: variant.costPrice || 0,
+                            barcode: variant.barcode || "",
+                            stockQuantity: variant.stockQuantity || 0,
+                          })
+                        }
+                      >
+                        <CopyPlus className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-destructive"
+                        onClick={() => removeVariant(variant.id)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

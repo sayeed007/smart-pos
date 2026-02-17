@@ -58,8 +58,11 @@ export interface Variant {
   sku: string;
   name: string;
   price: number; // Override product price
+  costPrice?: number;
   stockQuantity: number;
   attributes: Record<string, string>; // e.g. { Color: "Red", Size: "L" }
+  barcode?: string;
+  barcodes?: string[];
   barcodes?: string[]; // Variant-specific barcodes
   // Multi-location stock
   locationWiseStock?: Array<{

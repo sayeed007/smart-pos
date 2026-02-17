@@ -142,7 +142,17 @@ export class ProductsService {
       variants: (product as any).variants?.map((v: any) => ({
         ...v,
         price: Number(v.price ?? 0),
+        costPrice: v.costPrice !== undefined ? Number(v.costPrice) : undefined,
         stockQuantity: Number(v.stockQuantity ?? 0),
+        barcode: Array.isArray(v.barcodes)
+          ? v.barcodes.find((b: any) => b?.isPrimary)?.barcode ||
+            v.barcodes[0]?.barcode
+          : undefined,
+        barcodes: Array.isArray(v.barcodes)
+          ? v.barcodes
+              .map((b: any) => b?.barcode)
+              .filter((b: any) => typeof b === "string" && b.trim() !== "")
+          : undefined,
       })),
     } as Product;
   }
@@ -216,6 +226,7 @@ export class ProductsService {
             "image",
             "imageUrl",
             "status",
+            "variants",
           ]);
 
     const mergedBarcodes = this.normalizeBarcodes(
@@ -232,19 +243,45 @@ export class ProductsService {
       }
 
       if (key === "variants") {
-        if (mode !== "create") return;
-        const variants = (value as any[]).map((v) => ({
-          name: v.name,
-          sku: v.sku,
-          price: Number(v.price),
-          costPrice: v.costPrice ? Number(v.costPrice) : undefined,
-          attributes: v.attributes || {},
-          imageUrl: v.imageUrl, // Preserve if present
-          stockQuantity: Number(v.stockQuantity),
-        }));
+        const isUuid = (val: string) =>
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+            val,
+          );
+        const variants = (value as any[]).map((v) => {
+          const normalizedBarcode =
+            typeof v.barcode === "string" && v.barcode.trim()
+              ? v.barcode.trim()
+              : Array.isArray(v.barcodes)
+                ? v.barcodes[0]
+                : undefined;
+          const base = {
+            name: v.name,
+            sku: v.sku,
+            price:
+              v.price !== undefined && v.price !== null
+                ? Number(v.price)
+                : undefined,
+            costPrice:
+              v.costPrice !== undefined && v.costPrice !== null
+                ? Number(v.costPrice)
+                : undefined,
+            barcode: normalizedBarcode,
+            attributes: v.attributes || {},
+            imageUrl: v.imageUrl, // Preserve if present
+            stockQuantity:
+              v.stockQuantity !== undefined && v.stockQuantity !== null
+                ? Number(v.stockQuantity)
+                : undefined,
+          };
+          if (mode === "update") {
+            const id =
+              typeof v.id === "string" && isUuid(v.id) ? v.id : undefined;
+            return id ? { id, ...base } : base;
+          }
+          return base;
+        });
         formData.append(key, JSON.stringify(variants));
       } else if (key === "barcodes") {
-        if (mode !== "create") return;
         if (mergedBarcodes.length) {
           formData.append(key, JSON.stringify(mergedBarcodes));
         }

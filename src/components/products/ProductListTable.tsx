@@ -115,11 +115,62 @@ export function ProductListTable({
     {
       accessorKey: "sku",
       header: t("page.headers.sku"),
-      cell: ({ getValue }) => (
-        <div className="text-muted-foreground typo-regular-14">
-          {getValue() as string}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const product = row.original;
+        const variantSkus = Array.from(
+          new Set(
+            (product.variants || [])
+              .map((variant) => variant.sku)
+              .filter((sku): sku is string => Boolean(sku)),
+          ),
+        );
+
+        if (product.type === "variable" && variantSkus.length > 0) {
+          const preview = variantSkus.slice(0, 2).join(", ");
+          const remaining = variantSkus.length - 2;
+          const label =
+            remaining > 0 ? `${preview} +${remaining}` : preview;
+
+          return (
+            <TooltipProvider>
+              <Tooltip delayDuration={200}>
+                <TooltipTrigger asChild>
+                  <div className="text-muted-foreground typo-regular-14 cursor-help">
+                    {label}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="right"
+                  className="p-3 bg-popover border-border shadow-lg"
+                  sideOffset={8}
+                >
+                  <div className="space-y-2 min-w-[160px]">
+                    <p className="text-xs font-semibold text-foreground border-b border-border pb-1.5 mb-2">
+                      Variant SKUs
+                    </p>
+                    <div className="space-y-1.5">
+                      {variantSkus.map((sku) => (
+                        <div
+                          key={sku}
+                          className="text-xs text-muted-foreground font-medium"
+                        >
+                          {sku}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        }
+
+        return (
+          <div className="text-muted-foreground typo-regular-14">
+            {product.sku || "—"}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "categoryId",
