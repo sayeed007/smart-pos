@@ -7,6 +7,7 @@ import { useSettingsStore } from "@/features/settings/store";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { Offer, Product } from "@/types";
+import { db } from "@/lib/db";
 import {
   Banknote,
   CreditCard,
@@ -15,7 +16,6 @@ import {
   ShoppingCart,
   TicketPercent,
   Wallet,
-  X,
 } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ import { CartItemCard } from "./CartItemCard";
 
 import { CustomerSearchCombobox } from "./CustomerSearchCombobox";
 import { ProductSearchCombobox } from "./ProductSearchCombobox";
+import { CustomerInfoPanel } from "./CustomerInfoPanel";
 
 interface CartPanelProps {
   offers: Offer[];
@@ -85,7 +86,11 @@ export function CartPanel({ offers }: CartPanelProps) {
   );
 
   // Calculate Auto-Discounts from Offers
-  const { totalDiscount: offerDiscount, appliedOffers } = useMemo(
+  const {
+    totalDiscount: offerDiscount,
+    appliedOffers,
+    lineDiscounts,
+  } = useMemo(
     () => calculateCartDiscounts(cart, activeOffers),
     [cart, activeOffers],
   );
@@ -131,13 +136,6 @@ export function CartPanel({ offers }: CartPanelProps) {
       console.error(e);
       toast.error("Failed to suspend sale");
     }
-  };
-
-  // Helper to display tier
-  const getTierDisplay = (tierId?: string) => {
-    if (tierId === "tier-gold") return "Gold Member";
-    if (tierId === "tier-silver") return "Silver Member";
-    return "Bronze Member";
   };
 
   return (
@@ -199,35 +197,19 @@ export function CartPanel({ offers }: CartPanelProps) {
           className="h-11"
         />
 
-        {/* Customer Selection */}
+        {/* Customer & Loyalty */}
         <div className="mb-4">
           {customer ? (
-            <div className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/20 transition-all animate-in fade-in slide-in-from-top-1">
-              <div>
-                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  {customer.name}
-                  <span className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded-full uppercase tracking-wider font-bold">
-                    {getTierDisplay(customer.tierId)}
-                  </span>
-                </p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                  <span className="font-medium text-amber-600 flex items-center gap-1">
-                    <TicketPercent size={12} />
-                    {customer.loyaltyPoints} pts
-                  </span>
-                  <span>&bull;</span>
-                  <span>{t("cart.rewardsAvailable", "Rewards Available")}</span>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setCustomer(null)}
-                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
-              >
-                <X size={16} />
-              </Button>
-            </div>
+            <CustomerInfoPanel
+              customer={customer}
+              onClear={() => setCustomer(null)}
+              subtotal={subtotal}
+              redeemedPoints={redeemedPoints}
+              setRedeemedPoints={setRedeemedPoints}
+              currencySymbol={settings.currencySymbol}
+              redemptionRate={redemptionRate}
+              className="animate-in fade-in slide-in-from-top-1"
+            />
           ) : (
             <CustomerSearchCombobox
               onSelect={(c) => setCustomer(c)}
@@ -239,49 +221,6 @@ export function CartPanel({ offers }: CartPanelProps) {
             />
           )}
         </div>
-
-        {/* Loyalty Redemption */}
-        {customer && customer.loyaltyPoints >= 100 && (
-          <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200/50 animate-in fade-in slide-in-from-top-1">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1 bg-amber-100 rounded-md text-amber-700">
-                  <TicketPercent size={14} />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-amber-900">Use Points</p>
-                  <p className="text-[10px] text-amber-600 font-medium">
-                    Available: {customer.loyaltyPoints} pts
-                  </p>
-                </div>
-              </div>
-              <span className="text-sm font-bold text-amber-700">
-                -${pointsDiscount.toFixed(2)}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-amber-700 font-medium w-8">
-                0
-              </span>
-              <input
-                type="range"
-                min="0"
-                max={Math.min(
-                  customer.loyaltyPoints,
-                  subtotal * redemptionRate,
-                )} // Cap at subtotal equivalent
-                step="100"
-                value={redeemedPoints}
-                onChange={(e) => setRedeemedPoints(Number(e.target.value))}
-                className="flex-1 h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
-              />
-              <span className="text-[10px] text-amber-700 font-medium w-8 text-right">
-                {customer.loyaltyPoints}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Scrollable Cart Items */}
@@ -298,115 +237,56 @@ export function CartPanel({ offers }: CartPanelProps) {
               item={item}
               onUpdateQuantity={(delta) => updateQuantity(item.id, delta)}
               onRemove={() => updateQuantity(item.id, -item.quantity)}
+              offers={offers}
+              activeOfferIds={lineDiscounts
+                .filter((ld) => ld.itemId === item.id)
+                .map((ld) => ld.offerId)}
+              onToggleOffer={(offerId) => toggleOffer(offerId)}
+              isOfferExcluded={(offerId) => excludedOfferIds.includes(offerId)}
             />
           ))
         )}
+
+        {/* Applied Offers Summary - keeping this visible above totals */}
+        {appliedOffers.length > 0 && (
+          <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100 space-y-2 animate-in fade-in slide-in-from-bottom-2 mt-4 mx-4">
+            <div className="flex items-center justify-between">
+              <span className="text-emerald-700 font-medium text-sm flex items-center gap-2">
+                <TicketPercent size={16} />
+                {appliedOffers.length} Offer(s) Applied
+              </span>
+              <span className="text-emerald-700 font-bold text-sm">
+                -{settings.currencySymbol}
+                {offerDiscount.toFixed(2)}
+              </span>
+            </div>
+            <div className="space-y-1 pl-6">
+              {appliedOffers.map((offer) => (
+                <p key={offer.id} className="text-xs text-emerald-600 truncate">
+                  &bull; {offer.name}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Footer / Payment Section */}
-      <div className="p-4 bg-background border-t border-border shrink-0 space-y-4">
-        {/* Offers Section */}
-        {/* <div className="space-y-2">
-          {offers.length > 0 && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all h-10"
-                >
-                  <span className="flex items-center gap-2">
-                    <TicketPercent size={16} />
-                    <span className="text-sm font-medium">
-                      Active Offers ({activeOffers.length}/{offers.length})
-                    </span>
-                  </span>
-                  <ChevronRight size={16} className="opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-0 w-85" align="end">
-                <div className="p-3 border-b bg-muted/30">
-                  <h4 className="font-semibold text-sm text-foreground">
-                    Select Offers to Apply
-                  </h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Uncheck offers you want to exclude
-                  </p>
-                </div>
-                <div className="p-3 space-y-2 max-h-80 overflow-y-auto">
-                  {offers.map((offer) => {
-                    const checked = !excludedOfferIds.includes(offer.id);
-                    return (
-                      <div
-                        key={offer.id}
-                        className={cn(
-                          "flex items-start gap-3 rounded-lg border p-3 transition-all cursor-pointer hover:bg-muted/50",
-                          checked
-                            ? "border-primary/30 bg-primary/5"
-                            : "border-border/60 bg-background",
-                        )}
-                        onClick={() => toggleOffer(offer.id)}
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={() => toggleOffer(offer.id)}
-                          className="mt-0.5"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground">
-                            {offer.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1 capitalize">
-                            {offer.type.replace(/_/g, " ")}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-          {appliedOffers.length > 0 ? (
-            <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100 space-y-2 animate-in fade-in slide-in-from-bottom-2">
-              <div className="flex items-center justify-between">
-                <span className="text-emerald-700 font-medium text-sm flex items-center gap-2">
-                  <TicketPercent size={16} />
-                  {appliedOffers.length} Offer(s) Applied
-                </span>
-                <span className="text-emerald-700 font-bold text-sm">
-                  -${offerDiscount.toFixed(2)}
-                </span>
-              </div>
-              <div className="space-y-1 pl-6">
-                {appliedOffers.map((offer) => (
-                  <p
-                    key={offer.id}
-                    className="text-xs text-emerald-600 truncate"
-                  >
-                    &bull; {offer.name}
-                  </p>
-                ))}
-              </div>
-            </div>
-          ) : activeOffers.length > 0 && cart.length > 0 ? (
-            <div className="text-[10px] text-muted-foreground text-center py-1">
-              {activeOffers.length} offers active
-            </div>
-          ) : null}
-        </div> */}
-
-        {/* Totals Breakdown */}
-        <div className="space-y-2">
+      {/* Totals Breakdown */}
+      <div className="p-4 pt-2 bg-background z-20 border-t border-border shrink-0">
+        <div className="space-y-2 mb-4">
           <div className="flex justify-between text-muted-foreground">
             <span className="typo-regular-14">{t("cart.subtotal")}</span>
             <span className="typo-semibold-14 text-foreground">
-              ${subtotal.toFixed(2)}
+              {settings.currencySymbol}
+              {subtotal.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground items-center">
             <span className="typo-regular-14">{t("cart.discount")}</span>
             <span className="typo-semibold-14 text-foreground">
-              {discount > 0 ? `-$${discount.toFixed(2)}` : "$0.00"}
+              {discount > 0
+                ? `-${settings.currencySymbol}${discount.toFixed(2)}`
+                : `${settings.currencySymbol}0.00`}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground">
@@ -414,23 +294,26 @@ export function CartPanel({ offers }: CartPanelProps) {
               {t("cart.tax")} ({settings.taxRate}%)
             </span>
             <span className="typo-semibold-14 text-foreground">
-              ${tax.toFixed(2)}
+              {settings.currencySymbol}
+              {tax.toFixed(2)}
             </span>
           </div>
         </div>
 
-        <div className="flex justify-between items-end pt-2 border-t border-dashed border-border">
+        <div className="flex justify-between items-end pt-2 border-t border-dashed border-border mb-3">
           <span className="typo-bold-18 text-foreground">
             {t("cart.total")}
           </span>
           <div className="text-right">
             <span className="typo-bold-18 text-chart-1 block">
-              ${total.toFixed(2)}
+              {settings.currencySymbol}
+              {total.toFixed(2)}
             </span>
           </div>
         </div>
+
         {customer && (
-          <div className="flex justify-end -mt-1 text-xs text-muted-foreground">
+          <div className="flex justify-end -mt-2 mb-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1 text-emerald-600 font-medium">
               <TicketPercent size={10} />+
               {Math.floor(
@@ -447,7 +330,7 @@ export function CartPanel({ offers }: CartPanelProps) {
         )}
 
         {/* Payment Methods */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 mb-3">
           <Button
             variant={paymentMethod === "card" ? "default" : "outline"}
             className={cn(
