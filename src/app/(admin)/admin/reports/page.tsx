@@ -191,7 +191,7 @@ export default function ReportsPage() {
                 id="date"
                 variant="outline"
                 className={cn(
-                  "w-full sm:w-[260px] justify-start text-left font-normal bg-card",
+                  "w-full sm:w-65 justify-start text-left font-normal bg-card",
                   !date && "text-muted-foreground",
                 )}
               >
@@ -223,7 +223,7 @@ export default function ReportsPage() {
           </Popover>
 
           <Select value={locationFilter} onValueChange={setLocationFilter}>
-            <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectTrigger className="w-full sm:w-50">
               <SelectValue placeholder="All locations" />
             </SelectTrigger>
             <SelectContent>

@@ -172,7 +172,7 @@ export default function SettingsPage() {
                       onChange={(e) =>
                         handleChange("receiptFooter", e.target.value)
                       }
-                      className="bg-muted/30 resize-none min-h-[80px]"
+                      className="bg-muted/30 resize-none min-h-20"
                       placeholder={t(
                         "sections.receipt.placeholders.footer",
                         "Thank you for visiting!",

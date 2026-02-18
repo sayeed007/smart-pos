@@ -67,7 +67,7 @@ export function VariantSelectorView({
       <div className="mt-6 pt-4 border-t border-gray-100">
         <Button
           variant="ghost"
-          className="w-full text-gray-400 hover:text-gray-900"
+          className="w-full text-gray-400 hover:text-gray-900 border"
           onClick={onClose}
         >
           {t("common:cancel", "Cancel")}

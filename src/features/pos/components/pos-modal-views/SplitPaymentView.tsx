@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
 export interface SplitPaymentEntry {
   method: string;
@@ -128,13 +129,13 @@ export function SplitPaymentView({
         <Button variant="outline" className="flex-1" onClick={onBack}>
           {t("common:back", "Back")}
         </Button>
-        <Button
+        <PrimaryActionButton
           className="flex-1"
           disabled={remainingDue > 0.01}
           onClick={() => onCheckout("Split", payments)}
         >
           {t("cart.completeSale", "Complete Sale")}
-        </Button>
+        </PrimaryActionButton>
       </div>
     </div>
   );

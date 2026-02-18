@@ -3,6 +3,7 @@
 import { CheckCircle2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReceiptTemplate } from "@/features/pos/components/ReceiptTemplate";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Sale } from "@/types";
 import { useTranslation } from "react-i18next";
 
@@ -30,11 +31,13 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
           {sale.invoiceNo}
         </p>
       )}
-
       <div className="flex gap-2 mb-4">
-        <Button className="flex-1 py-5 rounded-xl text-sm" onClick={onNewSale}>
+        <PrimaryActionButton
+          className="flex-1 py-5 rounded-xl text-sm"
+          onClick={onNewSale}
+        >
           {t("common:newSale", "Start New Sale")}
-        </Button>
+        </PrimaryActionButton>
         <Button
           variant="outline"
           className="flex-none py-5 px-4 rounded-xl text-sm border-gray-200"
@@ -44,7 +47,6 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
           <Printer size={20} />
         </Button>
       </div>
-
       {/* Invisible Receipt Template for Print */}
       {sale && <ReceiptTemplate sale={sale} />}
     </div>
