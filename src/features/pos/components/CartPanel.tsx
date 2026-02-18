@@ -1,16 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { calculateCartDiscounts } from "@/features/pos/utils/discount-engine";
 import { useSettingsStore } from "@/features/settings/store";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { Offer, Product } from "@/types";
 import { db } from "@/lib/db";
 import {
-  Banknote,
-  CreditCard,
   ListRestart,
   PauseCircle,
   ShoppingCart,
@@ -25,6 +23,7 @@ import { CartItemCard } from "./CartItemCard";
 import { CustomerSearchCombobox } from "./CustomerSearchCombobox";
 import { ProductSearchCombobox } from "./ProductSearchCombobox";
 import { CustomerInfoPanel } from "./CustomerInfoPanel";
+import { AppliedOffersSummary } from "./AppliedOffersSummary";
 
 interface CartPanelProps {
   offers: Offer[];
@@ -40,8 +39,6 @@ export function CartPanel({ offers }: CartPanelProps) {
     setCustomer,
     redeemedPoints,
     setRedeemedPoints,
-    paymentMethod,
-    setPaymentMethod,
     excludedOfferIds,
     toggleOffer,
     setExcludedOffers,
@@ -85,7 +82,7 @@ export function CartPanel({ offers }: CartPanelProps) {
     [offers, excludedOfferIds],
   );
 
-  // Calculate Auto-Discounts from Offers
+  // Calculate Auto-Discounts from Offers (Actual - taking exclusions into account)
   const {
     totalDiscount: offerDiscount,
     appliedOffers,
@@ -93,6 +90,12 @@ export function CartPanel({ offers }: CartPanelProps) {
   } = useMemo(
     () => calculateCartDiscounts(cart, activeOffers),
     [cart, activeOffers],
+  );
+
+  // Calculate Potential Offers (Ignoring exclusions - to show all available options)
+  const { appliedOffers: potentialOffers } = useMemo(
+    () => calculateCartDiscounts(cart, offers),
+    [cart, offers],
   );
 
   // Points Logic
@@ -237,37 +240,8 @@ export function CartPanel({ offers }: CartPanelProps) {
               item={item}
               onUpdateQuantity={(delta) => updateQuantity(item.id, delta)}
               onRemove={() => updateQuantity(item.id, -item.quantity)}
-              offers={offers}
-              activeOfferIds={lineDiscounts
-                .filter((ld) => ld.itemId === item.id)
-                .map((ld) => ld.offerId)}
-              onToggleOffer={(offerId) => toggleOffer(offerId)}
-              isOfferExcluded={(offerId) => excludedOfferIds.includes(offerId)}
             />
           ))
-        )}
-
-        {/* Applied Offers Summary - keeping this visible above totals */}
-        {appliedOffers.length > 0 && (
-          <div className="bg-emerald-50/50 rounded-lg p-3 border border-emerald-100 space-y-2 animate-in fade-in slide-in-from-bottom-2 mt-4 mx-4">
-            <div className="flex items-center justify-between">
-              <span className="text-emerald-700 font-medium text-sm flex items-center gap-2">
-                <TicketPercent size={16} />
-                {appliedOffers.length} Offer(s) Applied
-              </span>
-              <span className="text-emerald-700 font-bold text-sm">
-                -{settings.currencySymbol}
-                {offerDiscount.toFixed(2)}
-              </span>
-            </div>
-            <div className="space-y-1 pl-6">
-              {appliedOffers.map((offer) => (
-                <p key={offer.id} className="text-xs text-emerald-600 truncate">
-                  &bull; {offer.name}
-                </p>
-              ))}
-            </div>
-          </div>
         )}
       </div>
 
@@ -281,6 +255,17 @@ export function CartPanel({ offers }: CartPanelProps) {
               {subtotal.toFixed(2)}
             </span>
           </div>
+
+          <AppliedOffersSummary
+            appliedOffers={appliedOffers}
+            potentialOffers={potentialOffers}
+            excludedOfferIds={excludedOfferIds}
+            onToggleOffer={toggleOffer}
+            onSetExcluded={(ids) => setExcludedOffers(ids)}
+            offerDiscount={offerDiscount}
+            currencySymbol={settings.currencySymbol}
+            className="mb-2"
+          />
           <div className="flex justify-between text-muted-foreground items-center">
             <span className="typo-regular-14">{t("cart.discount")}</span>
             <span className="typo-semibold-14 text-foreground">
@@ -329,57 +314,15 @@ export function CartPanel({ offers }: CartPanelProps) {
           </div>
         )}
 
-        {/* Payment Methods */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <Button
-            variant={paymentMethod === "card" ? "default" : "outline"}
-            className={cn(
-              "h-10 typo-semibold-12 gap-2 border-border",
-              paymentMethod === "card"
-                ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
-                : "text-foreground bg-transparent hover:bg-muted",
-            )}
-            onClick={() => setPaymentMethod("card")}
-          >
-            <CreditCard size={14} />
-            {t("checkout.card")}
-          </Button>
-          <Button
-            variant={paymentMethod === "cash" ? "default" : "outline"}
-            className={cn(
-              "h-10 typo-semibold-12 gap-2 border-border",
-              paymentMethod === "cash"
-                ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
-                : "text-foreground bg-transparent hover:bg-muted",
-            )}
-            onClick={() => setPaymentMethod("cash")}
-          >
-            <Banknote size={14} />
-            {t("checkout.cash")}
-          </Button>
-          <Button
-            variant={paymentMethod === "wallet" ? "default" : "outline"}
-            className={cn(
-              "h-10 typo-semibold-12 gap-2 px-1 border-border",
-              paymentMethod === "wallet"
-                ? "bg-chart-1 hover:bg-chart-1/90 text-white border-transparent"
-                : "text-foreground bg-transparent hover:bg-muted",
-            )}
-            onClick={() => setPaymentMethod("wallet")}
-          >
-            <Wallet size={14} />
-            {t("checkout.wallet")}
-          </Button>
-        </div>
-
-        {/* Complete Sale */}
-        <Button
-          size="lg"
-          className="w-full typo-semibold-14 bg-chart-1 hover:bg-chart-1/90 text-white shadow-lg shadow-chart-1/20"
-          onClick={() => setModal("payment-method")}
+        {/* Complete Sale Button */}
+        <PrimaryActionButton
+          className="w-full text-base font-bold shadow-lg hover:shadow-xl transition-all h-12"
+          disabled={cart.length === 0}
+          onClick={() => setModal("checkout")}
         >
-          {t("cart.completeSale")}
-        </Button>
+          {t("checkout.charge")} {settings.currencySymbol}
+          {total.toFixed(2)}
+        </PrimaryActionButton>
       </div>
     </div>
   );

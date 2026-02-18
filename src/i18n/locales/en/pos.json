@@ -43,7 +43,14 @@
     "completePayment": "Complete Payment",
     "printReceipt": "Print Receipt",
     "success": "Payment successful!",
-    "error": "Payment failed. Please try again."
+    "error": "Payment failed. Please try again.",
+    "charge": "Charge",
+    "payment": "Payment",
+    "payWithCash": "Pay with Cash",
+    "payWithCard": "Pay with Card",
+    "payWithWallet": "Pay with Wallet",
+    "selectMethod": "Select Payment Method",
+    "totalToPay": "Total To Pay"
   },
   "offers": {
     "title": "Active Offers",

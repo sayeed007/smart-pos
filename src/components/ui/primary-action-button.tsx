@@ -20,7 +20,7 @@ export const PrimaryActionButton = React.forwardRef<
     <Button
       ref={ref}
       className={cn(
-        "cursor-pointer bg-chart-1 hover:bg-chart-1/90 typo-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none",
+        "cursor-pointer bg-chart-1 hover:bg-chart-1/90 typo-semibold-14 text-card shadow-lg shadow-chart-1/20 transition-all disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none disabled:border",
         className,
       )}
       {...props}

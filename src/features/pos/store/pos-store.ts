@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Product, CartItem, Variant, Customer } from "@/types";
 
-type PaymentMethod = "card" | "cash" | "wallet";
+type PaymentMethod = "card" | "cash" | "wallet" | "split";
 
 interface POSState {
   cart: CartItem[];
@@ -14,6 +14,7 @@ interface POSState {
     | "none"
     | "size"
     | "variant-selector"
+    | "checkout"
     | "payment-method"
     | "cash-detail"
     | "card-detail"
