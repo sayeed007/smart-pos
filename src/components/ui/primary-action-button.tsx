@@ -25,15 +25,21 @@ export const PrimaryActionButton = React.forwardRef<
       )}
       {...props}
     >
-      {Icon && (
-        <span className="mr-2">
-          {typeof Icon === "function" ||
-          (typeof Icon === "object" && Icon !== null && "render" in Icon)
-            ? React.createElement(Icon as LucideIcon, { className: "w-4 h-4" })
-            : Icon}
-        </span>
+      {Icon ? (
+        <>
+          <span className="mr-2">
+            {typeof Icon === "function" ||
+            (typeof Icon === "object" && Icon !== null && "render" in Icon)
+              ? React.createElement(Icon as LucideIcon, {
+                  className: "w-4 h-4",
+                })
+              : Icon}
+          </span>
+          {children}
+        </>
+      ) : (
+        children
       )}
-      {children}
     </Button>
   );
 });
