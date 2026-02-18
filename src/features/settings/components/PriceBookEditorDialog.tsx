@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 export function PriceBookEditorDialog({
   book,
@@ -76,8 +77,8 @@ export function PriceBookEditorDialog({
         price: price, // Store as number
         updatedAt: new Date().toISOString(),
       });
-    } catch (e) {
-      toast.error("Failed to save price");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to save price"));
     }
   };
 

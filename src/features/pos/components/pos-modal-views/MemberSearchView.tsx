@@ -8,6 +8,7 @@ import { UserPlus, X } from "lucide-react";
 import { db } from "@/lib/db";
 import { Customer } from "@/types";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
 
 interface MemberSearchViewProps {
@@ -79,9 +80,14 @@ export function MemberSearchView({
       await db.customers.add(customer);
       onSelect(customer);
       toast.success(t("customer.createdSuccess", "Customer Created"));
-    } catch (e) {
-      console.error(e);
-      toast.error(t("customer.createError", "Failed to create customer"));
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        getErrorMessage(
+          error,
+          t("customer.createError", "Failed to create customer"),
+        ),
+      );
     } finally {
       setIsLoading(false);
     }

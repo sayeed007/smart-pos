@@ -18,6 +18,7 @@ import {
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { CartItemCard } from "./CartItemCard";
 
 import { CustomerSearchCombobox } from "./CustomerSearchCombobox";
@@ -135,9 +136,9 @@ export function CartPanel({ offers }: CartPanelProps) {
       });
       clearCart();
       toast.success("Sale Suspended");
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to suspend sale");
+    } catch (error) {
+      console.error(error);
+      toast.error(getErrorMessage(error, "Failed to suspend sale"));
     }
   };
 

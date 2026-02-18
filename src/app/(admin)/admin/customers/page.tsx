@@ -15,6 +15,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
 import { CustomerFormValues } from "@/lib/validations/customer";
 import { useDebounce } from "use-debounce";
@@ -63,7 +64,8 @@ export default function AdminCustomersPage() {
             setSelectedCustomer(null);
             toast.success(t("toasts.customerUpdated"));
           },
-          onError: () => toast.error(t("toasts.customerError")),
+          onError: (error: unknown) =>
+            toast.error(getErrorMessage(error, t("toasts.customerError"))),
         },
       );
     } else {
@@ -73,7 +75,8 @@ export default function AdminCustomersPage() {
           setSelectedCustomer(null);
           toast.success(t("toasts.customerCreated"));
         },
-        onError: () => toast.error(t("toasts.customerError")),
+        onError: (error: unknown) =>
+          toast.error(getErrorMessage(error, t("toasts.customerError"))),
       });
     }
   };

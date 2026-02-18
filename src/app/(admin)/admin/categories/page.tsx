@@ -9,6 +9,7 @@ import { Loader2, Plus, SquarePen } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import {
   useCategories,
   useCreateCategory,
@@ -64,7 +65,9 @@ export default function CategoriesPage() {
       setIsModalOpen(false);
     } catch (error) {
       console.error(error);
-      toast.error(t("common:errorMessage", "An error occurred"));
+      toast.error(
+        getErrorMessage(error, t("common:errorMessage", "An error occurred")),
+      );
     }
   };
 

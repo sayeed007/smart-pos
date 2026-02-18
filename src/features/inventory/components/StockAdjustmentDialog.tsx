@@ -23,6 +23,7 @@ import {
 import { Minus, Plus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
 import { useLocationStore } from "@/features/locations/store";
 import { useAdjustStock } from "@/hooks/api/inventory";
@@ -131,8 +132,8 @@ export function StockAdjustmentDialog({
       setOpen(false);
       reset();
     } catch (error) {
-      toast.error("Failed to adjust stock");
       console.error(error);
+      toast.error(getErrorMessage(error, "Failed to adjust stock"));
     }
   };
 

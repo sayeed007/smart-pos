@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Trash2 } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 interface ProductDeleteDialogProps {
   product: Product;
@@ -37,6 +39,9 @@ export function ProductDeleteDialog({
       setOpen(false);
     } catch (error) {
       console.error("Failed to delete", error);
+      toast.error(
+        getErrorMessage(error, t("toasts.deleteError", "Failed to delete product")),
+      );
     } finally {
       setIsDeleting(false);
     }

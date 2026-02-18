@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { useDebounce } from "use-debounce";
 
 export default function UsersPage() {
@@ -70,7 +71,7 @@ export default function UsersPage() {
       toast.success("User deleted successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete user");
+      toast.error(getErrorMessage(error, "Failed to delete user"));
     }
   };
 
@@ -96,11 +97,9 @@ export default function UsersPage() {
             setIsDialogOpen(false);
             toast.success("User updated successfully");
           },
-          onError: (error: any) => {
+          onError: (error: unknown) => {
             console.error(error);
-            toast.error(
-              error?.response?.data?.message || "Failed to update user",
-            );
+            toast.error(getErrorMessage(error, "Failed to update user"));
           },
         },
       );
@@ -111,11 +110,9 @@ export default function UsersPage() {
           setIsDialogOpen(false);
           toast.success("User created successfully");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
           console.error(error);
-          toast.error(
-            error?.response?.data?.message || "Failed to create user",
-          );
+          toast.error(getErrorMessage(error, "Failed to create user"));
         },
       });
     }

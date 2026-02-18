@@ -29,6 +29,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Controller, Resolver, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { z } from "zod";
 
 interface TransferItem {
@@ -254,9 +255,11 @@ export function CreateTransferDialog({
         }),
       );
       setOpen(false);
-    } catch (e) {
-      console.error(e);
-      toast.error(t("dialogs.createTransfer.errorMessage"));
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        getErrorMessage(error, t("dialogs.createTransfer.errorMessage")),
+      );
     }
   };
 

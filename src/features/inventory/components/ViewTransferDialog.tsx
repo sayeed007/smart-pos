@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useReceiveTransfer } from "@/hooks/api/inventory";
@@ -41,9 +42,11 @@ export function ViewTransferDialog({
       await receiveTransfer.mutateAsync(transfer.id);
       toast.success(t("dialogs.viewTransfer.successMessage"));
       onOpenChange(false);
-    } catch (e) {
-      console.error(e);
-      toast.error(t("dialogs.viewTransfer.errorMessage"));
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        getErrorMessage(error, t("dialogs.viewTransfer.errorMessage")),
+      );
     }
   };
 

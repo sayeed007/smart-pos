@@ -9,6 +9,8 @@ import { Customer } from "@/types";
 import { db } from "@/lib/db";
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 interface CustomerSearchComboboxProps {
   onSelect: (customer: Customer) => void;
@@ -106,6 +108,7 @@ export function CustomerSearchCombobox({
         }
       } catch (error) {
         console.error("Failed to load customers", error);
+        toast.error(getErrorMessage(error, "Failed to load customers"));
         if (active) setCustomers([]);
       } finally {
         setIsLoading(false);
@@ -141,6 +144,7 @@ export function CustomerSearchCombobox({
       }
     } catch (error) {
       console.error("Failed to load more customers", error);
+      toast.error(getErrorMessage(error, "Failed to load more customers"));
     } finally {
       setIsLoading(false);
     }

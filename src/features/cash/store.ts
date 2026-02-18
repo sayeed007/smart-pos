@@ -1,6 +1,8 @@
 
 import { create } from 'zustand';
 import { db, CashShift } from '@/lib/db';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/errors';
 
 interface CashState {
     currentShift: CashShift | null;
@@ -23,6 +25,7 @@ export const useCashStore = create<CashState>((set, get) => ({
             set({ currentShift: shift || null, isLoading: false });
         } catch (error) {
             console.error("Failed to check shift", error);
+            toast.error(getErrorMessage(error, "Failed to check shift"));
             set({ isLoading: false });
         }
     },

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { db } from "@/lib/db";
 import { Product, PriceOverride } from "@/types";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 import { useLocationStore } from "@/features/locations/store";
 import { syncProductsToLocal } from "@/lib/db";
@@ -44,6 +45,10 @@ export function useOfflineProducts() {
                 console.warn("Online fetch failed, falling back to DB", error);
                 if (!navigator.onLine) {
                     toast.error("Offline Mode: Serving local data");
+                } else {
+                    toast.error(
+                        getErrorMessage(error, "Failed to sync products"),
+                    );
                 }
             }
 

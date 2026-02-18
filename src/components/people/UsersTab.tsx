@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { useDebounce } from "use-debounce";
 
 import {
@@ -90,7 +91,9 @@ export function UsersTab() {
       toast.success(t("toasts.deleted", "User deleted successfully"));
     } catch (error) {
       console.error(error);
-      toast.error(t("toasts.deleteError", "Failed to delete user"));
+      toast.error(
+        getErrorMessage(error, t("toasts.deleteError", "Failed to delete user")),
+      );
     }
   };
 
@@ -117,12 +120,13 @@ export function UsersTab() {
             setIsDialogOpen(false);
             toast.success(t("toasts.updated", "User updated successfully"));
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onError: (error: any) => {
+          onError: (error: unknown) => {
             console.error(error);
             toast.error(
-              error?.response?.data?.message ||
+              getErrorMessage(
+                error,
                 t("toasts.updateError", "Failed to update user"),
+              ),
             );
           },
         },
@@ -134,12 +138,13 @@ export function UsersTab() {
           setIsDialogOpen(false);
           toast.success(t("toasts.created", "User created successfully"));
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (error: any) => {
+        onError: (error: unknown) => {
           console.error(error);
           toast.error(
-            error?.response?.data?.message ||
+            getErrorMessage(
+              error,
               t("toasts.createError", "Failed to create user"),
+            ),
           );
         },
       });

@@ -4,6 +4,20 @@ export enum UserRole {
   CASHIER = "Cashier",
 }
 
+export interface ApiErrorPayload {
+  message?: string;
+  error?: string;
+  details?: Record<string, unknown>;
+}
+
+export interface ApiError {
+  message?: string;
+  response?: {
+    status?: number;
+    data?: ApiErrorPayload;
+  };
+}
+
 export interface User {
   id: string;
   name: string;

@@ -22,6 +22,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { CopyPlus, Wand2, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
 import { ServerImage } from "@/components/ui/server-image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -244,6 +245,7 @@ export function ProductFormModal({
       await onSave(submissionData);
     } catch (error) {
       console.error("Error saving product:", error);
+      toast.error(getErrorMessage(error, "Failed to save product"));
     } finally {
       setIsSaving(false);
     }

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Plus, Trash2, DollarSign } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import {
   Dialog,
   DialogContent,
@@ -63,8 +64,8 @@ export function PriceBookManager() {
       setIsCreateOpen(false);
       load();
       toast.success("Price Book created.");
-    } catch (_) {
-      toast.error("Failed to create Price Book.");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to create Price Book."));
     }
   };
 

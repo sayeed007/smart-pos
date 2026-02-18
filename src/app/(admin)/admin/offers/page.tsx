@@ -29,6 +29,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import {
   Pagination,
   PaginationContent,
@@ -78,7 +79,7 @@ export default function OffersPage() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(t("common:error", "An error occurred"));
+      toast.error(getErrorMessage(error, t("common:error", "An error occurred")));
       throw error;
     }
   };
@@ -95,7 +96,7 @@ export default function OffersPage() {
       setOfferToDelete(null);
     } catch (error) {
       console.error(error);
-      toast.error(t("common:error"));
+      toast.error(getErrorMessage(error, t("common:error")));
     }
   };
 

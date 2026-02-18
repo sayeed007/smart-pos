@@ -8,11 +8,13 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 import { Offer } from "@/types";
 import { OfferForm, OfferFormPayload } from "@/components/offers/OfferForm";
 import { useProducts } from "@/hooks/api/products";
 import { useCategories } from "@/hooks/api/categories";
+import { getErrorMessage } from "@/lib/errors";
 
 interface OfferFormModalProps {
   open: boolean;
@@ -64,6 +66,12 @@ export function OfferFormModal({
                 onOpenChange(false);
               } catch (error) {
                 console.error("Failed to save offer", error);
+                toast.error(
+                  getErrorMessage(
+                    error,
+                    t("common:error", "Failed to save offer"),
+                  ),
+                );
               }
             }}
             onCancel={() => onOpenChange(false)}

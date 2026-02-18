@@ -6,6 +6,7 @@ import { usePOSStore } from "@/features/pos/store/pos-store";
 import { useSettingsStore } from "@/features/settings/store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import { processSale } from "@/features/pos/utils/sale-processor";
 import { Offer, CartItem, Customer } from "@/types";
 import { Sale } from "@/types";
@@ -167,9 +168,9 @@ export function POSModals({ offers = [] }: POSModalsProps) {
 
       setModal("success");
       clearCart();
-    } catch (e) {
-      console.error(e);
-      toast.error(e instanceof Error ? e.message : "Sale failed to process.");
+    } catch (error) {
+      console.error(error);
+      toast.error(getErrorMessage(error, "Sale failed to process."));
       setModal("none");
     }
   };

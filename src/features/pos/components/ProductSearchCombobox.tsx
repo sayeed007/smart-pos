@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Product } from "@/types";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 interface ProductSearchComboboxProps {
   onSelect: (product: Product) => void;
@@ -215,6 +217,7 @@ export function ProductSearchCombobox({
       }
     } catch (error) {
       console.error("Failed to load more products", error);
+      toast.error(getErrorMessage(error, "Failed to load more products"));
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/types";
+import type { Product } from "@/types";
 import {
   useCreateProduct,
   useDeleteProduct,
@@ -12,6 +12,7 @@ import { useCategories } from "@/hooks/api/categories";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 import {
   ProductFormModal,
   ProductSubmissionData,
@@ -81,15 +82,11 @@ export function ProductsPageContent() {
 
       setSelectedProduct(null);
       setIsAddOpen(false); // Close modal on success
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to save product", error);
-
-      // Extract error message from backend response
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to save product";
-      toast.error(errorMessage);
+      toast.error(
+        getErrorMessage(error, t("toasts.saveError", "Failed to save product")),
+      );
 
       // Keep modal open so user can fix the error (e.g., change SKU)
       // Don't close modal or clear selectedProduct
@@ -102,7 +99,12 @@ export function ProductsPageContent() {
       toast.success(t("toasts.deleteSuccess"));
     } catch (error) {
       console.error("Failed to delete product", error);
-      toast.error(t("toasts.deleteError", "Failed to delete product"));
+      toast.error(
+        getErrorMessage(
+          error,
+          t("toasts.deleteError", "Failed to delete product"),
+        ),
+      );
     }
   };
 
