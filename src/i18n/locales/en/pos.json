@@ -50,11 +50,58 @@
     "payWithCard": "Pay with Card",
     "payWithWallet": "Pay with Wallet",
     "selectMethod": "Select Payment Method",
-    "totalToPay": "Total To Pay"
+    "totalToPay": "Total To Pay",
+    "splitPayment": "Split Payment",
+    "payWithSplit": "Split payment across multiple methods",
+    "remainingDue": "Remaining Due",
+    "noPaymentsAdded": "No payments added yet.",
+    "transactionCompleted": "Transaction completed",
+    "cardPayment": "Card Payment",
+    "totalDue": "Total Due",
+    "processPayment": "Process Payment",
+    "digital": "Digital"
   },
   "offers": {
     "title": "Active Offers",
     "applied": "Offer Applied",
     "viewOffers": "View Offers"
+  },
+  "variant": {
+    "selectOption": "Select Option",
+    "noVariants": "No variants available for this product."
+  },
+  "customer": {
+    "newCustomer": "New Customer",
+    "selectCustomer": "Select Customer",
+    "fullName": "Full Name *",
+    "phoneNumber": "Phone Number *",
+    "emailOptional": "Email (Optional)",
+    "searchPlaceholder": "Search by name or phone...",
+    "createCustomer": "Create Customer",
+    "addNewCustomer": "Add New Customer",
+    "noCustomersFound": "No customers found.",
+    "typeToSearch": "Type above to search...",
+    "existsError": "Customer with this phone already exists",
+    "createdSuccess": "Customer Created",
+    "createError": "Failed to create customer",
+    "requiredError": "Name and Phone required"
+  },
+  "payment": {
+    "options": "Payment Options",
+    "digital": "Digital",
+    "card": "Card",
+    "cash": "Cash",
+    "split": "Split",
+    "voucher": "Voucher"
+  },
+  "suspended": {
+    "title": "Suspended Sales",
+    "empty": "No suspended sales found.",
+    "resume": "Resume",
+    "discard": "Discard",
+    "resumed": "Sale Resumed",
+    "discarded": "Suspended sale discarded",
+    "sale": "Sale",
+    "items": "items"
   }
 }

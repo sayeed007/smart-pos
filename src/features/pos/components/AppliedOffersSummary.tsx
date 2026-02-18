@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 interface AppliedOffersSummaryProps {
   appliedOffers: Offer[];
@@ -66,8 +67,11 @@ export function AppliedOffersSummary({
     >
       <Popover>
         <PopoverTrigger asChild className="w-full">
-          <button className="w-full flex items-center justify-between p-2 text-left hover:bg-emerald-100/50 rounded-lg transition-colors group">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+          <Button
+            variant="ghost"
+            className="w-full justify-between h-auto p-2 hover:bg-emerald-100/50 rounded-lg transition-colors group"
+          >
+            <div className="flex items-center gap-2 min-w-0 flex-1 text-left">
               <div className="bg-emerald-100 text-emerald-600 p-1 rounded-md shrink-0">
                 <TicketPercent size={14} />
               </div>
@@ -95,7 +99,7 @@ export function AppliedOffersSummary({
                 className="text-emerald-400 group-hover:text-emerald-600 transition-colors"
               />
             </div>
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           className="w-(--radix-popover-trigger-width) p-0"
@@ -114,9 +118,10 @@ export function AppliedOffersSummary({
               </span>
             </div>
 
-            <button
+            <Button
+              variant="ghost"
               onClick={handleToggleAll}
-              className="text-[10px] font-semibold text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1"
+              className="h-auto p-0 hover:bg-transparent text-[10px] font-semibold text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1"
             >
               {allSelected ? (
                 <>
@@ -130,7 +135,7 @@ export function AppliedOffersSummary({
                   <span>Select All</span>
                 </>
               )}
-            </button>
+            </Button>
           </div>
           <div className="max-h-75 overflow-y-auto p-1.5 space-y-1">
             {potentialOffers.map((offer) => {

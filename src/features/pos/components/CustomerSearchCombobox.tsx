@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Customer } from "@/types";
 import { db } from "@/lib/db";
 import { usePOSStore } from "@/features/pos/store/pos-store";
+import { Button } from "@/components/ui/button";
 
 interface CustomerSearchComboboxProps {
   onSelect: (customer: Customer) => void;
@@ -255,15 +256,17 @@ export function CustomerSearchCombobox({
           className="pl-11 pr-10 h-11 font-medium"
         />
         {search && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => {
               setSearch("");
               inputRef.current?.focus();
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground hover:bg-transparent transition-colors"
           >
             <X size={16} />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -278,10 +281,11 @@ export function CustomerSearchCombobox({
           >
             {customers.length > 0 ? (
               customers.map((customer, index) => (
-                <button
+                <Button
                   key={customer.id}
+                  variant="ghost"
                   className={cn(
-                    "w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors border-b border-border/50 last:border-b-0",
+                    "w-full justify-between h-auto px-4 py-3 border-b border-border/50 last:border-b-0 rounded-none",
                     index === selectedIndex
                       ? "bg-primary/15 border-primary/30"
                       : "hover:bg-primary/10 active:bg-primary/15",
@@ -289,7 +293,7 @@ export function CustomerSearchCombobox({
                   onClick={() => handleSelect(customer)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-semibold text-foreground truncate">
                       {customer.name}
                     </p>
@@ -302,7 +306,7 @@ export function CustomerSearchCombobox({
                       {customer.loyaltyPoints} pts
                     </div>
                   )}
-                </button>
+                </Button>
               ))
             ) : (
               <div className="px-4 py-3 text-center text-sm text-muted-foreground">
@@ -329,9 +333,10 @@ export function CustomerSearchCombobox({
 
             {/* Always show create option if search is present */}
             {search.trim() && (
-              <button
+              <Button
+                variant="ghost"
                 className={cn(
-                  "w-full text-left px-4 py-3 flex items-center gap-2 transition-colors border-t border-dashed border-border/50 hover:bg-primary/5 text-primary",
+                  "w-full justify-start h-auto px-4 py-3 border-t border-dashed border-border/50 hover:bg-primary/5 text-primary rounded-none",
                   customers.length === 0 && selectedIndex === 0
                     ? "bg-primary/10"
                     : "",
@@ -347,11 +352,11 @@ export function CustomerSearchCombobox({
                   setIsOpen(false);
                 }}
               >
-                <Plus size={16} />
+                <Plus size={16} className="mr-2" />
                 <span className="font-semibold text-sm">
-                  Create new "{search}"
+                  Create new &quot;{search}&quot;
                 </span>
-              </button>
+              </Button>
             )}
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { Button } from "@/components/ui/button";
 import { Menu, AlertCircle } from "lucide-react";
 
 interface NavItem {
@@ -30,9 +31,12 @@ export function CashierHeader({
         <div className="lg:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <button className="p-2 text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <Button
+                variant="ghost"
+                className="h-auto w-auto p-2 text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              >
                 <Menu size={20} />
-              </button>
+              </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-58 border-r-0">
               <Sidebar
@@ -52,9 +56,12 @@ export function CashierHeader({
         <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
           Live Terminal #01
         </div>
-        <button className="p-2.5 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-[#f87171] rounded-2xl transition-all border border-gray-100">
+        <Button
+          variant="outline"
+          className="h-auto w-auto p-2.5 bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-[#f87171] rounded-2xl transition-all border border-gray-100 hover:border-red-100"
+        >
           <AlertCircle size={20} />
-        </button>
+        </Button>
       </div>
     </header>
   );

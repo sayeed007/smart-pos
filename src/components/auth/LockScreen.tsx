@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Lock, ShieldAlert } from "lucide-react";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
@@ -97,13 +98,15 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
                     autoFocus
                     disabled={isLoading}
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setShowPin(!showPin)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 text-gray-400 hover:text-gray-600 hover:bg-transparent"
                   >
                     {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
+                  </Button>
                 </div>
               </div>
 

@@ -67,11 +67,11 @@ export function CheckoutView({
     <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
       {/* Header */}
       <div className="p-6 bg-muted/30 border-b">
-        <div className="flex items-center gap-2 text-xl font-black text-gray-900 mb-1">
+        <div className="flex items-center gap-2 typo-bold-18 text-foreground mb-1">
           <Receipt className="w-5 h-5 text-primary" />
           {t("checkout.payment", "Payment")}
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="typo-regular-14 text-muted-foreground">
           {t(
             "checkout.selectMethod",
             "Select a payment method to complete the sale.",
@@ -79,7 +79,7 @@ export function CheckoutView({
         </p>
         {/* Total */}
         <div className="mt-4 p-4 bg-background rounded-xl border flex flex-col items-center justify-center">
-          <span className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
+          <span className="typo-semibold-12 text-muted-foreground uppercase tracking-widest">
             {t("checkout.totalToPay", "Total to Pay")}
           </span>
           <span className="text-3xl font-bold text-foreground mt-1">
@@ -93,10 +93,11 @@ export function CheckoutView({
       <div className="p-6">
         <div className="grid grid-cols-2 gap-3 mb-4">
           {methods.map((method) => (
-            <button
+            <Button
               key={method.id}
+              variant="outline"
               onClick={() => onComplete(method.id)}
-              className="group relative flex flex-col items-center justify-center gap-3 p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-center"
+              className="h-auto w-full group relative flex flex-col items-center justify-center gap-3 p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-center"
             >
               <div
                 className={cn(
@@ -107,17 +108,17 @@ export function CheckoutView({
                 <method.icon size={24} />
               </div>
               <div className="w-full">
-                <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                <p className="typo-semibold-14 text-foreground group-hover:text-primary transition-colors whitespace-normal">
                   {method.label}
                 </p>
-                <p className="text-[10px] text-muted-foreground line-clamp-1 hidden sm:block">
+                <p className="typo-regular-11 text-muted-foreground line-clamp-1 hidden sm:block whitespace-normal">
                   {method.description}
                 </p>
               </div>
               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-primary">
                 <CheckCircle2 size={16} />
               </div>
-            </button>
+            </Button>
           ))}
         </div>
 

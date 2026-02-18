@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export interface SplitPaymentEntry {
   method: string;
@@ -16,16 +17,17 @@ interface SplitPaymentViewProps {
   onBack: () => void;
 }
 
-const SPLIT_METHODS = ["Cash", "Card", "Digital", "Voucher"] as const;
+const SPLIT_METHODS = ["cash", "card", "digital", "voucher"] as const;
 
 export function SplitPaymentView({
   total,
   onCheckout,
   onBack,
 }: SplitPaymentViewProps) {
+  const { t } = useTranslation(["pos", "common"]);
   const [payments, setPayments] = useState<SplitPaymentEntry[]>([]);
   const [amountInput, setAmountInput] = useState("");
-  const [selectedMethod, setSelectedMethod] = useState<string>("Cash");
+  const [selectedMethod, setSelectedMethod] = useState<string>("cash");
 
   const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
   const remainingDue = Math.max(0, total - totalPaid);
@@ -45,13 +47,13 @@ export function SplitPaymentView({
   return (
     <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100">
       <h3 className="text-xl font-black text-gray-900 tracking-tight mb-4 text-center">
-        Split Payment
+        {t("checkout.splitPayment", "Split Payment")}
       </h3>
 
       {/* Remaining Due */}
       <div className="bg-gray-50 p-4 rounded-xl mb-4 flex justify-between items-center">
         <span className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">
-          Remaining Due
+          {t("checkout.remainingDue", "Remaining Due")}
         </span>
         <span
           className={`text-2xl font-black ${
@@ -72,13 +74,13 @@ export function SplitPaymentView({
           >
             {SPLIT_METHODS.map((m) => (
               <option key={m} value={m}>
-                {m}
+                {t(`payment.${m}`, m.charAt(0).toUpperCase() + m.slice(1))}
               </option>
             ))}
           </select>
           <Input
             type="number"
-            placeholder="Amount"
+            placeholder={t("common.amount", "Amount")}
             value={amountInput}
             onChange={(e) => setAmountInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddPayment()}
@@ -94,7 +96,7 @@ export function SplitPaymentView({
       <div className="space-y-2 mb-6 max-h-50 overflow-y-auto">
         {payments.length === 0 ? (
           <p className="text-center text-muted-foreground text-xs py-2">
-            No payments added yet.
+            {t("checkout.noPaymentsAdded", "No payments added yet.")}
           </p>
         ) : (
           payments.map((p, i) => (
@@ -103,15 +105,19 @@ export function SplitPaymentView({
               className="flex justify-between items-center p-2 border rounded-lg text-sm"
             >
               <div className="flex gap-2">
-                <span className="font-bold">{p.method}</span>
+                <span className="font-bold">
+                  {t(`payment.${p.method}`, p.method)}
+                </span>
                 <span>${p.amount.toFixed(2)}</span>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => handleRemovePayment(i)}
-                className="text-red-500 hover:text-red-700 transition-colors"
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 size={14} />
-              </button>
+              </Button>
             </div>
           ))
         )}
@@ -120,14 +126,14 @@ export function SplitPaymentView({
       {/* Actions */}
       <div className="flex gap-2">
         <Button variant="outline" className="flex-1" onClick={onBack}>
-          Back
+          {t("common:back", "Back")}
         </Button>
         <Button
           className="flex-1"
           disabled={remainingDue > 0.01}
           onClick={() => onCheckout("Split", payments)}
         >
-          Complete Sale
+          {t("cart.completeSale", "Complete Sale")}
         </Button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/layout/Sidebar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
@@ -105,13 +106,14 @@ export default function AdminLayout({
   return (
     <div className="flex min-h-screen bg-muted/20">
       {/* Mobile Hamburger Button */}
-      <button
+      <Button
+        variant="outline"
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-card border border-sidebar-border shadow-lg hover:bg-muted transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-40 h-auto w-auto p-2 bg-card border-sidebar-border shadow-lg hover:bg-muted transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6 text-foreground" />
-      </button>
+      </Button>
 
       {/* Mobile Overlay */}
       {isMobileOpen && (

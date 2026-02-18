@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/types";
 import { db } from "@/lib/db";
+import { Button } from "@/components/ui/button";
 
 interface ProductSearchComboboxProps {
   onSelect: (product: Product) => void;
@@ -318,15 +319,17 @@ export function ProductSearchCombobox({
           className="pl-11 pr-10 h-12 font-medium"
         />
         {search && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => {
               setSearch("");
               inputRef.current?.focus();
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground hover:text-foreground hover:bg-transparent transition-colors"
           >
             <X size={16} />
-          </button>
+          </Button>
         )}
       </div>
 
@@ -340,10 +343,11 @@ export function ProductSearchCombobox({
             onScroll={handleScroll}
           >
             {products.map((product, index) => (
-              <button
+              <Button
+                variant="ghost"
                 key={product.id}
                 className={cn(
-                  "w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors border-b border-border/50 last:border-b-0",
+                  "w-full justify-between h-auto px-4 py-3 border-b border-border/50 last:border-b-0 rounded-none",
                   index === selectedIndex
                     ? "bg-primary/15 border-primary/30"
                     : "hover:bg-primary/10 active:bg-primary/15",
@@ -351,7 +355,7 @@ export function ProductSearchCombobox({
                 onClick={() => handleSelect(product)}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                   <p className="text-sm font-semibold text-foreground truncate">
                     {product.name}
                   </p>
@@ -369,7 +373,7 @@ export function ProductSearchCombobox({
                       )
                     : Number(product.sellingPrice || 0).toFixed(2)}
                 </div>
-              </button>
+              </Button>
             ))}
             {isLoading && (
               <div className="px-4 py-3 text-center text-sm text-muted-foreground">

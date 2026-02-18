@@ -30,16 +30,17 @@ export function CartItemCard({
             ${item.sellingPrice.toFixed(2)} {t("cart.each")}
           </p>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-3 right-3 h-6 w-6 text-muted-foreground/40 hover:text-destructive hover:bg-transparent"
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
           }}
-          className="text-muted-foreground/40 hover:text-destructive transition-colors absolute top-3 right-3"
         >
-          <Trash2 size={16} color="red" />
-        </button>
+          <Trash2 size={16} />
+        </Button>
       </div>
 
       <div className="flex items-center justify-between">

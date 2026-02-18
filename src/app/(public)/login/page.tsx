@@ -10,12 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/api/auth";
-import { cn } from "@/lib/utils";
 import { mapBackendRoleToUiRole, useAuth } from "@/providers/auth-provider";
 import { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2, Shield, Smartphone, Store } from "lucide-react";
+import { Eye, EyeOff, Loader2, Smartphone } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -160,17 +160,19 @@ export default function LoginPage() {
                             className="h-12 rounded-xl bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-[#f87171] transition-all pr-10"
                             {...field}
                           />
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-transparent"
                           >
                             {showPassword ? (
                               <EyeOff size={20} />
                             ) : (
                               <Eye size={20} />
                             )}
-                          </button>
+                          </Button>
                         </div>
                       </FormControl>
                       <FormMessage />

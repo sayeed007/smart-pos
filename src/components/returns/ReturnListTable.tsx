@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 
 export function ReturnListTable({
   returns,
-  isLoading,
+  // isLoading,
   onDelete,
   onInvoiceClick,
 }: ReturnListTableProps) {
@@ -60,13 +60,14 @@ export function ReturnListTable({
               <TableRow key={ret.id}>
                 <TableCell className="font-medium">
                   {onInvoiceClick && ret.saleId ? (
-                    <button
+                    <Button
+                      variant="link"
                       type="button"
                       onClick={() => onInvoiceClick(ret)}
-                      className="text-primary hover:underline font-semibold"
+                      className="p-0 h-auto font-semibold"
                     >
                       {ret.invoiceNo}
-                    </button>
+                    </Button>
                   ) : (
                     ret.invoiceNo
                   )}
