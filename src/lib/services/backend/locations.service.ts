@@ -5,10 +5,10 @@ import { ApiEnvelope } from "@/types/backend";
 
 export interface CreateLocationDto {
   name: string;
-  address: string;
-  type: "store" | "warehouse";
-  priceBookId?: string;
-  status: "active" | "inactive";
+  address?: string | null;
+  type: "STORE" | "WAREHOUSE";
+  priceBookId?: string | null;
+  status: "ACTIVE" | "INACTIVE";
 }
 
 export type UpdateLocationDto = Partial<CreateLocationDto>;

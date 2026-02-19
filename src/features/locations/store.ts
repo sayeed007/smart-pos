@@ -13,9 +13,9 @@ interface LocationState {
 const DEFAULT_LOCATION: Location = {
   id: "default",
   name: "Default",
-  address: "",
-  type: "store",
-  status: "active",
+  address: null,
+  type: "STORE",
+  status: "ACTIVE",
 };
 
 export const useLocationStore = create<LocationState>()(

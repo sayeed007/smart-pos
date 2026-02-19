@@ -263,10 +263,11 @@ export interface InventoryTransaction {
 export interface Location {
   id: string;
   name: string;
-  address: string;
-  type: "store" | "warehouse";
-  status: "active" | "inactive";
-  priceBookId?: string; // Optional: if null, use base price
+  address: string | null;
+  type: "STORE" | "WAREHOUSE";
+  status: "ACTIVE" | "INACTIVE";
+  priceBookId?: string | null;
+  priceBook?: { id: string; name: string } | null;
 }
 
 export interface PriceBook {

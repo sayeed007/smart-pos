@@ -17,6 +17,7 @@ import {
   Tag,
   Layers,
   Users,
+  MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -84,6 +85,11 @@ export default function AdminLayout({
       name: t("returns"),
       icon: <RotateCcw size={20} />,
       path: "/admin/returns",
+    },
+    {
+      name: t("locations", "Locations"),
+      icon: <MapPin size={20} />,
+      path: "/admin/locations",
     },
 
     {
