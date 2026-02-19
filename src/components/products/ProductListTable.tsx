@@ -54,7 +54,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import JsBarcode from "jsbarcode";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { generateBarcodesPDF } from "@/lib/pdf-utils";
 
 interface ProductListTableProps {
   products: Product[];
@@ -89,24 +90,6 @@ export function ProductListTable({
   const resolveBarcode = (barcode?: string, barcodes?: string[]) =>
     barcode?.trim() || barcodes?.[0]?.trim() || "";
 
-  const escapeHtml = (value: string) =>
-    value.replace(/[&<>"']/g, (char) => {
-      switch (char) {
-        case "&":
-          return "&amp;";
-        case "<":
-          return "&lt;";
-        case ">":
-          return "&gt;";
-        case '"':
-          return "&quot;";
-        case "'":
-          return "&#39;";
-        default:
-          return char;
-      }
-    });
-
   const openPrintDialog = (product: Product) => {
     setPrintProduct(product);
     if (product.type === "variable") {
@@ -131,18 +114,6 @@ export function ProductListTable({
     setPrintOpen(true);
   };
 
-  const renderBarcodeSvg = (value: string) => {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    JsBarcode(svg, value, {
-      format: "CODE128",
-      displayValue: true,
-      fontSize: 10,
-      height: 40,
-      margin: 0,
-    });
-    return svg.outerHTML;
-  };
-
   const handlePrint = () => {
     if (!printProduct) return;
 
@@ -150,12 +121,23 @@ export function ProductListTable({
       name: string;
       sku: string;
       barcode: string;
+      price: number;
     }> = [];
 
+    const sanitize = (str: string) =>
+      str.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
+    let filename = "";
+
     if (printProduct.type === "variable") {
-      (printProduct.variants || []).forEach((variant) => {
+      const selectedVariants = (printProduct.variants || []).filter(
+        (v) =>
+          variantSelections[v.id]?.checked &&
+          (variantSelections[v.id]?.qty || 0) > 0,
+      );
+
+      selectedVariants.forEach((variant) => {
         const selection = variantSelections[variant.id];
-        if (!selection?.checked || selection.qty <= 0) return;
         const barcode = resolveBarcode(variant.barcode, variant.barcodes);
         if (!barcode) return;
         const qty = Math.max(1, Math.floor(selection.qty));
@@ -164,9 +146,20 @@ export function ProductListTable({
             name: `${printProduct.name} - ${variant.name}`,
             sku: variant.sku,
             barcode,
+            price: variant.price,
           });
         }
       });
+
+      if (selectedVariants.length === 1) {
+        const v = selectedVariants[0];
+        const bc = resolveBarcode(v.barcode, v.barcodes);
+        filename = `${sanitize(printProduct.name)}_${sanitize(
+          v.sku || "",
+        )}_${sanitize(bc)}.pdf`;
+      } else {
+        filename = `${sanitize(printProduct.name)}_variants.pdf`;
+      }
     } else {
       const barcode = resolveBarcode(
         printProduct.barcode,
@@ -179,68 +172,19 @@ export function ProductListTable({
       for (let i = 0; i < qty; i += 1) {
         labels.push({
           name: printProduct.name,
-          sku: printProduct.sku,
+          sku: printProduct.sku || "",
           barcode,
+          price: printProduct.sellingPrice,
         });
       }
+      filename = `${sanitize(printProduct.name)}_${sanitize(
+        printProduct.sku || "",
+      )}_${sanitize(barcode)}.pdf`;
     }
 
     if (labels.length === 0) return;
 
-    const content = labels
-      .map((label) => {
-        const svg = renderBarcodeSvg(label.barcode);
-        const safeName = escapeHtml(label.name);
-        const safeSku = escapeHtml(label.sku || "-");
-        return `
-          <div class="label">
-            <div class="title">${safeName}</div>
-            <div class="sku">SKU: ${safeSku}</div>
-            ${svg}
-          </div>
-        `;
-      })
-      .join("");
-
-    const printWindow = window.open("", "_blank", "width=900,height=700");
-    if (!printWindow) return;
-
-    printWindow.document.write(`<!doctype html>
-      <html>
-        <head>
-          <title>Print Barcodes</title>
-          <style>
-            * { box-sizing: border-box; }
-            body { margin: 0; padding: 16px; font-family: Arial, sans-serif; }
-            .grid { display: flex; flex-wrap: wrap; gap: 12px; }
-            .label {
-              width: 220px;
-              border: 1px solid #eee;
-              padding: 10px;
-              display: flex;
-              flex-direction: column;
-              gap: 6px;
-              align-items: center;
-              text-align: center;
-              page-break-inside: avoid;
-            }
-            .title { font-size: 12px; font-weight: 600; }
-            .sku { font-size: 10px; color: #666; }
-            svg { width: 200px; height: 60px; }
-            @media print {
-              body { padding: 0; }
-              .label { border: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="grid">${content}</div>
-        </body>
-      </html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    generateBarcodesPDF(labels, filename);
   };
 
   const canPrint = useMemo(() => {
@@ -250,9 +194,7 @@ export function ProductListTable({
         (selection) => selection.checked && selection.qty > 0,
       );
     }
-    return Boolean(
-      resolveBarcode(printProduct.barcode, printProduct.barcodes),
-    );
+    return Boolean(resolveBarcode(printProduct.barcode, printProduct.barcodes));
   }, [printProduct, variantSelections]);
 
   const variantSelectionStats = useMemo(() => {
@@ -281,9 +223,7 @@ export function ProductListTable({
     setVariantSelections((prev) => {
       const next: typeof prev = {};
       Object.entries(prev).forEach(([id, selection]) => {
-        next[id] = selection.disabled
-          ? selection
-          : { ...selection, checked };
+        next[id] = selection.disabled ? selection : { ...selection, checked };
       });
       return next;
     });
@@ -348,8 +288,7 @@ export function ProductListTable({
         if (product.type === "variable" && variantSkus.length > 0) {
           const preview = variantSkus.slice(0, 2).join(", ");
           const remaining = variantSkus.length - 2;
-          const label =
-            remaining > 0 ? `${preview} +${remaining}` : preview;
+          const label = remaining > 0 ? `${preview} +${remaining}` : preview;
 
           return (
             <TooltipProvider>
@@ -883,7 +822,10 @@ export function ProductListTable({
                     }
                   />
                 </div>
-                {!resolveBarcode(printProduct.barcode, printProduct.barcodes) && (
+                {!resolveBarcode(
+                  printProduct.barcode,
+                  printProduct.barcodes,
+                ) && (
                   <p className="text-xs text-destructive">
                     No barcode available for this product.
                   </p>
@@ -896,9 +838,9 @@ export function ProductListTable({
             <Button variant="outline" onClick={() => setPrintOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handlePrint} disabled={!canPrint}>
+            <PrimaryActionButton onClick={handlePrint} disabled={!canPrint}>
               Print
-            </Button>
+            </PrimaryActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
