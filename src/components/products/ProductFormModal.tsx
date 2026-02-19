@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Product, Category, Variant, UserRole } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,8 @@ import { z } from "zod";
 import { useAuth } from "@/providers/auth-provider";
 import { useLocationStore } from "@/features/locations/store";
 import { useLocations } from "@/hooks/api/locations";
+import { CategoryFormModal } from "@/components/categories/CategoryFormModal";
+import { useCreateCategory } from "@/hooks/api/categories";
 
 export interface ProductFormData {
   id?: string;
@@ -169,10 +171,15 @@ export function ProductFormModal({
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
   const [isSaving, setIsSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [createdCategory, setCreatedCategory] = useState<Category | null>(null);
   const { t } = useTranslation("products");
   const { user } = useAuth();
   const { currentLocation } = useLocationStore();
   const { data: locations = [] } = useLocations();
+  const createCategory = useCreateCategory();
+  const wasOpenRef = useRef(false);
+  const lastProductIdRef = useRef<string | null>(null);
 
   const roleName =
     typeof user?.role === "object" ? user?.role?.name : user?.role;
@@ -197,7 +204,7 @@ export function ProductFormModal({
       : "");
   }, [currentLocation, locations]);
 
-  const locationOptions = (() => {
+  const locationOptions = useMemo(() => {
     const list = [...locations];
     if (
       currentLocation &&
@@ -207,7 +214,22 @@ export function ProductFormModal({
       list.unshift(currentLocation);
     }
     return list;
-  })();
+  }, [locations, currentLocation]);
+
+  const sortedCategories = useMemo(() => {
+    const list = [...categories];
+    if (createdCategory && !list.some((c) => c.id === createdCategory.id)) {
+      list.push(createdCategory);
+    }
+    return list.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
+  }, [categories, createdCategory]);
+
+  const initialCategoryId = useMemo(
+    () => sortedCategories[0]?.id ?? "",
+    [sortedCategories],
+  );
 
   // Variant temporary state
   const [newVariant, setNewVariant] = useState<Partial<Variant>>({
@@ -226,38 +248,48 @@ export function ProductFormModal({
   };
 
   useEffect(() => {
-    if (open) {
-      setFieldErrors({});
-      if (productToEdit) {
-        setFormData({
-          id: productToEdit.id,
-          name: productToEdit.name,
-          categoryId: productToEdit.categoryId,
-          sku: productToEdit.sku,
-          barcode: productToEdit.barcode || "",
-          costPrice: productToEdit.costPrice || 0,
-          sellingPrice: productToEdit.sellingPrice,
-          taxRate: productToEdit.taxRate || 0,
-          stockQuantity: productToEdit.stockQuantity,
-          minStockLevel: productToEdit.minStockLevel ?? 10,
-          status: (productToEdit.status as "active" | "inactive") || "active",
-          image: productToEdit.image,
-          type: productToEdit.type || "simple",
-          variants: productToEdit.variants || [],
-          uom: productToEdit.uom || "pcs",
-          allowDecimals: productToEdit.allowDecimals || false,
-          barcodes: productToEdit.barcodes?.join("\n") || "",
-          locationId: "",
-        });
-      } else {
-        setFormData({
-          ...defaultFormData,
-          categoryId: categories[0]?.id ?? "",
-          locationId: resolvedLocationId,
-        });
-      }
+    if (!open) {
+      wasOpenRef.current = false;
+      lastProductIdRef.current = null;
+      return;
     }
-  }, [open, productToEdit, categories, resolvedLocationId]);
+    const currentProductId = productToEdit?.id ?? null;
+    const isNewOpen = !wasOpenRef.current;
+    const productChanged = currentProductId !== lastProductIdRef.current;
+    if (!isNewOpen && !productChanged) return;
+
+    wasOpenRef.current = true;
+    lastProductIdRef.current = currentProductId;
+    setFieldErrors({});
+    if (productToEdit) {
+      setFormData({
+        id: productToEdit.id,
+        name: productToEdit.name,
+        categoryId: productToEdit.categoryId,
+        sku: productToEdit.sku,
+        barcode: productToEdit.barcode || "",
+        costPrice: productToEdit.costPrice || 0,
+        sellingPrice: productToEdit.sellingPrice,
+        taxRate: productToEdit.taxRate || 0,
+        stockQuantity: productToEdit.stockQuantity,
+        minStockLevel: productToEdit.minStockLevel ?? 10,
+        status: (productToEdit.status as "active" | "inactive") || "active",
+        image: productToEdit.image,
+        type: productToEdit.type || "simple",
+        variants: productToEdit.variants || [],
+        uom: productToEdit.uom || "pcs",
+        allowDecimals: productToEdit.allowDecimals || false,
+        barcodes: productToEdit.barcodes?.join("\n") || "",
+        locationId: "",
+      });
+    } else {
+      setFormData({
+        ...defaultFormData,
+        categoryId: initialCategoryId,
+        locationId: resolvedLocationId,
+      });
+    }
+  }, [open, productToEdit, initialCategoryId, resolvedLocationId]);
 
   useEffect(() => {
     if (!open || productToEdit) return;
@@ -268,6 +300,26 @@ export function ProductFormModal({
       return { ...prev, locationId: resolved };
     });
   }, [open, productToEdit, resolvedLocationId]);
+
+  const handleCreateCategory = async (categoryData: Partial<Category>) => {
+    try {
+      if (!categoryData.name) {
+        throw new Error("Category name is required");
+      }
+      const created = await createCategory.mutateAsync({
+        name: categoryData.name,
+        icon: categoryData.icon,
+      });
+      setCreatedCategory(created);
+      setFormData((prev) => ({ ...prev, categoryId: created.id }));
+      toast.success("Category created");
+    } catch (error) {
+      console.error("Failed to create category", error);
+      toast.error(getErrorMessage(error, "Failed to create category"));
+    } finally {
+      setIsCategoryModalOpen(false);
+    }
+  };
 
   const handleSave = async () => {
     const validation = productSchema.safeParse(formData);
@@ -346,8 +398,9 @@ export function ProductFormModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="typo-bold-18">
             {productToEdit ? t("title.edit") : t("title.add")}
@@ -382,19 +435,32 @@ export function ProductFormModal({
               </Label>
               <Select
                 value={formData.categoryId}
-                onValueChange={(val) =>
-                  setFormData({ ...formData, categoryId: val })
-                }
+                onValueChange={(val) => {
+                  if (val === "__create__") {
+                    setIsCategoryModalOpen(true);
+                    return;
+                  }
+                  setFormData({ ...formData, categoryId: val });
+                }}
               >
                 <SelectTrigger id="category" className="w-full">
                   <SelectValue placeholder={t("fields.categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories?.map((c) => (
+                  {sortedCategories.length === 0 && (
+                    <SelectItem value="no-categories" disabled>
+                      No categories found
+                    </SelectItem>
+                  )}
+                  {sortedCategories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
                     </SelectItem>
                   ))}
+                  <div className="my-1 h-px bg-border" />
+                  <SelectItem value="__create__">
+                    + Create new category
+                  </SelectItem>
                 </SelectContent>
               </Select>
               {fieldErrors.categoryId?.[0] && (
@@ -949,7 +1015,15 @@ export function ProductFormModal({
             {isSaving ? t("actions.saving") : t("actions.save")}
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+      <CategoryFormModal
+        key={isCategoryModalOpen ? "new-category" : "closed"}
+        open={isCategoryModalOpen}
+        onOpenChange={setIsCategoryModalOpen}
+        categoryToEdit={null}
+        onSave={handleCreateCategory}
+      />
+    </>
   );
 }
