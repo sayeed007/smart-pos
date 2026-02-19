@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { userSchema, UserFormValues } from "@/lib/validations/user";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRoles } from "@/hooks/api/users";
+import { useLocations } from "@/hooks/api/locations";
 
 interface UserFormDialogProps {
   open: boolean;
@@ -52,6 +53,7 @@ export function UserFormDialog({
 }: UserFormDialogProps) {
   const { t } = useTranslation("users");
   const { data: roles, isLoading: isRolesLoading } = useRoles();
+  const { data: locations, isLoading: isLocationsLoading } = useLocations();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<UserFormValues>({
@@ -61,6 +63,7 @@ export function UserFormDialog({
       email: "",
       roleId: "",
       status: "active",
+      defaultLocationId: "",
       password: "",
     },
   });
@@ -71,8 +74,9 @@ export function UserFormDialog({
         form.reset({
           name: user.name,
           email: user.email,
-          roleId: typeof user.role === "object" ? user.role.id : "", // Handle string case if needed, but assuming object now
+          roleId: typeof user.role === "object" ? user.role.id : "",
           status: user.status.toLowerCase() as "active" | "inactive",
+          defaultLocationId: user.defaultLocationId || "",
           password: "",
         });
       } else {
@@ -81,6 +85,7 @@ export function UserFormDialog({
           email: "",
           roleId: "",
           status: "active",
+          defaultLocationId: "",
           password: "",
         });
       }
@@ -193,36 +198,71 @@ export function UserFormDialog({
                 )}
               />
 
-              {user && (
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Status <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="defaultLocationId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Default Location</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                      disabled={isLocationsLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue
+                            placeholder={
+                              isLocationsLoading
+                                ? "Loading..."
+                                : "Select location"
+                            }
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locations?.map((loc) => (
+                          <SelectItem key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+            {user && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Status <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}

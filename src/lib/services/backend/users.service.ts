@@ -13,6 +13,7 @@ export interface CreateUserDto {
   email: string;
   password?: string;
   roleIds: string[];
+  defaultLocationId?: string;
   // status: "active" | "inactive"; // Backend handles status, defaults to active
 }
 
@@ -34,6 +35,7 @@ export class UsersService {
           ? { id: u.roles[0].id, name: u.roles[0].name }
           : UserRole.CASHIER,
         status: u.status,
+        defaultLocationId: u.defaultLocationId,
       })),
     };
   }

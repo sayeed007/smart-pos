@@ -5,6 +5,7 @@ export const userSchema = z.object({
   email: z.string().email("Invalid email"),
   roleId: z.string().min(1, "Role is required"),
   status: z.enum(["active", "inactive"]).optional(),
+  defaultLocationId: z.string().optional(),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")

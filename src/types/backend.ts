@@ -12,6 +12,7 @@ export interface BackendAuthUser {
   id: string;
   name: string;
   email: string;
+  defaultLocationId?: string | null;
   tenantId: string;
   roles: { id: string; name: string }[];
   role?: string; // Keep for backward compatibility if needed, or remove if unused

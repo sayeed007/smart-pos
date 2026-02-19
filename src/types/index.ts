@@ -24,6 +24,7 @@ export interface User {
   email: string;
   role: UserRole | { id: string; name: string };
   status: "active" | "inactive";
+  defaultLocationId?: string | null;
 }
 
 export interface Role {
