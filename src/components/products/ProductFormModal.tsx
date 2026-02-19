@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Product, Category, Variant } from "@/types";
+import { useState, useEffect, useMemo } from "react";
+import { Product, Category, Variant, UserRole } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
+import { useAuth } from "@/providers/auth-provider";
+import { useLocationStore } from "@/features/locations/store";
+import { useLocations } from "@/hooks/api/locations";
 
 export interface ProductFormData {
   id?: string;
@@ -48,6 +51,7 @@ export interface ProductFormData {
   uom: string;
   allowDecimals: boolean;
   barcodes: string; // specific for form handling (string vs array)
+  locationId?: string;
 }
 
 export interface ProductSubmissionData extends Omit<
@@ -73,6 +77,7 @@ const defaultFormData: ProductFormData = {
   uom: "pcs",
   allowDecimals: false,
   barcodes: "",
+  locationId: "",
 };
 
 const numberField = (label: string) =>
@@ -101,6 +106,7 @@ const productSchema = z
     uom: z.string().optional(),
     allowDecimals: z.boolean(),
     barcodes: z.string().optional(),
+    locationId: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.type === "simple" && (!data.sku || data.sku.trim().length === 0)) {
@@ -164,6 +170,44 @@ export function ProductFormModal({
   const [isSaving, setIsSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const { t } = useTranslation("products");
+  const { user } = useAuth();
+  const { currentLocation } = useLocationStore();
+  const { data: locations = [] } = useLocations();
+
+  const roleName =
+    typeof user?.role === "object" ? user?.role?.name : user?.role;
+  const normalizedRole = roleName?.toLowerCase();
+  const canChooseLocation =
+    normalizedRole === UserRole.ADMIN.toLowerCase() ||
+    normalizedRole === UserRole.MANAGER.toLowerCase();
+
+  const resolvedLocationId = useMemo(() => {
+    const currentId = currentLocation?.id;
+    const hasValidCurrent =
+      !!currentId &&
+      currentId !== "default" &&
+      locations.some((loc) => loc.id === currentId);
+
+    if (hasValidCurrent) return currentId;
+    if (currentId && currentId !== "default" && locations.length === 0) {
+      return currentId;
+    }
+    return locations[0]?.id ?? (currentId && currentId !== "default"
+      ? currentId
+      : "");
+  }, [currentLocation, locations]);
+
+  const locationOptions = (() => {
+    const list = [...locations];
+    if (
+      currentLocation &&
+      currentLocation.id !== "default" &&
+      !list.some((loc) => loc.id === currentLocation.id)
+    ) {
+      list.unshift(currentLocation);
+    }
+    return list;
+  })();
 
   // Variant temporary state
   const [newVariant, setNewVariant] = useState<Partial<Variant>>({
@@ -195,7 +239,7 @@ export function ProductFormModal({
           sellingPrice: productToEdit.sellingPrice,
           taxRate: productToEdit.taxRate || 0,
           stockQuantity: productToEdit.stockQuantity,
-          minStockLevel: productToEdit.minStockLevel || 10,
+          minStockLevel: productToEdit.minStockLevel ?? 10,
           status: (productToEdit.status as "active" | "inactive") || "active",
           image: productToEdit.image,
           type: productToEdit.type || "simple",
@@ -203,15 +247,27 @@ export function ProductFormModal({
           uom: productToEdit.uom || "pcs",
           allowDecimals: productToEdit.allowDecimals || false,
           barcodes: productToEdit.barcodes?.join("\n") || "",
+          locationId: "",
         });
       } else {
         setFormData({
           ...defaultFormData,
           categoryId: categories[0]?.id ?? "",
+          locationId: resolvedLocationId,
         });
       }
     }
-  }, [open, productToEdit, categories]);
+  }, [open, productToEdit, categories, resolvedLocationId]);
+
+  useEffect(() => {
+    if (!open || productToEdit) return;
+    setFormData((prev) => {
+      if (prev.locationId && prev.locationId !== "default") return prev;
+      const resolved = resolvedLocationId;
+      if (!resolved || resolved === prev.locationId) return prev;
+      return { ...prev, locationId: resolved };
+    });
+  }, [open, productToEdit, resolvedLocationId]);
 
   const handleSave = async () => {
     const validation = productSchema.safeParse(formData);
@@ -726,6 +782,26 @@ export function ProductFormModal({
           {/* Common Fields */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="minStockLevel" className="typo-semibold-14">
+                Min Stock Level
+              </Label>
+              <Input
+                id="minStockLevel"
+                type="number"
+                placeholder="0"
+                value={formData.minStockLevel ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    minStockLevel:
+                      e.target.value === ""
+                        ? undefined
+                        : parseFloat(e.target.value),
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="status" className="typo-semibold-14">
                 {t("fields.status")}
               </Label>
@@ -747,6 +823,50 @@ export function ProductFormModal({
               </Select>
             </div>
           </div>
+
+          {/* Location (only on create) */}
+          {!productToEdit && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="typo-semibold-14">Location</Label>
+                {canChooseLocation ? (
+                  <Select
+                    value={formData.locationId}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, locationId: val })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locationOptions.length === 0 && (
+                        <SelectItem value="no-locations" disabled>
+                          No locations available
+                        </SelectItem>
+                      )}
+                      {locationOptions.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.id}>
+                          {loc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={
+                      locationOptions.find(
+                        (loc) => loc.id === formData.locationId,
+                      )?.name ||
+                      currentLocation?.name ||
+                      ""
+                    }
+                    disabled
+                  />
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Image Upload */}
           <div className="space-y-2">

@@ -8,6 +8,7 @@ export interface CreateProductDto {
   sku: string;
   barcode?: string;
   categoryId: string;
+  locationId?: string;
   costPrice: number;
   sellingPrice: number;
   taxRate: number;
@@ -204,12 +205,13 @@ export class ProductsService {
             "taxProfileId",
             "costPrice",
             "sellingPrice",
-            "uom",
-            "allowDecimals",
-            "minStockLevel",
-            "image",
-            "imageUrl",
-            "variants",
+          "uom",
+          "allowDecimals",
+          "minStockLevel",
+          "locationId",
+          "image",
+          "imageUrl",
+          "variants",
             "barcodes",
             "stockQuantity",
           ])
@@ -303,7 +305,9 @@ export class ProductsService {
         // Skip empty strings for UUID fields — backend validates with @IsUUID()
         const strValue = String(value);
         if (
-          (key === "categoryId" || key === "taxProfileId") &&
+          (key === "categoryId" ||
+            key === "taxProfileId" ||
+            key === "locationId") &&
           strValue === ""
         ) {
           return;
