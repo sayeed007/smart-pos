@@ -31,10 +31,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { User } from "@/types";
 import { useEffect, useState } from "react";
-import { userSchema, UserFormValues } from "@/lib/validations/user";
+import { getUserSchema, UserFormValues } from "@/lib/validations/user";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRoles } from "@/hooks/api/users";
 import { useLocations } from "@/hooks/api/locations";
+import { useMemo } from "react";
 
 interface UserFormDialogProps {
   open: boolean;
@@ -56,8 +57,10 @@ export function UserFormDialog({
   const { data: locations, isLoading: isLocationsLoading } = useLocations();
   const [showPassword, setShowPassword] = useState(false);
 
+  const schema = useMemo(() => getUserSchema(roles), [roles]);
+
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
