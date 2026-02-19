@@ -102,8 +102,18 @@ export function UserFormDialog({
     // We should adapt values before calling onSubmit, or update onSubmit signature.
     // However, onSubmit takes `UserFormValues`. The page handles the API call.
     // We should send `roleId` as is, and let the page format it.
+    // We should send `roleId` as is, and let the page format it.
     await onSubmit(values);
   };
+
+  const selectedRoleId = form.watch("roleId");
+
+  useEffect(() => {
+    const selectedRole = roles?.find((r) => r.id === selectedRoleId);
+    if (selectedRole?.name === "Admin" || selectedRole?.name === "admin") {
+      form.setValue("defaultLocationId", "");
+    }
+  }, [selectedRoleId, roles, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -201,37 +211,48 @@ export function UserFormDialog({
               <FormField
                 control={form.control}
                 name="defaultLocationId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Default Location</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                      disabled={isLocationsLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue
-                            placeholder={
-                              isLocationsLoading
-                                ? "Loading..."
-                                : "Select location"
-                            }
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {locations?.map((loc) => (
-                          <SelectItem key={loc.id} value={loc.id}>
-                            {loc.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const selectedRole = roles?.find(
+                    (r) => r.id === selectedRoleId,
+                  );
+                  const isAdmin =
+                    selectedRole?.name === "Admin" ||
+                    selectedRole?.name === "admin";
+
+                  return (
+                    <FormItem>
+                      <FormLabel>Default Location</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={isAdmin ? "" : field.value}
+                        disabled={isLocationsLoading || isAdmin}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue
+                              placeholder={
+                                isAdmin
+                                  ? "All Locations"
+                                  : isLocationsLoading
+                                    ? "Loading..."
+                                    : "Select location"
+                              }
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {locations?.map((loc) => (
+                            <SelectItem key={loc.id} value={loc.id}>
+                              {loc.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </div>
             {user && (
