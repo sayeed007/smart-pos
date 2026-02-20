@@ -1,6 +1,6 @@
 "use client";
 
-import { Sale, Category } from "@/types";
+import { Sale } from "@/types";
 import { useSales, useSalesSummary } from "@/hooks/api/sales";
 import { useCategories } from "@/hooks/api/categories";
 import { DateRange } from "react-day-picker";
@@ -111,7 +111,6 @@ export default function SalesHistoryPage() {
     restock: boolean,
   ) => {
     // In a real app, this would be an API call to create a Return entity
-    // api.post('/returns', { saleId, items, reason, restock })
 
     if (restock) {
       // Optimistically update inventory if requested
@@ -132,7 +131,6 @@ export default function SalesHistoryPage() {
       toast.success("Return processed (Items discarded).");
     }
 
-    console.log("Return processed:", { saleId, items, reason, restock });
     setReturnSale(null);
   };
 
@@ -219,50 +217,61 @@ export default function SalesHistoryPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-xl border-none shadow-sm bg-white">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+        <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
             <p className="text-sm font-semibold text-muted-foreground mb-1">
               {t("stats.totalRevenue")}
             </p>
             <p className="text-2xl font-bold text-green-600">
-              ${summary?.totalSales.toFixed(2) || "0.00"}
+              ${summary?.totalSales?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
-        <Card className="rounded-xl border-none shadow-sm bg-white">
+        <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
             <p className="text-sm font-semibold text-muted-foreground mb-1">
-              {t("stats.totalProfit")}
-            </p>
-            <p className="text-2xl font-bold text-blue-600">
-              {/* Profit is not yet calculated in backend summary clearly as "profit" but we can display Average Order Value or Total Discount for now, or just keep it 0 if not returned. 
-                  Actually I added totalDiscount, totalTax. 
-                  Let's assume Profit is not available yet or repurpose this card. 
-                  The user said "UI will be similar". 
-                  Let's use Average Order Value instead of Profit for now or just generic.
-               */}
-              ${summary?.averageOrderValue.toFixed(2) || "0.00"}
-              <span className="text-xs text-muted-foreground ml-2 font-normal">
-                (Avg Order)
-              </span>
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-xl border-none shadow-sm bg-white">
-          <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
-              {t("stats.totalSales")}
+              {t("stats.totalOrders")}
             </p>
             <p className="text-2xl font-bold text-foreground">
               {summary?.totalOrders || 0}
             </p>
           </CardContent>
         </Card>
+        <Card className="rounded-xl border-none shadow-sm bg-card">
+          <CardContent className="pt-6">
+            <p className="text-sm font-semibold text-muted-foreground mb-1">
+              {t("stats.avgOrderValue")}
+            </p>
+            <p className="text-2xl font-bold text-blue-600">
+              ${summary?.averageOrderValue?.toFixed(2) || "0.00"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="rounded-xl border-none shadow-sm bg-card">
+          <CardContent className="pt-6">
+            <p className="text-sm font-semibold text-muted-foreground mb-1">
+              {t("stats.totalDiscount")}
+            </p>
+            <p className="text-2xl font-bold text-orange-500">
+              ${summary?.totalDiscount?.toFixed(2) || "0.00"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="rounded-xl border-none shadow-sm bg-card">
+          <CardContent className="pt-6">
+            <p className="text-sm font-semibold text-muted-foreground mb-1">
+              {t("stats.totalTax")}
+            </p>
+            <p className="text-2xl font-bold text-purple-600">
+              ${summary?.totalTax?.toFixed(2) || "0.00"}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Recent Sales Table */}
-      <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-white">
+      <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-card">
         <div className="px-6 pt-2">
           <h2 className="text-lg font-bold text-foreground mb-4">
             {t("table.title")}
@@ -271,24 +280,36 @@ export default function SalesHistoryPage() {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-muted border-0">
-                <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
-                  <TableHead className="w-15 pl-6">
+              <TableHeader className="bg-primary/5 border-t border-b">
+                <TableRow className="typo-semibold-14 border-b-0 p-2">
+                  <TableHead className="w-15 pl-6 text-primary">
                     {t("table.headers.sl")}
                   </TableHead>
-                  <TableHead>{t("table.headers.invoiceNo")}</TableHead>
-                  <TableHead>{t("table.headers.product")}</TableHead>
-                  <TableHead>{t("table.headers.category")}</TableHead>
-                  <TableHead>{t("table.headers.price")}</TableHead>
-                  <TableHead>{t("table.headers.time")}</TableHead>
-                  <TableHead>{t("table.headers.payment")}</TableHead>
-                  <TableHead className="w-20 text-center">
+                  <TableHead className="text-primary">
+                    {t("table.headers.invoiceNo")}
+                  </TableHead>
+                  <TableHead className="text-primary">
+                    {t("table.headers.product")}
+                  </TableHead>
+                  <TableHead className="text-primary">
+                    {t("table.headers.category")}
+                  </TableHead>
+                  <TableHead className="text-primary">
+                    {t("table.headers.price")}
+                  </TableHead>
+                  <TableHead className="text-primary">
+                    {t("table.headers.time")}
+                  </TableHead>
+                  <TableHead className="text-primary">
+                    {t("table.headers.payment")}
+                  </TableHead>
+                  <TableHead className="w-20 text-center text-primary">
                     {t("table.headers.return")}
                   </TableHead>
-                  <TableHead className="w-25 text-center">
+                  <TableHead className="w-25 text-center text-primary">
                     {t("table.headers.status")}
                   </TableHead>
-                  <TableHead className="w-20 text-center pr-6">
+                  <TableHead className="w-20 text-center pr-6 text-primary">
                     {t("table.headers.invoice")}
                   </TableHead>
                 </TableRow>

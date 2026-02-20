@@ -6,8 +6,10 @@
   },
   "stats": {
     "totalRevenue": "মোট আয়",
-    "totalProfit": "মোট লাভ",
-    "totalSales": "মোট বিক্রয়"
+    "totalOrders": "মোট অর্ডার",
+    "avgOrderValue": "গড় অর্ডার মূল্য",
+    "totalDiscount": "মোট ছাড়",
+    "totalTax": "মোট কর"
   },
   "table": {
     "title": "সাম্প্রতিক বিক্রয়",
@@ -25,6 +27,27 @@
       "actions": "কর্ম"
     },
     "empty": "কোনো বিক্রয় রেকর্ড পাওয়া যায়নি"
+  },
+  "invoice_modal": {
+    "title": "চালানের বিবরণ",
+    "invoice": "চালান",
+    "dateIssued": "ইস্যুর তারিখ",
+    "cashier": "ক্যাশিয়ার",
+    "customer": "গ্রাহক",
+    "walkIn": "সাধারণ গ্রাহক",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "mixed": "মিশ্র",
+    "item": "পণ্য",
+    "price": "মূল্য",
+    "qty": "পরিমাণ",
+    "total": "মোট",
+    "ref": "সূত্র:",
+    "subtotal": "উপমোট",
+    "tax": "কর",
+    "discount": "ছাড়",
+    "generatedBy": "প্রস্তুতকারী",
+    "close": "বন্ধ করুন",
+    "print": "প্রিন্ট করুন"
   },
   "modal": {
     "title": "রিটার্ন প্রক্রিয়া",

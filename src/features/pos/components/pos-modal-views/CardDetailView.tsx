@@ -14,7 +14,7 @@ export function CardDetailView({ total, onCheckout }: CardDetailViewProps) {
   const { t } = useTranslation(["pos", "common"]);
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl">
       {/* Header */}
       <div className="p-6 bg-muted/30 border-b">
         <div className="flex items-center gap-2 typo-bold-18 text-foreground mb-1">

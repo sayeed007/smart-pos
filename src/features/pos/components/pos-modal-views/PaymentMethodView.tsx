@@ -26,8 +26,8 @@ export function PaymentMethodView({
   ] as const;
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl">
-      <h3 className="text-xl font-black text-gray-900 tracking-tight mb-6 text-center">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl">
+      <h3 className="text-xl font-black text-foreground tracking-tight mb-6 text-center">
         {t("payment.options", "Payment Options")}
       </h3>
       <div className="grid grid-cols-2 gap-3">
@@ -36,12 +36,12 @@ export function PaymentMethodView({
             key={key}
             variant="outline"
             onClick={() => onCheckout(key)}
-            className="h-auto w-full flex flex-col items-center justify-center p-4 bg-gray-50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
+            className="h-auto w-full flex flex-col items-center justify-center p-4 bg-muted/50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
           >
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 group-hover:text-primary">
+            <div className="w-12 h-12 bg-card rounded-xl shadow-sm flex items-center justify-center text-muted-foreground group-hover:text-primary">
               <Icon size={24} />
             </div>
-            <span className="font-bold text-[10px] uppercase tracking-wider text-gray-400 group-hover:text-primary">
+            <span className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary">
               {label}
             </span>
           </Button>
@@ -51,12 +51,12 @@ export function PaymentMethodView({
         <Button
           variant="outline"
           onClick={onOpenSplit}
-          className="h-auto w-full flex flex-col items-center justify-center p-4 bg-gray-50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
+          className="h-auto w-full flex flex-col items-center justify-center p-4 bg-muted/50 border border-transparent hover:border-primary hover:bg-primary/10 rounded-2xl transition-all gap-3 group"
         >
-          <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-gray-400 group-hover:text-primary">
+          <div className="w-12 h-12 bg-card rounded-xl shadow-sm flex items-center justify-center text-muted-foreground group-hover:text-primary">
             <Split size={24} />
           </div>
-          <span className="font-bold text-[10px] uppercase tracking-wider text-gray-400 group-hover:text-primary">
+          <span className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary">
             {t("payment.split", "Split")}
           </span>
         </Button>

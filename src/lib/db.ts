@@ -28,6 +28,9 @@ export interface SaleQueueItem {
   total: number;
   paymentMethod: string;
   payments?: { method: string; amount: number }[];
+  locationId?: string;
+  registerId?: string;
+  shiftId?: string;
   cashierId: string;
   status: "pending" | "synced" | "failed";
   createdAt: string; // ISO String
@@ -35,6 +38,7 @@ export interface SaleQueueItem {
   errorReason?: string;
   customerId?: string;
   redeemedPoints?: number;
+  loyaltyDiscount?: number;
 }
 
 export interface CashShift {
@@ -83,6 +87,10 @@ const db = new Dexie("AuraPOSDB") as Dexie & {
   loyaltyLogs: EntityTable<LoyaltyLog, "id">;
   offers: EntityTable<Offer, "id">;
 };
+
+const allowDemoSeed =
+  process.env.NEXT_PUBLIC_ENABLE_DEMO_SEED === "true" ||
+  process.env.NODE_ENV === "development";
 
 // Define indices for fast searching
 db.version(1).stores({
@@ -133,44 +141,46 @@ export const syncProductsToLocal = async (products: Product[]) => {
   try {
     await db.products.bulkPut(products);
 
-    // Seed Loyalty Tiers (MVP)
-    const tiers: LoyaltyTier[] = [
-      {
-        id: "tier-bronze",
-        name: "Bronze",
-        minSpend: 0,
-        earnRate: 1,
-        color: "#CD7F32",
-      },
-      {
-        id: "tier-silver",
-        name: "Silver",
-        minSpend: 500,
-        earnRate: 1.5,
-        color: "#C0C0C0",
-      },
-      {
-        id: "tier-gold",
-        name: "Gold",
-        minSpend: 2000,
-        earnRate: 2,
-        color: "#FFD700",
-      },
-    ];
-    await db.loyaltyTiers.bulkPut(tiers);
+    if (allowDemoSeed) {
+      // Seed Loyalty Tiers (MVP)
+      const tiers: LoyaltyTier[] = [
+        {
+          id: "tier-bronze",
+          name: "Bronze",
+          minSpend: 0,
+          earnRate: 1,
+          color: "#CD7F32",
+        },
+        {
+          id: "tier-silver",
+          name: "Silver",
+          minSpend: 500,
+          earnRate: 1.5,
+          color: "#C0C0C0",
+        },
+        {
+          id: "tier-gold",
+          name: "Gold",
+          minSpend: 2000,
+          earnRate: 2,
+          color: "#FFD700",
+        },
+      ];
+      await db.loyaltyTiers.bulkPut(tiers);
 
-    // Seed Sample Customer
-    const sampleCustomer: Customer = {
-      id: "cust-1",
-      name: "John Doe",
-      phone: "555-0123",
-      email: "john@example.com",
-      totalSpent: 1200,
-      loyaltyPoints: 150,
-      tierId: "tier-silver",
-      history: [], // Populate with IDs if needed
-    };
-    await db.customers.put(sampleCustomer);
+      // Seed Sample Customer
+      const sampleCustomer: Customer = {
+        id: "cust-1",
+        name: "John Doe",
+        phone: "555-0123",
+        email: "john@example.com",
+        totalSpent: 1200,
+        loyaltyPoints: 150,
+        tierId: "tier-silver",
+        history: [], // Populate with IDs if needed
+      };
+      await db.customers.put(sampleCustomer);
+    }
 
     // P2: Populate default inventory levels for Main Store (loc1)
     // In production, this data should come from a dedicated /inventory/levels API
@@ -199,26 +209,27 @@ export const syncProductsToLocal = async (products: Product[]) => {
       }
     });
 
-    // Seed Sample Price Data (MVP) - Only if not exists?
-    // For MVP, overwrite is fine as it ensures data for demo.
-    const downtownBook: PriceBook = {
-      id: "pb-downtown",
-      name: "Downtown Pricing",
-      description: "Premium pricing for CBD store",
-      isDefault: false,
-      createdAt: new Date().toISOString(),
-    };
-    await db.priceBooks.put(downtownBook);
+    if (allowDemoSeed) {
+      // Seed Sample Price Data (MVP)
+      const downtownBook: PriceBook = {
+        id: "pb-downtown",
+        name: "Downtown Pricing",
+        description: "Premium pricing for CBD store",
+        isDefault: false,
+        createdAt: new Date().toISOString(),
+      };
+      await db.priceBooks.put(downtownBook);
 
-    // Override first 3 products with +20% price
-    const overrides: PriceOverride[] = products.slice(0, 3).map((p) => ({
-      id: `ov-${p.id}`,
-      priceBookId: "pb-downtown",
-      productId: p.id,
-      price: Number((p.sellingPrice * 1.2).toFixed(2)),
-      updatedAt: new Date().toISOString(),
-    }));
-    await db.priceOverrides.bulkPut(overrides);
+      // Override first 3 products with +20% price
+      const overrides: PriceOverride[] = products.slice(0, 3).map((p) => ({
+        id: `ov-${p.id}`,
+        priceBookId: "pb-downtown",
+        productId: p.id,
+        price: Number((p.sellingPrice * 1.2).toFixed(2)),
+        updatedAt: new Date().toISOString(),
+      }));
+      await db.priceOverrides.bulkPut(overrides);
+    }
 
     await db.inventoryLevels.bulkPut(levels);
   } catch (error) {

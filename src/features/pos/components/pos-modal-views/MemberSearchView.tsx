@@ -94,7 +94,7 @@ export function MemberSearchView({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl min-w-100">
       <div className="flex justify-between items-center mb-6">
         <h3 className="typo-bold-18 text-foreground tracking-tight">
           {isCreating
@@ -168,7 +168,7 @@ export function MemberSearchView({
                   key={c.id}
                   variant="ghost"
                   onClick={() => onSelect(c)}
-                  className="w-full justify-between h-auto p-3 hover:bg-gray-50 rounded-lg border border-transparent hover:border-gray-200 group"
+                  className="w-full justify-between h-auto p-3 hover:bg-muted/50 rounded-lg border border-transparent hover:border-border group"
                 >
                   <div className="text-left">
                     <div className="typo-bold-14 text-foreground">{c.name}</div>
@@ -182,11 +182,11 @@ export function MemberSearchView({
                 </Button>
               ))
             ) : query ? (
-              <div className="text-center py-8 text-gray-400 text-sm">
+              <div className="text-center py-8 text-muted-foreground text-sm">
                 {t("customer.noCustomersFound", "No customers found.")}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-400 text-sm">
+              <div className="text-center py-8 text-muted-foreground text-sm">
                 {t("customer.typeToSearch", "Type above to search...")}
               </div>
             )}

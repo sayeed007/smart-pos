@@ -46,14 +46,14 @@ export function SplitPaymentView({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100">
-      <h3 className="text-xl font-black text-gray-900 tracking-tight mb-4 text-center">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl min-w-100">
+      <h3 className="text-xl font-black text-foreground tracking-tight mb-4 text-center">
         {t("checkout.splitPayment", "Split Payment")}
       </h3>
 
       {/* Remaining Due */}
-      <div className="bg-gray-50 p-4 rounded-xl mb-4 flex justify-between items-center">
-        <span className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">
+      <div className="bg-muted p-4 rounded-xl mb-4 flex justify-between items-center">
+        <span className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest">
           {t("checkout.remainingDue", "Remaining Due")}
         </span>
         <span

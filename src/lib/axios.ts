@@ -16,14 +16,6 @@ const getCookieValue = (name: string): string | null => {
   return null;
 };
 
-// Legacy/mock API client used by existing Next.js route handlers.
-export const api = axios.create({
-  baseURL: "/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 // Backend API client (NestJS server).
 export const backendApi = axios.create({
   baseURL: BACKEND_API_URL,
@@ -32,24 +24,6 @@ export const backendApi = axios.create({
   },
   withCredentials: true,
 });
-
-// Request interceptor for legacy/mock client.
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("aura_user");
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        config.headers = config.headers ?? {};
-        config.headers.Authorization = `Bearer mock-token-${user.id}`;
-      }
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
 
 backendApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -67,17 +41,6 @@ backendApi.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error),
-);
-
-// Response interceptor: Global error handling with automatic token refresh
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  },
 );
 
 // Track if we're currently refreshing to avoid multiple simultaneous refresh attempts
@@ -134,7 +97,9 @@ backendApi.interceptors.response.use(
 
     try {
       // Attempt to refresh the token via cookie
-      console.log("[Auth] Attempting token refresh...");
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[Auth] Attempting token refresh...");
+      }
       const csrfToken = getCookieValue("csrfToken");
       await axios.post(
         `${BACKEND_API_URL}/auth/refresh`,
@@ -148,7 +113,9 @@ backendApi.interceptors.response.use(
         },
       );
 
-      console.log("[Auth] Token refresh successful via cookies");
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[Auth] Token refresh successful via cookies");
+      }
 
       // Process queued requests
       processQueue(null, null); // passing null as token since we use cookies
@@ -158,7 +125,9 @@ backendApi.interceptors.response.use(
       return backendApi(originalRequest);
     } catch (refreshError) {
       // Refresh failed, logout
-      console.error("[Auth] Token refresh failed:", refreshError);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[Auth] Token refresh failed:", refreshError);
+      }
       processQueue(refreshError, null);
       isRefreshing = false;
       clearStoredAuth();

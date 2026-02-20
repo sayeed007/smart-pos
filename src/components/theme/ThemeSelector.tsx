@@ -79,7 +79,7 @@ export function ThemeSelector({ className }: { className?: string }) {
               style={{
                 backgroundColor:
                   themeName === themeConfig.name
-                    ? `hsl(${themeConfig.light.primary})` // Use CSS variable or direct value if needed
+                    ? themeConfig.light.primary // the direct hex code now works
                     : undefined,
               }}
               // Fallback to style using the actual color if the variable isn't resolving in this context

@@ -16,14 +16,14 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
   const { t } = useTranslation(["pos", "common"]);
 
   return (
-    <div className="bg-white rounded-3xl p-8 shadow-2xl text-center">
+    <div className="bg-card rounded-3xl p-8 shadow-2xl text-center">
       <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white shadow-xl shadow-green-100 mb-6 mx-auto">
         <CheckCircle2 size={32} strokeWidth={3} />
       </div>
-      <h2 className="text-2xl font-black text-gray-900 mb-1">
+      <h2 className="text-2xl font-black text-foreground mb-1">
         {t("checkout.success", "Payment Successful!")}
       </h2>
-      <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-2">
+      <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mb-2">
         {t("checkout.transactionCompleted", "Transaction completed")}
       </p>
       {sale?.invoiceNo && (
@@ -40,7 +40,7 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
         </PrimaryActionButton>
         <Button
           variant="outline"
-          className="flex-none py-5 px-4 rounded-xl text-sm border-gray-200"
+          className="flex-none py-5 px-4 rounded-xl text-sm border-border bg-card"
           onClick={() => window.print()}
           title={t("checkout.printReceipt", "Print Receipt")}
         >

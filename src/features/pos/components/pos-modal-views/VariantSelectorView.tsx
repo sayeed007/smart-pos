@@ -18,11 +18,11 @@ export function VariantSelectorView({
   const { t } = useTranslation(["pos", "common"]);
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl animate-in zoom-in-95 duration-200 min-w-80 max-w-md">
-      <h3 className="text-xl font-black text-gray-900 tracking-tight mb-1 text-center">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl animate-in zoom-in-95 duration-200 min-w-80 max-w-md">
+      <h3 className="text-xl font-black text-foreground tracking-tight mb-1 text-center">
         {t("variant.selectOption", "Select Option")}
       </h3>
-      <p className="text-sm text-gray-400 font-medium mb-6 text-center">
+      <p className="text-sm text-muted-foreground font-medium mb-6 text-center">
         {product.name}
       </p>
 
@@ -33,7 +33,7 @@ export function VariantSelectorView({
               key={v.id}
               variant="outline"
               onClick={() => onSelect(product, v)}
-              className="h-auto w-full flex flex-col items-center justify-center p-4 bg-white border border-gray-100 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all group whitespace-normal"
+              className="h-auto w-full flex flex-col items-center justify-center p-4 bg-card border border-border rounded-2xl hover:border-primary hover:bg-primary/5 transition-all group whitespace-normal"
             >
               <div className="typo-bold-14 text-foreground line-clamp-2 text-center">
                 {v.name}
@@ -64,10 +64,10 @@ export function VariantSelectorView({
         )}
       </div>
 
-      <div className="mt-6 pt-4 border-t border-gray-100">
+      <div className="mt-6 pt-4 border-t border-border">
         <Button
           variant="ghost"
-          className="w-full text-gray-400 hover:text-gray-900 border"
+          className="w-full text-muted-foreground hover:text-foreground border border-border"
           onClick={onClose}
         >
           {t("common:cancel", "Cancel")}

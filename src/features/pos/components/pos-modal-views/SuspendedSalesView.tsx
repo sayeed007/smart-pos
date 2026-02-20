@@ -48,26 +48,26 @@ export function SuspendedSalesView({ onClose }: SuspendedSalesViewProps) {
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-125 max-h-[80vh] flex flex-col">
-      <h3 className="text-xl font-black text-gray-900 tracking-tight mb-4 text-center">
+    <div className="bg-card rounded-3xl p-6 shadow-2xl min-w-125 max-h-[80vh] flex flex-col">
+      <h3 className="text-xl font-black text-foreground tracking-tight mb-4 text-center">
         {t("suspended.title", "Suspended Sales")}
       </h3>
       <div className="flex-1 overflow-y-auto space-y-3 p-1">
         {sales.length === 0 ? (
-          <p className="text-center text-gray-400 py-10">
+          <p className="text-center text-muted-foreground py-10">
             {t("suspended.empty", "No suspended sales found.")}
           </p>
         ) : (
           sales.map((sale) => (
             <div
               key={sale.id}
-              className="border rounded-xl p-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors"
+              className="border border-border rounded-xl p-4 flex justify-between items-center bg-muted/50 hover:bg-muted/80 transition-colors"
             >
               <div>
-                <div className="font-bold text-sm">
+                <div className="font-bold text-sm text-foreground">
                   {t("suspended.sale", "Sale")} #{sale.id.substr(0, 8)}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(sale.createdAt))} ago &bull;{" "}
                   {sale.items.length} {t("suspended.items", "items")}
                 </div>
@@ -91,7 +91,7 @@ export function SuspendedSalesView({ onClose }: SuspendedSalesViewProps) {
           ))
         )}
       </div>
-      <div className="mt-4 pt-4 border-t border-gray-100">
+      <div className="mt-4 pt-4 border-t border-border">
         <Button variant="ghost" className="w-full" onClick={onClose}>
           {t("common:close", "Close")}
         </Button>

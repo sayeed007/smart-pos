@@ -88,127 +88,94 @@ export function useCustomTheme() {
  * Apply theme variables to document root
  */
 function applyThemeVariables(config: ThemeConfig) {
-  const root = document.documentElement;
+  const styleId = "aura-theme-vars";
+  let styleEl = document.getElementById(styleId) as HTMLStyleElement;
 
-  // Helper function to convert hex to HSL
-  const hexToHSL = (hex: string): string => {
-    // Remove # if present
-    hex = hex.replace(/^#/, "");
-
-    // Parse hex values
-    const r = parseInt(hex.substring(0, 2), 16) / 255;
-    const g = parseInt(hex.substring(2, 4), 16) / 255;
-    const b = parseInt(hex.substring(4, 6), 16) / 255;
-
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0,
-      s = 0,
-      l = (max + min) / 2;
-
-    if (max !== min) {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-      switch (max) {
-        case r:
-          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-          break;
-        case g:
-          h = ((b - r) / d + 2) / 6;
-          break;
-        case b:
-          h = ((r - g) / d + 4) / 6;
-          break;
-      }
-    }
-
-    h = Math.round(h * 360);
-    s = Math.round(s * 100);
-    l = Math.round(l * 100);
-
-    return `${h} ${s}% ${l}%`;
-  };
-
-  // Apply light theme colors
-  root.style.setProperty("--primary", hexToHSL(config.light.primary));
-  root.style.setProperty(
-    "--primary-foreground",
-    hexToHSL(config.light.primaryForeground),
-  );
-  root.style.setProperty("--secondary", hexToHSL(config.light.secondary));
-  root.style.setProperty(
-    "--secondary-foreground",
-    hexToHSL(config.light.secondaryForeground),
-  );
-  root.style.setProperty("--muted", hexToHSL(config.light.muted));
-  root.style.setProperty(
-    "--muted-foreground",
-    hexToHSL(config.light.mutedForeground),
-  );
-  root.style.setProperty("--accent", hexToHSL(config.light.accent));
-  root.style.setProperty(
-    "--accent-foreground",
-    hexToHSL(config.light.accentForeground),
-  );
-  root.style.setProperty("--destructive", hexToHSL(config.light.destructive));
-  root.style.setProperty(
-    "--destructive-foreground",
-    hexToHSL(config.light.destructiveForeground),
-  );
-  root.style.setProperty("--border", hexToHSL(config.light.border));
-  root.style.setProperty("--input", hexToHSL(config.light.input));
-  root.style.setProperty("--ring", hexToHSL(config.light.ring));
-
-  // Apply dark theme colors (with .dark prefix)
-  const darkStyleId = "dark-theme-vars";
-  let darkStyle = document.getElementById(darkStyleId) as HTMLStyleElement;
-
-  if (!darkStyle) {
-    darkStyle = document.createElement("style");
-    darkStyle.id = darkStyleId;
-    document.head.appendChild(darkStyle);
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = styleId;
+    document.head.appendChild(styleEl);
   }
 
-  darkStyle.textContent = `.dark {
-    --primary: ${hexToHSL(config.dark.primary)};
-    --primary-foreground: ${hexToHSL(config.dark.primaryForeground)};
-    --secondary: ${hexToHSL(config.dark.secondary)};
-    --secondary-foreground: ${hexToHSL(config.dark.secondaryForeground)};
-    --muted: ${hexToHSL(config.dark.muted)};
-    --muted-foreground: ${hexToHSL(config.dark.mutedForeground)};
-    --accent: ${hexToHSL(config.dark.accent)};
-    --accent-foreground: ${hexToHSL(config.dark.accentForeground)};
-    --destructive: ${hexToHSL(config.dark.destructive)};
-    --destructive-foreground: ${hexToHSL(config.dark.destructiveForeground)};
-    --border: ${hexToHSL(config.dark.border)};
-    --input: ${hexToHSL(config.dark.input)};
-    --ring: ${hexToHSL(config.dark.ring)};
-  }`;
+  const lc = config.light;
+  const dc = config.dark;
+  const typo = config.typography;
+  const space = config.spacing;
 
-  // Apply typography
-  Object.entries(config.typography.fontFamily).forEach(([key, value]) => {
-    root.style.setProperty(`--font-${key}`, value);
-  });
+  // Generate Typography & Spacing CSS strings dynamically
+  let typoCss = "";
+  Object.entries(typo.fontFamily).forEach(
+    ([k, v]) => (typoCss += `--font-${k}: ${v};\n  `),
+  );
+  Object.entries(typo.fontSize).forEach(
+    ([k, v]) => (typoCss += `--text-${k}: ${v};\n  `),
+  );
+  Object.entries(typo.fontWeight).forEach(
+    ([k, v]) => (typoCss += `--font-weight-${k}: ${v};\n  `),
+  );
+  Object.entries(typo.lineHeight).forEach(
+    ([k, v]) => (typoCss += `--line-height-${k}: ${v};\n  `),
+  );
 
-  Object.entries(config.typography.fontSize).forEach(([key, value]) => {
-    root.style.setProperty(`--text-${key}`, value);
-  });
+  let spaceCss = "";
+  Object.entries(space.borderRadius).forEach(
+    ([k, v]) => (spaceCss += `--radius-${k}: ${v};\n  `),
+  );
+  Object.entries(space.spacing).forEach(
+    ([k, v]) => (spaceCss += `--spacing-${k}: ${v};\n  `),
+  );
 
-  Object.entries(config.typography.fontWeight).forEach(([key, value]) => {
-    root.style.setProperty(`--font-weight-${key}`, String(value));
-  });
+  styleEl.textContent = `
+    :root {
+      /* Typography */
+      ${typoCss}
+      
+      /* Spacing */
+      ${spaceCss}
 
-  Object.entries(config.typography.lineHeight).forEach(([key, value]) => {
-    root.style.setProperty(`--line-height-${key}`, value);
-  });
+      /* Light Theme Colors */
+      --background: ${lc.background};
+      --foreground: ${lc.foreground};
+      --card: ${lc.card};
+      --card-foreground: ${lc.cardForeground};
+      --popover: ${lc.popover};
+      --popover-foreground: ${lc.popoverForeground};
+      --primary: ${lc.primary};
+      --primary-foreground: ${lc.primaryForeground};
+      --secondary: ${lc.secondary};
+      --secondary-foreground: ${lc.secondaryForeground};
+      --muted: ${lc.muted};
+      --muted-foreground: ${lc.mutedForeground};
+      --accent: ${lc.accent};
+      --accent-foreground: ${lc.accentForeground};
+      --destructive: ${lc.destructive};
+      --destructive-foreground: ${lc.destructiveForeground};
+      --border: ${lc.border};
+      --input: ${lc.input};
+      --ring: ${lc.ring};
+    }
 
-  // Apply spacing
-  Object.entries(config.spacing.borderRadius).forEach(([key, value]) => {
-    root.style.setProperty(`--radius-${key}`, value);
-  });
-
-  Object.entries(config.spacing.spacing).forEach(([key, value]) => {
-    root.style.setProperty(`--spacing-${key}`, value);
-  });
+    .dark {
+      /* Dark Theme Colors */
+      --background: ${dc.background};
+      --foreground: ${dc.foreground};
+      --card: ${dc.card};
+      --card-foreground: ${dc.cardForeground};
+      --popover: ${dc.popover};
+      --popover-foreground: ${dc.popoverForeground};
+      --primary: ${dc.primary};
+      --primary-foreground: ${dc.primaryForeground};
+      --secondary: ${dc.secondary};
+      --secondary-foreground: ${dc.secondaryForeground};
+      --muted: ${dc.muted};
+      --muted-foreground: ${dc.mutedForeground};
+      --accent: ${dc.accent};
+      --accent-foreground: ${dc.accentForeground};
+      --destructive: ${dc.destructive};
+      --destructive-foreground: ${dc.destructiveForeground};
+      --border: ${dc.border};
+      --input: ${dc.input};
+      --ring: ${dc.ring};
+    }
+  `;
 }

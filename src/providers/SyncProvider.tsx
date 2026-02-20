@@ -5,12 +5,19 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
   ReactNode,
 } from "react";
-import { db } from "@/lib/db";
-import { api } from "@/lib/axios";
+import { db, type SaleQueueItem } from "@/lib/db";
+import {
+  SalesService,
+  type CreateSaleDto,
+  type SaleLineDto,
+  type SalePaymentDto,
+} from "@/lib/services/backend/sales.service";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocationStore } from "@/features/locations/store";
 
 interface SyncContextType {
   isOnline: boolean;
@@ -20,12 +27,87 @@ interface SyncContextType {
 
 const SyncContext = createContext<SyncContextType | null>(null);
 
+const PAYMENT_METHOD_MAP: Record<string, SalePaymentDto["method"]> = {
+  card: "CARD",
+  Card: "CARD",
+  cash: "CASH",
+  Cash: "CASH",
+  wallet: "DIGITAL_WALLET",
+  Wallet: "DIGITAL_WALLET",
+  digital: "DIGITAL_WALLET",
+  Digital: "DIGITAL_WALLET",
+  voucher: "GIFT_CARD",
+  Voucher: "GIFT_CARD",
+  Split: "OTHER",
+};
+
+const mapPaymentMethod = (method: string) =>
+  PAYMENT_METHOD_MAP[method] || "OTHER";
+
+const buildSaleDto = (
+  sale: SaleQueueItem,
+  fallbackLocationId?: string,
+): CreateSaleDto | null => {
+  const locationId = sale.locationId || fallbackLocationId;
+  if (!locationId || locationId === "default") {
+    return null;
+  }
+
+  const lines: SaleLineDto[] = sale.items.map((item) => {
+    const productId = item.originalProductId || item.id;
+    const isVariant =
+      !!item.originalProductId && item.id !== item.originalProductId;
+    return {
+      productId,
+      variantId: isVariant ? item.id : undefined,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      discountAmount: 0,
+    };
+  });
+
+  if (lines.length === 0) {
+    return null;
+  }
+
+  let payments: SalePaymentDto[];
+  if (sale.payments && sale.payments.length > 0) {
+    payments = sale.payments.map((p) => ({
+      method: mapPaymentMethod(p.method),
+      amount: p.amount,
+    }));
+  } else {
+    payments = [
+      {
+        method: mapPaymentMethod(sale.paymentMethod),
+        amount: sale.total,
+      },
+    ];
+  }
+
+  return {
+    locationId,
+    registerId: sale.registerId,
+    shiftId: sale.shiftId,
+    customerId: sale.customerId,
+    isOffline: true,
+    offlineId: sale.id,
+    loyaltyPointsRedeemed: sale.redeemedPoints || 0,
+    loyaltyDiscount:
+      sale.loyaltyDiscount ||
+      (sale.redeemedPoints ? sale.redeemedPoints / 100 : 0),
+    lines,
+    payments,
+  };
+};
+
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
   const queryClient = useQueryClient();
+  const { currentLocation } = useLocationStore();
 
-  const updatePendingCount = async () => {
+  const updatePendingCount = useCallback(async () => {
     try {
       const count = await db.salesQueue
         .where("status")
@@ -35,9 +117,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.error("DB Error", e);
     }
-  };
+  }, []);
 
-  const syncSales = async () => {
+  const syncSales = useCallback(async () => {
     if (!navigator.onLine) return;
 
     try {
@@ -55,14 +137,12 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       let synced = 0;
       for (const sale of pendingSales) {
         try {
-          await api.post("/sales", {
-            items: sale.items,
-            total: sale.total,
-            paymentMethod: sale.paymentMethod,
-            payments: sale.payments,
-            cashierId: sale.cashierId,
-            createdAt: sale.createdAt, // Preserve offline timestamp
-          });
+          const dto = buildSaleDto(sale, currentLocation?.id);
+          if (!dto) {
+            throw new Error("Missing sale data for sync");
+          }
+
+          await SalesService.create(dto);
 
           // Delete from queue on success
           await db.salesQueue.delete(sale.id);
@@ -82,7 +162,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Sync Process Error", error);
     }
-  };
+  }, [currentLocation?.id, queryClient, updatePendingCount]);
 
   useEffect(() => {
     setIsOnline(navigator.onLine);
@@ -117,7 +197,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("offline", handleOffline);
       clearInterval(interval);
     };
-  }, []);
+  }, [syncSales, updatePendingCount]);
 
   return (
     <SyncContext.Provider

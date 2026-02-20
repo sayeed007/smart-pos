@@ -64,7 +64,7 @@ export function CheckoutView({
   ];
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-2xl overflow-hidden">
       {/* Header */}
       <div className="p-6 bg-muted/30 border-b">
         <div className="flex items-center gap-2 typo-bold-18 text-foreground mb-1">
