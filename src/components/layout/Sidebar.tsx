@@ -74,7 +74,7 @@ export function Sidebar({
 
           {!collapsed && (
             <div className="flex-1 min-w-0 animate-in fade-in duration-300">
-              <h1 className="typo-semibold-14 text-foreground whitespace-nowrap">
+              <h1 className="typo-semibold-14 text-foreground whitespace-nowrap mb-1">
                 {instance.companyName}
               </h1>
               <p className="typo-regular-11 text-muted-foreground uppercase whitespace-nowrap">

@@ -5,31 +5,31 @@
  */
 
 export interface InstanceConfig {
-    /** Company/Business name */
-    companyName: string;
-    /** Company logo URL */
-    logoUrl: string;
-    /** Favicon URL */
-    faviconUrl?: string;
-    /** Primary brand color (will override theme if provided) */
-    brandColor?: string;
-    /** Company tagline/subtitle */
-    tagline?: string;
-    /** Instance/Tenant ID */
-    instanceId: string;
-    /** Company contact info */
-    contact?: {
-        email?: string;
-        phone?: string;
-        address?: string;
-    };
-    /** Feature flags for this instance */
-    features?: {
-        enableInventory?: boolean;
-        enableMultiCurrency?: boolean;
-        enableOffers?: boolean;
-        enableCustomerLoyalty?: boolean;
-    };
+  /** Company/Business name */
+  companyName: string;
+  /** Company logo URL */
+  logoUrl: string;
+  /** Favicon URL */
+  faviconUrl?: string;
+  /** Primary brand color (will override theme if provided) */
+  brandColor?: string;
+  /** Company tagline/subtitle */
+  tagline?: string;
+  /** Instance/Tenant ID */
+  instanceId: string;
+  /** Company contact info */
+  contact?: {
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
+  /** Feature flags for this instance */
+  features?: {
+    enableInventory?: boolean;
+    enableMultiCurrency?: boolean;
+    enableOffers?: boolean;
+    enableCustomerLoyalty?: boolean;
+  };
 }
 
 /**
@@ -37,15 +37,15 @@ export interface InstanceConfig {
  * Used as fallback when server data is not available
  */
 export const defaultInstanceConfig: InstanceConfig = {
-    companyName: "POS System",
-    logoUrl: "/logo.png",
-    faviconUrl: "/favicon.ico",
-    tagline: "Point of Sale",
-    instanceId: "default",
-    features: {
-        enableInventory: true,
-        enableMultiCurrency: false,
-        enableOffers: true,
-        enableCustomerLoyalty: true,
-    },
+  companyName: "Tafuri POS",
+  logoUrl: "/tafuri_pos_logo_transparent.png",
+  faviconUrl: "/favicon.ico",
+  tagline: "Point of Sale",
+  instanceId: "default",
+  features: {
+    enableInventory: true,
+    enableMultiCurrency: false,
+    enableOffers: true,
+    enableCustomerLoyalty: true,
+  },
 };
