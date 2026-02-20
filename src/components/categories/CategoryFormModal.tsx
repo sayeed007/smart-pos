@@ -20,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Category } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
+import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
@@ -40,6 +41,7 @@ export function CategoryFormModal({
   onSave,
 }: CategoryFormModalProps) {
   const { t } = useTranslation(["categories", "common"]);
+  const { theme } = useTheme();
 
   const formSchema = useMemo(
     () =>
@@ -134,6 +136,7 @@ export function CategoryFormModal({
                           }
                           width="100%"
                           height={300}
+                          theme={theme === "dark" ? Theme.DARK : Theme.LIGHT}
                         />
                       </>
                     </FormControl>

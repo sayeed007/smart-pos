@@ -125,7 +125,7 @@ export function StockTransferList({
           </Popover>
         </div>
 
-        <div className="border rounded-lg bg-white overflow-hidden">
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
           {transfers.length === 0 ? (
             <div className="p-12 text-center text-muted-foreground bg-muted/10">
               {translate("dialogs.transferList.noTransfers")}
