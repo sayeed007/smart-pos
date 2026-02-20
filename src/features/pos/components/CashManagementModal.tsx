@@ -10,7 +10,6 @@ import { format } from "date-fns";
 import { SalesService } from "@/lib/services/backend/sales.service";
 import { ZReportTemplate } from "@/features/reports/components/ZReportTemplate";
 
-
 interface SalesSummary {
   totalSales: number;
   cashSales: number;
@@ -46,7 +45,7 @@ export function CashManagementModal() {
           // Fetch sales for this shift
           // For P1 MVP, we fetch all sales and filter client-side.
           // In production, use start_date query param.
-          const result = await SalesService.list({ limit: 1000 });
+          const result = await SalesService.list({ limit: 100 });
           const sales = Array.isArray(result) ? result : result.data || [];
 
           const shiftSales = sales.filter((s) => {

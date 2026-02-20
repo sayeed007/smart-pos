@@ -32,7 +32,7 @@ export function OfferFormModal({
   const { t } = useTranslation(["offers", "common"]);
   const { data: productsData, isLoading: productsLoading } = useProducts({
     page: 1,
-    limit: 1000,
+    limit: 100,
   });
   const { data: categoriesData, isLoading: categoriesLoading } =
     useCategories();

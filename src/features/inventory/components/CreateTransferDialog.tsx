@@ -54,7 +54,7 @@ export function CreateTransferDialog({
   // API Hooks
   const createTransfer = useCreateTransfer();
   const shipTransfer = useShipTransfer();
-  const { data: productsData } = useProducts({ page: 1, limit: 1000 });
+  const { data: productsData } = useProducts({ page: 1, limit: 100 });
   const { data: locations } = useLocations();
 
   const products = useMemo(() => productsData?.data || [], [productsData]);

@@ -74,7 +74,7 @@ export function StockAdjustmentDialog({
   }, [t]);
 
   const adjustStock = useAdjustStock();
-  const { data: productsData } = useProducts({ page: 1, limit: 1000 });
+  const { data: productsData } = useProducts({ page: 1, limit: 100 });
   const { data: locations } = useLocations();
 
   const products = productsData?.data || [];
