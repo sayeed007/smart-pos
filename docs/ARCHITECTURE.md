@@ -1,78 +1,73 @@
-# Aura Web - Frontend Architecture & System Guide
+# Aura Web - Frontend Architecture and System Guide
 
-Welcome to the **Aura Web** frontend platform. This documentation serves as a comprehensive overview of the architecture, folder structures, core libraries, and technical decisions making up the frontend application. It is designed to quickly onboard new developers and specialized agents.
+## Purpose and responsibilities
+Aura Web is the web UI for Aura POS. It owns the user experience, client-side state, offline persistence, and communication with the backend API. It does not enforce business rules that must be authoritative (pricing, inventory, permissions, accounting); those live in the backend.
 
-## 🛠 Tech Stack overview
-- **Framework**: [Next.js](https://nextjs.org/) (App Directory router) with React.
-- **Styling**: Tailwind CSS combined with Native CSS variables for theming.
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (Highly customizable, accessible components heavily reliant on Radix UI underlying logic).
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand) (Simpler, hook-based global state instead of Redux).
-- **Theming**: `next-themes` (Class-based dark/light mode toggling).
-- **Internationalization (i18n)**: `react-i18next`.
-- **Date/Time**: `date-fns`.
-- **Forms & Validation**: `react-hook-form` with `zod` schemas.
+## Tech stack
+- Next.js App Router with React and TypeScript
+- Tailwind CSS with CSS variables, shadcn/ui, Radix primitives
+- TanStack React Query for server state
+- Zustand for client state
+- Dexie (IndexedDB) for offline persistence
+- axios for API calls
+- react-hook-form with zod
+- i18next and react-i18next
+- date-fns, lucide-react
 
----
+## Runtime architecture
+- Route groups separate admin, cashier, and public flows.
+- Auth uses HttpOnly cookies issued by the backend. The frontend stores the user and tenant id in localStorage and sends `X-CSRF-Token` on unsafe requests.
+- `backendApi` in `src/lib/axios.ts` centralizes API calls and handles token refresh on 401.
+- React Query handles fetching, caching, and invalidation.
+- Providers compose app behavior: `AuthProvider`, `SessionProvider`, `InstanceProvider`, `QueryProvider`, `SyncProvider`, `ThemeProvider`, `CustomThemeProvider`, `I18nProvider`.
+- Offline mode uses Dexie in `src/lib/db.ts` for products, customers, offers, inventory levels, suspended sales, and a sales queue.
+- `SyncProvider` periodically retries queued offline sales and shows a sync indicator when pending items exist.
+- Instance configuration is fetched from `/instance/config` and controls branding and feature flags.
+- Theming uses CSS variables. Prefer semantic tokens like `bg-background` and `text-foreground` over hardcoded colors.
 
-## 📂 Directory Structure (`src/`)
+## Directory map
+- `src/app` route tree for all pages and layouts.
+- `src/components` shared UI and domain components.
+- `src/features` feature slices with stores, components, and logic.
+- `src/hooks` React Query hooks and offline hooks.
+- `src/lib` API clients, utilities, auth storage, and Dexie database.
+- `src/providers` cross-cutting providers.
+- `src/i18n` translations and i18n initialization.
+- `src/types` shared domain types and backend DTO shapes.
 
-- **`app/`**: Next.js App Router root. Contains all URL route mappings.
-  - `(admin)/`: Grouped layouts strictly for authenticated admin routes (Dashboard, inventory, categories).
-  - `(auth)/`: Grouped layouts for login flows.
-  - `(pos)/`: Grouped layout specifically assigned for the POS Checkout interface (typically requires more horizontal screen space or specific kiosk formatting without the heavy admin sidebar).
+## Route map
+- Admin routes live under `src/app/(admin)/admin` and include `dashboard`, `products`, `categories`, `inventory`, `sales`, `returns`, `offers`, `reports`, `settings`, `locations`, `people`, `users`, `pos`, and `customers`.
+- Cashier routes live under `src/app/(cashier)/cashier` and include `pos`, `products`, and `customers`.
+- Public routes live under `src/app/(public)` and include `login`.
 
-- **`components/`**: React components.
-  - `ui/`: Raw `shadcn/ui` foundational components (Buttons, inputs, popovers, Dialogs). **Do not place business logic in these files**.
-  - `categories/`, `products/`, `sales/`, `returns/`: Business-logic heavy domain components isolating their specific module rendering (e.g., `ReturnFormModal.tsx`).
+## Feature map (where to look)
+- POS checkout: `src/features/pos` and `src/app/(cashier)/cashier/pos`, with deeper design in `src/features/pos/POS_ARCHITECTURE.md`.
+- Products: `src/app/(admin)/admin/products`, `src/components/products`, `src/hooks/api/products`, `src/lib/services/backend/products.service.ts`.
+- Categories: `src/app/(admin)/admin/categories`, `src/components/categories`, `src/hooks/api/categories`, `src/lib/services/backend/categories.service.ts`.
+- Inventory: `src/app/(admin)/admin/inventory`, `src/components/inventory`, `src/features/inventory`, `src/hooks/api/inventory`, `src/lib/services/backend/inventory.service.ts`.
+- Sales: `src/app/(admin)/admin/sales`, `src/components/sales`, `src/hooks/api/sales`, `src/lib/services/backend/sales.service.ts`.
+- Returns: `src/app/(admin)/admin/returns`, `src/components/returns`, `src/hooks/api/returns`, `src/lib/services/backend/returns.service.ts`.
+- Customers and loyalty: `src/app/(admin)/admin/customers`, `src/components/customers`, `src/hooks/api/customers`, `src/lib/services/backend/customers.service.ts`.
+- Offers and discounts: `src/app/(admin)/admin/offers`, `src/hooks/api/offers`, `src/lib/services/backend/offers.service.ts`.
+- Locations: `src/app/(admin)/admin/locations`, `src/features/locations`, `src/hooks/api/locations`, `src/lib/services/backend/locations.service.ts`.
+- Cash management: `src/features/cash`, `src/hooks/api/cash-management`, `src/lib/services/backend/cash-management.service.ts`.
+- Reports and dashboards: `src/app/(admin)/admin/reports` and `src/hooks/api/reports`.
+- Settings and theming: `src/app/(admin)/admin/settings`, `src/features/settings/store.ts`, `src/providers/custom-theme-provider.tsx`.
+- Auth and session: `src/app/(public)/login`, `src/providers/auth-provider.tsx`, `src/lib/services/backend/auth.service.ts`.
+- Instance branding: `src/providers/instance-provider.tsx`, `src/config/instance.config.ts`.
 
-- **`features/`**: Feature-sliced architecture modules. (e.g. `pos/` holds stores, types, and components strictly linked to the Point of Sales feature).
+## Data flows (high level)
+- Login and session: `useLogin` calls `/auth/login`, backend sets cookies, `AuthProvider` stores user and tenant id and routes by role.
+- API calls: `backendApi` sends cookies and `X-CSRF-Token`, retries once on 401 by calling `/auth/refresh`.
+- Instance config: `InstanceProvider` fetches `/instance/config`, updates document title and favicon.
+- POS checkout: cart state in `src/features/pos/store/pos-store.ts` is transformed to `CreateSaleDto` and posted to `/sales`. On success, React Query invalidates related caches.
+- Offline sales: sales are queued in Dexie and retried by `SyncProvider` when online.
 
-- **`hooks/`**: Custom React hooks. Usually wrapping API calls mapping directly to REST endpoints using `@tanstack/react-query` or similar fetching patterns.
+## Related docs
+- `src/features/pos/POS_ARCHITECTURE.md` for full POS behavior and discount logic.
+- `AUTH_COOKIE_FLOW.md` for cookie based auth flow and CSRF notes.
 
-- **`lib/`**: Utility scripts, constants, Axios instance setup, generic helpers (like `cn` for Tailwind class merging).
-
-- **`store/`**: Global Zustand stores.
-  - `useCartStore.ts`: Manages products selected in the POS system currently pending checkout.
-  - `useSettingsStore.ts`: Handles caching global tenant settings (currency symbols, loyalty points rules).
-  - `useThemeStore.ts`: Tracks custom theming overlays.
-  - `useAuthStore.ts`: Session information tracking.
-
----
-
-## 🔑 Core Workflows & Logic
-
-### 1. The Point of Sale (POS) Interface
-Located primarily under `/src/features/pos/` and `/src/app/(pos)/`.
-- Handles rapid adding/removing of items to cart.
-- Supports **Product Variants** (`VariantSelectorView`).
-- Handles complex checkouts:
-  - Multiple payment methods (**Split Payments**).
-  - Suspended Sales tracking (saving a cart layout to clear the physical counter line).
-  - Handles Loyalty Points parsing directly per customer selection.
-
-### 2. State Mapping & Theming
-- **Theming**: DO NOT use hardcoded colors (e.g., `bg-white`, `text-gray-900`) for structural components unless absolutely intentional.
-- ALWAYS use mapped CSS variables provided via Tailwind (e.g., `bg-card`, `bg-background`, `text-foreground`, `border-border`, `bg-muted`/`text-muted-foreground`). 
-- Doing this ensures components seamlessly switch behavior naturally as users toggle Light/Dark Mode via the Settings sidebar.
-
-### 3. Modals & Dialogs UI
-When building popups or editing panels, default to leveraging the `<Dialog>` or `<Sheet>` structures stored in `components/ui/dialog.tsx` and `components/ui/sheet.tsx`. Use Popovers (`components/ui/popover.tsx`) alongside `<Command>` inputs to recreate native Select behaviors that require search filtering.
-
-### 4. i18n Translations
-Never hardcode strings meant for the direct UI facing the user. Rely on the `useTranslation()` hook.
-- **Example**: `t("form.processReturn", "Process Return")`
-- The first argument is the dictionary key, and the second is the exact Fallback english text in the event a user's language map drops.
-
----
-
-## 📝 Best Practices Checklist
-1. **Never mutate UI raw inputs manually**: Let React/Zustand handle the state.
-2. **Handle Loading/Error States**: Always account for `isFetching`, `isLoading`, and network errors on buttons explicitly.
-3. **Respect the grid**: Stick to the standard Tailwind 4-point spacing scale (`p-4`, `gap-2`, `m-6`).
-4. **Icons**: Exclusively use `lucide-react`.
-
-## 🚀 Running the project
-- Dependencies `npm install`
-- Env vars: Ensure your `.env.local` runs `NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1`
-- Start server: `npm run dev`
+## Local development
+- Required env: `NEXT_PUBLIC_BACKEND_API_URL` (defaults to `http://localhost:3001/api/v1`).
+- Optional env: `NEXT_PUBLIC_ENABLE_DEMO_SEED` for Dexie demo data, and the `NEXT_PUBLIC_DEV_*` login helpers used in `src/app/(public)/login/page.tsx`.
+- Commands: `npm install` then `npm run dev`.
