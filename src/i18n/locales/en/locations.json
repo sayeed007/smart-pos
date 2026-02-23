@@ -1,0 +1,51 @@
+{
+  "toasts": {
+    "updateSuccess": "Updated successfully",
+    "updateError": "Failed to update",
+    "createSuccess": "Created successfully",
+    "createError": "Failed to create",
+    "deleteSuccess": "Deleted successfully",
+    "deleteError": "Failed to delete"
+  },
+  "page": {
+    "title": "Title",
+    "subtitle": "Subtitle"
+  },
+  "actions": {
+    "addLocation": "Add Location",
+    "cancel": "Cancel",
+    "update": "Update",
+    "save": "Save"
+  },
+  "dialog": {
+    "deleteTitle": "Delete",
+    "deleteDescription": "Delete Description",
+    "editTitle": "Edit",
+    "addTitle": "Add",
+    "editDescription": "Edit Description",
+    "addDescription": "Add Description"
+  },
+  "fields": {
+    "name": "Name",
+    "enterName": "Enter Name",
+    "type": "Type",
+    "selectType": "Select Type",
+    "status": "Status",
+    "selectStatus": "Select Status",
+    "address": "Address",
+    "enterAddress": "Enter Address",
+    "priceBookId": "Price Book Id",
+    "enterPriceBookId": "Enter Price Book Id"
+  },
+  "headers": {
+    "name": "Name",
+    "type": "Type",
+    "address": "Address",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "empty": {
+    "title": "Title",
+    "description": "Description"
+  }
+}

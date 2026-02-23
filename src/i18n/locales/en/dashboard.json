@@ -20,7 +20,11 @@
     "topCategories": "Top Categories",
     "lowStockAlert": "Low Stock Alert",
     "paymentMethods": "Payment Methods",
-    "selectedRange": "Selected range"
+    "selectedRange": "Selected range",
+    "noLowStock": "No Low Stock",
+    "noPaymentData": "No Payment Data",
+    "noRecentSales": "No Recent Sales",
+    "noCategoryData": "No Category Data"
   },
   "units": "units",
   "sales": {
@@ -30,5 +34,8 @@
   },
   "card": "Card",
   "digital_wallet": "Digital Wallet",
-  "cash": "Cash"
+  "cash": "Cash",
+  "filters": {
+    "pickDate": "Pick Date"
+  }
 }

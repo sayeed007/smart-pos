@@ -29,7 +29,8 @@
     "inactive": "Inactive",
     "imageDrag": "Drag & drop files here",
     "imageClick": "Or click to browse (up to 2MB)",
-    "browse": "Browse files"
+    "browse": "Browse files",
+    "uncategorized": "Uncategorized"
   },
   "actions": {
     "save": "Save Product",
@@ -64,6 +65,8 @@
   "toasts": {
     "createSuccess": "Product created successfully",
     "updateSuccess": "Product updated successfully",
-    "deleteSuccess": "Product deleted successfully"
+    "deleteSuccess": "Product deleted successfully",
+    "deleteError": "Failed to delete",
+    "saveError": "Save Error"
   }
 }

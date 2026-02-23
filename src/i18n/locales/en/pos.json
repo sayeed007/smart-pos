@@ -59,7 +59,8 @@
     "cardPayment": "Card Payment",
     "totalDue": "Total Due",
     "processPayment": "Process Payment",
-    "digital": "Digital"
+    "digital": "Digital",
+    "processing": "Processing"
   },
   "offers": {
     "title": "Active Offers",
@@ -103,5 +104,8 @@
     "discarded": "Suspended sale discarded",
     "sale": "Sale",
     "items": "items"
+  },
+  "common": {
+    "amount": "Amount"
   }
 }

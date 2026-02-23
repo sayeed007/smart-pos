@@ -16,7 +16,8 @@
     "selectSale": "Please select a sale first.",
     "noReturnableItems": "No returnable items found.",
     "provideReason": "Please provide a reason for the return.",
-    "selectItems": "Please select items to return."
+    "selectItems": "Please select items to return.",
+    "noSale": "No Sale"
   },
   "table": {
     "invoiceNo": "Invoice No",
@@ -57,9 +58,9 @@
     "processReturn": "Process Return"
   },
   "status": {
-      "Pending": "Pending",
-      "Approved": "Approved",
-      "Rejected": "Rejected",
-      "Completed": "Completed"
+    "Pending": "Pending",
+    "Approved": "Approved",
+    "Rejected": "Rejected",
+    "Completed": "Completed"
   }
 }

@@ -35,7 +35,8 @@
   },
   "status": {
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "scheduled": "Scheduled"
   },
   "placeholders": {
     "name": "e.g., Summer Sale 2024",
@@ -46,5 +47,25 @@
   },
   "createSuccess": "Offer created successfully",
   "updateSuccess": "Offer updated successfully",
-  "noOffers": "No offers found"
+  "noOffers": "No offers found",
+  "deleteSuccess": "Delete Success",
+  "archive": "Archive",
+  "archiveOfferTitle": "Archive Offer Title",
+  "archiveOfferDescription": "Archive Offer Description",
+  "buyQty": "Buy Qty",
+  "getQty": "Get Qty",
+  "discountType": "Discount Type",
+  "free": "Free",
+  "percent": "Percent",
+  "fixed": "Fixed",
+  "discountPercent": "Discount Percent",
+  "discountAmount": "Discount Amount",
+  "sameProduct": "Same Product",
+  "buyProducts": "Buy Products",
+  "getProducts": "Get Products",
+  "bundleProducts": "Bundle Products",
+  "bundlePricing": "Bundle Pricing",
+  "fixedPrice": "Fixed Price",
+  "percentOff": "Percent Off",
+  "bundlePrice": "Bundle Price"
 }

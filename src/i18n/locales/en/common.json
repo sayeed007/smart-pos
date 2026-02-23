@@ -11,7 +11,10 @@
   "filter": "Filter",
   "clear": "Clear",
   "close": "Close",
-  "confirm": "Confirm",
+  "confirm": {
+    "title": "Confirm Action",
+    "description": "Are you sure you want to proceed?"
+  },
   "back": "Back",
   "next": "Next",
   "previous": "Previous",
@@ -73,5 +76,24 @@
     "description": "Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.",
     "goHome": "Go to Homepage",
     "goBack": "Go Back"
-  }
+  },
+  "locations": "Locations",
+  "page": "Page",
+  "checkout": {
+    "cash": "Cash",
+    "payWithCash": "Pay With Cash",
+    "card": "Card",
+    "payWithCard": "Pay With Card",
+    "wallet": "Wallet",
+    "payWithWallet": "Pay With Wallet",
+    "split": "Split",
+    "payWithSplit": "Pay With Split",
+    "payment": "Payment",
+    "selectMethod": "Select Method",
+    "totalToPay": "Total To Pay"
+  },
+  "common": {
+    "cancel": "Cancel"
+  },
+  "creating": "Creating"
 }

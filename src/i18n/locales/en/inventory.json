@@ -30,7 +30,8 @@
   "filters": {
     "search": "Search by product, SKU, or reason...",
     "filterByType": "Filter by Type",
-    "allTypes": "All Types"
+    "allTypes": "All Types",
+    "pickDate": "Pick Date"
   },
   "tableHeaders": {
     "dateTime": "Date & Time",
