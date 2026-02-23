@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "tsc": "npx tsc --noEmit > ts_errors.txt",
-    "check-i18n": "node scripts/check-i18n.js"
+    "check-i18n": "node scripts/check-i18n.js",
+    "find-missing-translations": "node scripts/find-missing-translations.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
