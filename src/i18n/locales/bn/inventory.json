@@ -30,7 +30,8 @@
   "filters": {
     "search": "পণ্য, SKU, বা কারণ দিয়ে খুঁজুন...",
     "filterByType": "ধরন অনুসারে ফিল্টার করুন",
-    "allTypes": "সব ধরন"
+    "allTypes": "সব ধরন",
+    "pickDate": "তারিখ নির্বাচন করুন"
   },
   "tableHeaders": {
     "dateTime": "তারিখ ও সময়",

@@ -8,7 +8,7 @@
     "totalProducts": "মোট পণ্য",
     "customers": "গ্রাহকগণ",
     "lowStock": "কম স্টক",
-    "totalOrders": "[EN] Total Orders"
+    "totalOrders": "মোট অর্ডার"
   },
   "charts": {
     "revenueOverview": "আয়ের সারসংক্ষেপ",
@@ -20,7 +20,11 @@
     "topCategories": "শীর্ষ বিভাগ",
     "lowStockAlert": "স্বল্প স্টক সতর্কতা",
     "paymentMethods": "পেমেন্ট পদ্ধতি",
-    "selectedRange": "[EN] Selected range"
+    "selectedRange": "নির্বাচিত রেঞ্জ",
+    "noLowStock": "কোনো স্বল্প স্টক নেই",
+    "noPaymentData": "কোনো পেমেন্ট ডেটা নেই",
+    "noRecentSales": "সাম্প্রতিক কোনো বিক্রয় নেই",
+    "noCategoryData": "কোনো ক্যাটাগরির ডেটা নেই"
   },
   "units": "ইউনিট",
   "sales": {
@@ -28,7 +32,10 @@
     "noSales": "এখনও কোনো বিক্রয় নেই",
     "viewAll": "সব দেখুন"
   },
-  "card": "[EN] Card",
-  "digital_wallet": "[EN] Digital Wallet",
-  "cash": "[EN] Cash"
+  "card": "কার্ড",
+  "digital_wallet": "ডিজিটাল ওয়ালেট",
+  "cash": "নগদ",
+  "filters": {
+    "pickDate": "তারিখ নির্বাচন করুন"
+  }
 }

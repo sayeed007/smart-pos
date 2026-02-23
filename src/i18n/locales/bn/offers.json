@@ -35,7 +35,8 @@
   },
   "status": {
     "active": "সক্রিয়",
-    "inactive": "নিষ্ক্রিয়"
+    "inactive": "নিষ্ক্রিয়",
+    "scheduled": "নির্ধারিত"
   },
   "placeholders": {
     "name": "যেমন, গ্রীষ্মকালীন অফার ২০২৪",
@@ -46,5 +47,25 @@
   },
   "createSuccess": "অফার সফলভাবে তৈরি হয়েছে",
   "updateSuccess": "অফার সফলভাবে আপডেট হয়েছে",
-  "noOffers": "কোন অফার পাওয়া যায়নি"
+  "noOffers": "কোন অফার পাওয়া যায়নি",
+  "deleteSuccess": "সফলভাবে মুছে ফেলা হয়েছে",
+  "archive": "আর্কাইভ করুন",
+  "archiveOfferTitle": "অফার আর্কাইভ করুন",
+  "archiveOfferDescription": "আপনি কি অফারটি আর্কাইভ করতে চান?",
+  "buyQty": "কেনার পরিমাণ",
+  "getQty": "পাওয়ার পরিমাণ",
+  "discountType": "ডিসকাউন্টের ধরণ",
+  "free": "ফ্রি",
+  "percent": "শতাংশ",
+  "fixed": "নির্দিষ্ট",
+  "discountPercent": "ডিসকাউন্টের শতাংশ",
+  "discountAmount": "ডিসকাউন্টের পরিমাণ",
+  "sameProduct": "একই পণ্য",
+  "buyProducts": "পণ্য কিনুন",
+  "getProducts": "পণ্য পান",
+  "bundleProducts": "বান্ডেল পণ্য",
+  "bundlePricing": "বান্ডেলের মূল্য",
+  "fixedPrice": "নির্দিষ্ট মূল্য",
+  "percentOff": "শতাংশ ছাড়",
+  "bundlePrice": "বান্ডেলের দাম"
 }

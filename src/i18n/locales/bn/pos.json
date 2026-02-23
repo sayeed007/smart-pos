@@ -51,15 +51,16 @@
     "payWithWallet": "মোবাইল ওয়ালেটে পে করুন",
     "selectMethod": "পেমেন্ট পদ্ধতি নির্বাচন করুন",
     "totalToPay": "মোট পরিশোধযোগ্য",
-    "splitPayment": "[EN] Split Payment",
-    "payWithSplit": "[EN] Split payment across multiple methods",
-    "remainingDue": "[EN] Remaining Due",
-    "noPaymentsAdded": "[EN] No payments added yet.",
-    "transactionCompleted": "[EN] Transaction completed",
-    "cardPayment": "[EN] Card Payment",
-    "totalDue": "[EN] Total Due",
-    "processPayment": "[EN] Process Payment",
-    "digital": "[EN] Digital"
+    "splitPayment": "বিভক্ত পেমেন্ট",
+    "payWithSplit": "একাধিক পদ্ধতিতে পেমেন্ট করুন",
+    "remainingDue": "বাকি পরিমাণ",
+    "noPaymentsAdded": "এখনও কোনো পেমেন্ট যোগ করা হয়নি।",
+    "transactionCompleted": "লেনদেন সমাপ্ত",
+    "cardPayment": "কার্ড পেমেন্ট",
+    "totalDue": "মোট বাকি",
+    "processPayment": "পেমেন্ট প্রক্রিয়া করুন",
+    "digital": "ডিজিটাল",
+    "processing": "প্রক্রিয়াকরণ"
   },
   "offers": {
     "title": "সক্রিয় অফার",
@@ -67,41 +68,44 @@
     "viewOffers": "অফার দেখুন"
   },
   "variant": {
-    "selectOption": "[EN] Select Option",
-    "noVariants": "[EN] No variants available for this product."
+    "selectOption": "বিকল্প নির্বাচন করুন",
+    "noVariants": "এই পণ্যের জন্য কোন ভেরিয়েন্ট উপলব্ধ নেই।"
   },
   "customer": {
-    "newCustomer": "[EN] New Customer",
-    "selectCustomer": "[EN] Select Customer",
-    "fullName": "[EN] Full Name *",
-    "phoneNumber": "[EN] Phone Number *",
-    "emailOptional": "[EN] Email (Optional)",
-    "searchPlaceholder": "[EN] Search by name or phone...",
-    "createCustomer": "[EN] Create Customer",
-    "addNewCustomer": "[EN] Add New Customer",
-    "noCustomersFound": "[EN] No customers found.",
-    "typeToSearch": "[EN] Type above to search...",
-    "existsError": "[EN] Customer with this phone already exists",
-    "createdSuccess": "[EN] Customer Created",
-    "createError": "[EN] Failed to create customer",
-    "requiredError": "[EN] Name and Phone required"
+    "newCustomer": "নতুন গ্রাহক",
+    "selectCustomer": "গ্রাহক নির্বাচন করুন",
+    "fullName": "পুরো নাম *",
+    "phoneNumber": "ফোন নম্বর *",
+    "emailOptional": "ইমেইল (ঐচ্ছিক)",
+    "searchPlaceholder": "নাম বা ফোন দিয়ে খুঁজুন...",
+    "createCustomer": "গ্রাহক তৈরি করুন",
+    "addNewCustomer": "নতুন গ্রাহক যোগ করুন",
+    "noCustomersFound": "কোন গ্রাহক পাওয়া যায়নি।",
+    "typeToSearch": "খুঁজতে উপরে টাইপ করুন...",
+    "existsError": "এই ফোনের গ্রাহক ইতিমধ্যে বিদ্যমান",
+    "createdSuccess": "গ্রাহক তৈরি হয়েছে",
+    "createError": "গ্রাহক তৈরি করতে ব্যর্থ",
+    "requiredError": "নাম এবং ফোন আবশ্যক"
   },
   "payment": {
-    "options": "[EN] Payment Options",
-    "digital": "[EN] Digital",
-    "card": "[EN] Card",
-    "cash": "[EN] Cash",
-    "split": "[EN] Split",
-    "voucher": "[EN] Voucher"
+    "options": "পেমেন্ট বিকল্প",
+    "digital": "ডিজিটাল",
+    "card": "কার্ড",
+    "cash": "নগদ",
+    "split": "বিভক্ত",
+    "voucher": "ভাউচার"
   },
   "suspended": {
-    "title": "[EN] Suspended Sales",
-    "empty": "[EN] No suspended sales found.",
-    "resume": "[EN] Resume",
-    "discard": "[EN] Discard",
-    "resumed": "[EN] Sale Resumed",
-    "discarded": "[EN] Suspended sale discarded",
-    "sale": "[EN] Sale",
-    "items": "[EN] items"
+    "title": "স্থগিত বিক্রয়",
+    "empty": "কোন স্থগিত বিক্রয় পাওয়া যায়নি।",
+    "resume": "পুনরায় শুরু করুন",
+    "discard": "বাতিল করুন",
+    "resumed": "বিক্রয় পুনরায় শুরু হয়েছে",
+    "discarded": "স্থগিত বিক্রয় বাতিল করা হয়েছে",
+    "sale": "বিক্রয়",
+    "items": "আইটেম"
+  },
+  "common": {
+    "amount": "পরিমাণ"
   }
 }

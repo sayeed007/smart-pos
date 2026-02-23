@@ -1,0 +1,51 @@
+{
+  "toasts": {
+    "updateSuccess": "সফলভাবে আপডেট করা হয়েছে",
+    "updateError": "আপডেট করতে ব্যর্থ হয়েছে",
+    "createSuccess": "সফলভাবে তৈরি করা হয়েছে",
+    "createError": "তৈরি করতে ব্যর্থ হয়েছে",
+    "deleteSuccess": "সফলভাবে মুছে ফেলা হয়েছে",
+    "deleteError": "মুছতে ব্যর্থ হয়েছে"
+  },
+  "page": {
+    "title": "অবস্থানসমূহ",
+    "subtitle": "আপনার অবস্থান পরিচালনা করুন"
+  },
+  "actions": {
+    "addLocation": "অবস্থান যোগ করুন",
+    "cancel": "বাতিল",
+    "update": "আপডেট করুন",
+    "save": "সংরক্ষণ করুন"
+  },
+  "dialog": {
+    "deleteTitle": "মুছুন",
+    "deleteDescription": "আপনি কি এটি মুছতে চান?",
+    "editTitle": "সম্পাদনা করুন",
+    "addTitle": "যোগ করুন",
+    "editDescription": "অবস্থানের বিবরণ সম্পাদনা করুন",
+    "addDescription": "নতুন অবস্থান যোগ করুন"
+  },
+  "fields": {
+    "name": "নাম",
+    "enterName": "নাম লিখুন",
+    "type": "প্রকার",
+    "selectType": "প্রকার নির্বাচন করুন",
+    "status": "অবস্থা",
+    "selectStatus": "অবস্থা নির্বাচন করুন",
+    "address": "ঠিকানা",
+    "enterAddress": "ঠিকানা লিখুন",
+    "priceBookId": "প্রাইস বুক আইডি",
+    "enterPriceBookId": "প্রাইস বুক আইডি লিখুন"
+  },
+  "headers": {
+    "name": "নাম",
+    "type": "প্রকার",
+    "address": "ঠিকানা",
+    "status": "অবস্থা",
+    "actions": "ক্রিয়াকলাপ"
+  },
+  "empty": {
+    "title": "কোনো অবস্থান নেই",
+    "description": "বর্তমানে কোনো অবস্থান যোগ করা হয়নি"
+  }
+}
