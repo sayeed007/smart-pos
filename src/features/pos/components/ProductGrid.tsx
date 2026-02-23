@@ -147,7 +147,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
             className={cn(
               "px-3 py-2 h-auto rounded-lg transition-all shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
               selectedCategory === "all"
-                ? "bg-chart-1 hover:bg-chart-1/90 text-white shadow-md shadow-chart-1/30"
+                ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/30"
                 : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",
             )}
           >
@@ -161,7 +161,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
               className={cn(
                 "px-3 py-2 h-auto rounded-lg transition-all whitespace-nowrap shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
                 selectedCategory === cat.id
-                  ? "bg-chart-1 hover:bg-chart-1/90 text-white shadow-md shadow-chart-1/30"
+                  ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/30"
                   : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",
               )}
             >

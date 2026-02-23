@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { usePOSStore } from "@/features/pos/store/pos-store";
 import { useSettingsStore } from "@/features/settings/store";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { processSale } from "@/features/pos/utils/sale-processor";
@@ -265,7 +265,11 @@ export function POSModals({ offers = [] }: POSModalsProps) {
       open={activeModal !== "none"}
       onOpenChange={(open) => !open && setModal("none")}
     >
-      <DialogContent className="max-w-sm bg-transparent border-0 shadow-none p-0 overflow-hidden outline-none">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-sm bg-transparent border-0 shadow-none p-0 overflow-hidden outline-none"
+      >
+        <DialogTitle className="sr-only">POS Modal</DialogTitle>
         {renderModalContent()}
       </DialogContent>
     </Dialog>
