@@ -50,11 +50,58 @@
     "payWithCard": "কার্ডে পে করুন",
     "payWithWallet": "মোবাইল ওয়ালেটে পে করুন",
     "selectMethod": "পেমেন্ট পদ্ধতি নির্বাচন করুন",
-    "totalToPay": "মোট পরিশোধযোগ্য"
+    "totalToPay": "মোট পরিশোধযোগ্য",
+    "splitPayment": "[EN] Split Payment",
+    "payWithSplit": "[EN] Split payment across multiple methods",
+    "remainingDue": "[EN] Remaining Due",
+    "noPaymentsAdded": "[EN] No payments added yet.",
+    "transactionCompleted": "[EN] Transaction completed",
+    "cardPayment": "[EN] Card Payment",
+    "totalDue": "[EN] Total Due",
+    "processPayment": "[EN] Process Payment",
+    "digital": "[EN] Digital"
   },
   "offers": {
     "title": "সক্রিয় অফার",
     "applied": "অফার প্রয়োগ করা হয়েছে",
     "viewOffers": "অফার দেখুন"
+  },
+  "variant": {
+    "selectOption": "[EN] Select Option",
+    "noVariants": "[EN] No variants available for this product."
+  },
+  "customer": {
+    "newCustomer": "[EN] New Customer",
+    "selectCustomer": "[EN] Select Customer",
+    "fullName": "[EN] Full Name *",
+    "phoneNumber": "[EN] Phone Number *",
+    "emailOptional": "[EN] Email (Optional)",
+    "searchPlaceholder": "[EN] Search by name or phone...",
+    "createCustomer": "[EN] Create Customer",
+    "addNewCustomer": "[EN] Add New Customer",
+    "noCustomersFound": "[EN] No customers found.",
+    "typeToSearch": "[EN] Type above to search...",
+    "existsError": "[EN] Customer with this phone already exists",
+    "createdSuccess": "[EN] Customer Created",
+    "createError": "[EN] Failed to create customer",
+    "requiredError": "[EN] Name and Phone required"
+  },
+  "payment": {
+    "options": "[EN] Payment Options",
+    "digital": "[EN] Digital",
+    "card": "[EN] Card",
+    "cash": "[EN] Cash",
+    "split": "[EN] Split",
+    "voucher": "[EN] Voucher"
+  },
+  "suspended": {
+    "title": "[EN] Suspended Sales",
+    "empty": "[EN] No suspended sales found.",
+    "resume": "[EN] Resume",
+    "discard": "[EN] Discard",
+    "resumed": "[EN] Sale Resumed",
+    "discarded": "[EN] Suspended sale discarded",
+    "sale": "[EN] Sale",
+    "items": "[EN] items"
   }
 }
