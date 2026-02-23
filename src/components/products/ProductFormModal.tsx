@@ -84,7 +84,7 @@ const defaultFormData: ProductFormData = {
 
 const numberField = (label: string) =>
   z
-    .number({ invalid_type_error: `${label} is required` })
+    .number({ message: `${label} is required` })
     .refine((value) => !Number.isNaN(value), {
       message: `${label} is required`,
     })
