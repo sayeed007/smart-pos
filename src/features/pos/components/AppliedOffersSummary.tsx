@@ -121,7 +121,7 @@ export function AppliedOffersSummary({
             <Button
               variant="ghost"
               onClick={handleToggleAll}
-              className="h-auto p-0 hover:bg-transparent text-[10px] text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1 typo-semibold-14"
+              className="h-auto p-0 hover:bg-transparent text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1 typo-semibold-10"
             >
               {allSelected ? (
                 <>
@@ -168,7 +168,7 @@ export function AppliedOffersSummary({
                     >
                       {offer.name}
                     </p>
-                    <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">
+                    <p className="text-muted-foreground line-clamp-2 mt-0.5 typo-regular-10">
                       {offer.description || "Discount available"}
                     </p>
                   </div>

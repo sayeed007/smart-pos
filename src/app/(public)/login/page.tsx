@@ -129,7 +129,7 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="space-y-1.5">
-                      <FormLabel className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
+                      <FormLabel className="text-gray-400 uppercase tracking-widest ml-1 typo-bold-10">
                         Email Address
                       </FormLabel>
                       <FormControl>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem className="space-y-1.5">
-                      <FormLabel className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
+                      <FormLabel className="text-gray-400 uppercase tracking-widest ml-1 typo-bold-10">
                         Password
                       </FormLabel>
                       <FormControl>
@@ -198,12 +198,12 @@ export default function LoginPage() {
             </form>
           </Form>
 
-          <p className="text-center text-[10px] text-gray-300 uppercase tracking-widest typo-bold-14">
+          <p className="text-center text-gray-300 uppercase tracking-widest typo-bold-10">
             Protected by Aura Security
           </p>
           {isDev && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
-              <p className="uppercase tracking-widest text-[10px] text-amber-700 typo-bold-14">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 typo-regular-11">
+              <p className="uppercase tracking-widest text-amber-700 typo-bold-10">
                 Dev Credentials
               </p>
               <div className="mt-2 space-y-1">

@@ -678,4 +678,72 @@
     letter-spacing: 0px !important;
   }
 
+  /* Micro Sizes */
+  /* 10px Size */
+  .typo-bold-10 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-10 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-10 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-10 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 13px Size */
+  .typo-bold-13 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-13 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-13 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-13 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    letter-spacing: 0px !important;
+  }
+
 }

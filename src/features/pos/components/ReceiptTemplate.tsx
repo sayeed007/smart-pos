@@ -145,11 +145,11 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
 
       <div className="text-center typo-regular-12">
         <p className="whitespace-pre-wrap">{settings.receiptFooter}</p>
-        <p className="mt-2 text-[10px]">Powered by Aura POS</p>
+        <p className="mt-2 typo-regular-10">Powered by Aura POS</p>
       </div>
 
       {/* Cut line visual (optional) */}
-      <div className="mt-4 text-center text-[10px] text-gray-400">
+      <div className="mt-4 text-center text-gray-400 typo-regular-10">
         . . . . . . . . . . . . .
       </div>
     </div>

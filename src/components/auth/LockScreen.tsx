@@ -53,7 +53,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
               </p>
             </div>
 
-            <div className="pt-8 flex gap-3 text-[10px] uppercase tracking-widest text-red-100/60 typo-bold-14">
+            <div className="pt-8 flex gap-3 uppercase tracking-widest text-red-100/60 typo-bold-10">
               <span>Secure</span>
               <span>•</span>
               <span>Encrypted</span>
@@ -75,7 +75,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
 
             <div className="space-y-4 pt-4">
               <div className="space-y-1.5">
-                <label className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
+                <label className="text-gray-400 uppercase tracking-widest ml-1 typo-bold-10">
                   Security PIN
                 </label>
                 <div className="relative">
@@ -133,7 +133,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
               </PrimaryActionButton>
             </div>
 
-            <p className="text-center text-[10px] text-gray-300 uppercase tracking-widest pt-8 typo-bold-14">
+            <p className="text-center text-gray-300 uppercase tracking-widest pt-8 typo-bold-10">
               Current User: Admin
             </p>
           </div>

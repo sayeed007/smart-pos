@@ -68,7 +68,7 @@ export function SalesByCategoryChart({ data }: SalesByCategoryChartProps) {
                 }}
               ></div>
               {entry.name}
-              <span className="text-[11px] text-gray-400 typo-semibold-14">
+              <span className="text-gray-400 typo-semibold-11">
                 {percent.toFixed(1)}%
               </span>
             </div>

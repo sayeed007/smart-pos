@@ -561,7 +561,7 @@ export function CreateTransferDialog({
                       <div className="whitespace-normal typo-medium-14">
                         {item.name}
                       </div>
-                      <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
+                      <div className="flex gap-2 text-muted-foreground mt-0.5 typo-regular-10">
                         <span>{item.sku}</span>
                         {item.maxStock !== undefined && (
                           <span className="text-blue-600 bg-blue-50 px-1 rounded">

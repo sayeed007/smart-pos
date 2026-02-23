@@ -53,7 +53,7 @@ export function CashierHeader({
         </h2>
       </div>
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest border border-green-100 shadow-sm typo-bold-14">
+        <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full uppercase tracking-widest border border-green-100 shadow-sm typo-bold-10">
           Live Terminal #01
         </div>
         <Button

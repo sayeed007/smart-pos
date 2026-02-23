@@ -154,7 +154,7 @@ export function PriceBookManager() {
                 <div className="flex items-center gap-2 typo-bold-14">
                   {book.name}
                   {book.isDefault && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider typo-bold-14">
+                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider typo-bold-10">
                       Default
                     </span>
                   )}

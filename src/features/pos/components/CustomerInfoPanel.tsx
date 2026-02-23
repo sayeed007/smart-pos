@@ -111,7 +111,7 @@ export function CustomerInfoPanel({
             {customer.name}
             <Badge
               variant="secondary"
-              className="px-1.5 py-0 text-[10px] uppercase tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0 typo-bold-14"
+              className="px-1.5 py-0 uppercase tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0 typo-bold-10"
             >
               {getTierDisplay(customer.tierId)}
             </Badge>

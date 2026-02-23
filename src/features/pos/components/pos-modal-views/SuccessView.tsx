@@ -23,7 +23,7 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
       <h2 className="text-foreground mb-1 typo-regular-24 typo-bold-14">
         {t("checkout.success", "Payment Successful!")}
       </h2>
-      <p className="text-muted-foreground uppercase tracking-widest text-[10px] mb-2 typo-bold-14">
+      <p className="text-muted-foreground uppercase tracking-widest mb-2 typo-bold-10">
         {t("checkout.transactionCompleted", "Transaction completed")}
       </p>
       {sale?.invoiceNo && (

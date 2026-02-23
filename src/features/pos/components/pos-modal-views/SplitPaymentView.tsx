@@ -53,7 +53,7 @@ export function SplitPaymentView({
 
       {/* Remaining Due */}
       <div className="bg-muted p-4 rounded-xl mb-4 flex justify-between items-center">
-        <span className="text-muted-foreground uppercase text-[10px] tracking-widest typo-bold-14">
+        <span className="text-muted-foreground uppercase tracking-widest typo-bold-10">
           {t("checkout.remainingDue", "Remaining Due")}
         </span>
         <span

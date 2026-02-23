@@ -183,10 +183,10 @@ export function ZReportTemplate({
 
       <div className="text-center mt-4 typo-regular-12">
         <p>*** END OF SHIFT ***</p>
-        <p className="mt-2 text-[10px]">Powered by Aura POS</p>
+        <p className="mt-2 typo-regular-10">Powered by Aura POS</p>
       </div>
 
-      <div className="mt-4 text-center text-[10px] text-gray-400">
+      <div className="mt-4 text-center text-gray-400 typo-regular-10">
         . . . . . . . . . . . . .
       </div>
     </div>

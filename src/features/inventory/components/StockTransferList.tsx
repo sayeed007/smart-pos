@@ -215,7 +215,7 @@ export function StockTransferList({
                             </span>
                           ))}
                           {transfer.lines.length > 2 && (
-                            <span className="text-muted-foreground text-[10px]">
+                            <span className="text-muted-foreground typo-regular-10">
                               +{transfer.lines.length - 2}{" "}
                               {translate("common:more")}
                             </span>

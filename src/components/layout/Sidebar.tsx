@@ -175,7 +175,7 @@ export function Sidebar({
               <p className="text-foreground truncate leading-none mb-1 typo-bold-14">
                 {user?.name || "User"}
               </p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate leading-none typo-bold-14">
+              <p className="text-muted-foreground uppercase tracking-wider truncate leading-none typo-bold-10">
                 {typeof user?.role === "object"
                   ? (user.role as { name: string }).name
                   : user?.role || t("role")}
