@@ -24,6 +24,7 @@ import { CopyPlus, Wand2, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { ServerImage } from "@/components/ui/server-image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -1015,13 +1016,9 @@ export function ProductFormModal({
             >
               {t("actions.cancel")}
             </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className=" bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
-            >
+            <PrimaryActionButton onClick={handleSave} disabled={isSaving}>
               {isSaving ? t("actions.saving") : t("actions.save")}
-            </Button>
+            </PrimaryActionButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

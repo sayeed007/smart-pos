@@ -12,6 +12,7 @@ import { useSettingsStore } from "@/features/settings/store";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PriceBookManager } from "@/features/settings/components/PriceBookManager";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { PageHeader } from "@/components/ui/page-header";
 import { useTranslation } from "react-i18next";
 
@@ -284,13 +285,13 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button
+            <PrimaryActionButton
               onClick={handleSave}
               className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 px-8"
             >
               <Save className="w-4 h-4 mr-2" />
               {t("actions.save", "Save Settings")}
-            </Button>
+            </PrimaryActionButton>
           </div>
         </TabsContent>
 

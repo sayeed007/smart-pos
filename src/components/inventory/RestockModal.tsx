@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { Input } from "@/components/ui/input";
 import { ServerImage } from "@/components/ui/server-image";
 import { AlertCircle, Package } from "lucide-react";
@@ -169,13 +170,12 @@ export function RestockModal({
             >
               {t("modal.cancel", "Cancel")}
             </Button>
-            <Button
+            <PrimaryActionButton
               onClick={handleRestock}
-              className="flex-1 h-11 rounded-xl bg-linear-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-lg shadow-orange-500/20"
               disabled={quantityNum <= 0}
             >
               {t("modal.addStock", "Add Stock")}
-            </Button>
+            </PrimaryActionButton>
           </div>
         </div>
       </DialogContent>
