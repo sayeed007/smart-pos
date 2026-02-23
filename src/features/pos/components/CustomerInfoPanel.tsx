@@ -107,17 +107,17 @@ export function CustomerInfoPanel({
       {/* Header: Name and Remove */}
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0 pr-2">
-          <p className="flex items-center gap-2 text-sm font-semibold text-foreground truncate">
+          <p className="flex items-center gap-2 text-foreground truncate typo-semibold-14">
             {customer.name}
             <Badge
               variant="secondary"
-              className="px-1.5 py-0 text-[10px] uppercase font-bold tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0"
+              className="px-1.5 py-0 text-[10px] uppercase tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0 typo-bold-14"
             >
               {getTierDisplay(customer.tierId)}
             </Badge>
           </p>
-          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1 font-medium text-amber-600">
+          <div className="mt-0.5 flex items-center gap-2 text-muted-foreground typo-regular-12">
+            <span className="flex items-center gap-1 text-amber-600 typo-medium-14">
               <TicketPercent size={12} />
               {customer.loyaltyPoints} pts
             </span>
@@ -132,13 +132,13 @@ export function CustomerInfoPanel({
         <div className="flex items-center gap-2 shrink-0">
           {customer.loyaltyPoints > 0 && (
             <div className="relative w-24">
-              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground typo-regular-12">
                 {currencySymbol}
               </span>
               <Input
                 ref={inputRef}
                 type="number"
-                className="h-8 pl-5 text-xs bg-background pr-1 text-right shadow-sm border-primary/20 focus-visible:ring-primary/20"
+                className="h-8 pl-5 bg-background pr-1 text-right shadow-sm border-primary/20 focus-visible:ring-primary/20 typo-regular-12"
                 placeholder="0.00"
                 min={0}
                 max={maxRedeemableValue}

@@ -24,7 +24,7 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
   return (
     <div
       id="receipt-print-area"
-      className="hidden print:block print:w-full print:h-auto font-mono text-black bg-white"
+      className="hidden print:block print:w-full print:h-auto text-black bg-white"
     >
       <style jsx global>{`
         @media print {
@@ -52,32 +52,34 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
       `}</style>
 
       <div className="text-center mb-4">
-        <h1 className="text-lg font-bold uppercase">{settings.storeName}</h1>
-        <p className="text-xs">{settings.storeAddress}</p>
-        <p className="text-xs">{settings.storePhone}</p>
+        <h1 className="uppercase typo-bold-18">{settings.storeName}</h1>
+        <p className="typo-regular-12">{settings.storeAddress}</p>
+        <p className="typo-regular-12">{settings.storePhone}</p>
         {settings.storeEmail && (
-          <p className="text-xs">{settings.storeEmail}</p>
+          <p className="typo-regular-12">{settings.storeEmail}</p>
         )}
       </div>
 
       <div className="text-center mb-2 pb-2 border-b border-black border-dashed">
-        <p className="font-bold">{settings.receiptHeader}</p>
-        <div className="flex justify-between text-xs mt-1">
+        <p className="typo-bold-14">{settings.receiptHeader}</p>
+        <div className="flex justify-between mt-1 typo-regular-12">
           <span>{format(receiptDate, "dd/MM/yyyy HH:mm")}</span>
           <span>#{sale.invoiceNo || sale.id.slice(-6)}</span>
         </div>
-        {reprint && <p className="font-bold uppercase mt-1">*** REPRINT ***</p>}
+        {reprint && (
+          <p className="uppercase mt-1 typo-bold-14">*** REPRINT ***</p>
+        )}
       </div>
 
       {/* Items */}
       <div className="mb-2 pb-2 border-b border-black border-dashed">
-        <div className="flex justify-between font-bold text-xs mb-1">
+        <div className="flex justify-between mb-1 typo-bold-12">
           <span className="w-1/2 text-left">Item</span>
           <span className="w-1/6 text-center">Qty</span>
           <span className="w-1/3 text-right">Total</span>
         </div>
         {(sale.lines || sale.items || []).map((item: any, idx) => (
-          <div key={idx} className="flex justify-between text-xs mb-1">
+          <div key={idx} className="flex justify-between mb-1 typo-regular-12">
             <span className="w-1/2 text-left truncate">{item.name}</span>
             <span className="w-1/6 text-center">{item.quantity}</span>
             <span className="w-1/3 text-right">
@@ -92,28 +94,28 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
 
       {/* Totals */}
       <div className="mb-4 pb-2 border-b border-black border-dashed space-y-1 text-right">
-        <div className="flex justify-between text-xs">
+        <div className="flex justify-between typo-regular-12">
           <span>Subtotal:</span>
           <span>
             {settings.currencySymbol}
             {sale.subtotal.toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between text-xs">
+        <div className="flex justify-between typo-regular-12">
           <span>Tax ({settings.taxRate}%):</span>
           <span>
             {settings.currencySymbol}
             {(sale.tax || sale.taxTotal || 0).toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between text-xs">
+        <div className="flex justify-between typo-regular-12">
           <span>Discount:</span>
           <span>
             -{settings.currencySymbol}
             {(sale.discount || sale.discountTotal || 0).toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between text-sm font-bold mt-2">
+        <div className="flex justify-between mt-2 typo-bold-14">
           <span>TOTAL:</span>
           <span>
             {settings.currencySymbol}
@@ -123,10 +125,10 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
       </div>
 
       {/* Payment Info */}
-      <div className="mb-4 text-xs">
+      <div className="mb-4 typo-regular-12">
         <div className="flex justify-between">
           <span>Payment Method:</span>
-          <span className="font-bold">{sale.paymentMethod}</span>
+          <span className="typo-bold-14">{sale.paymentMethod}</span>
         </div>
         {/* Split Payments Details if any */}
         {sale.payments &&
@@ -141,9 +143,9 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
           ))}
       </div>
 
-      <div className="text-center text-xs">
+      <div className="text-center typo-regular-12">
         <p className="whitespace-pre-wrap">{settings.receiptFooter}</p>
-        <p className="mt-2 font-mono text-[10px]">Powered by Aura POS</p>
+        <p className="mt-2 text-[10px]">Powered by Aura POS</p>
       </div>
 
       {/* Cut line visual (optional) */}

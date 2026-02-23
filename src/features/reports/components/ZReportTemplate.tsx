@@ -25,7 +25,7 @@ export function ZReportTemplate({
   return (
     <div
       id="z-report-print-area"
-      className={`${print ? "hidden print:block" : ""} font-mono text-black bg-white p-4`}
+      className={`${print ? "hidden print:block" : ""} text-black bg-white p-4`}
     >
       <style jsx global>{`
         @media print {
@@ -53,19 +53,21 @@ export function ZReportTemplate({
       `}</style>
 
       <div className="text-center mb-4 border-b border-black border-dashed pb-2">
-        <h1 className="text-lg font-bold uppercase">Z-REPORT</h1>
-        <h2 className="text-md font-bold">{settings.storeName}</h2>
-        <p className="text-xs">{format(new Date(), "dd/MM/yyyy HH:mm")}</p>
-        <p className="text-xs">Shift ID: #{shift.id.slice(0, 8)}</p>
-        <p className="text-xs">Cashier: {shift.cashierId}</p>
+        <h1 className="uppercase typo-bold-18">Z-REPORT</h1>
+        <h2 className="text-md typo-bold-14">{settings.storeName}</h2>
+        <p className="typo-regular-12">
+          {format(new Date(), "dd/MM/yyyy HH:mm")}
+        </p>
+        <p className="typo-regular-12">Shift ID: #{shift.id.slice(0, 8)}</p>
+        <p className="typo-regular-12">Cashier: {shift.cashierId}</p>
       </div>
 
-      <div className="mb-4 text-xs space-y-1 border-b border-black border-dashed pb-2">
-        <div className="flex justify-between font-bold">
+      <div className="mb-4 space-y-1 border-b border-black border-dashed pb-2 typo-regular-12">
+        <div className="flex justify-between typo-bold-14">
           <span>Shift Start:</span>
           <span>{format(new Date(shift.startTime), "HH:mm")}</span>
         </div>
-        <div className="flex justify-between font-bold">
+        <div className="flex justify-between typo-bold-14">
           <span>Shift End:</span>
           <span>
             {shift.endTime ? format(new Date(shift.endTime), "HH:mm") : "NOW"}
@@ -73,8 +75,8 @@ export function ZReportTemplate({
         </div>
       </div>
 
-      <div className="mb-4 text-xs space-y-1 border-b border-black border-dashed pb-2">
-        <h3 className="font-bold underline mb-2">SALES SUMMARY</h3>
+      <div className="mb-4 space-y-1 border-b border-black border-dashed pb-2 typo-regular-12">
+        <h3 className="underline mb-2 typo-bold-14">SALES SUMMARY</h3>
         <div className="flex justify-between">
           <span>Total Revenue:</span>
           <span>
@@ -105,8 +107,8 @@ export function ZReportTemplate({
         </div>
       </div>
 
-      <div className="mb-4 text-xs space-y-1 border-b border-black border-dashed pb-2">
-        <h3 className="font-bold underline mb-2">PAYMENT BREAKDOWN</h3>
+      <div className="mb-4 space-y-1 border-b border-black border-dashed pb-2 typo-regular-12">
+        <h3 className="underline mb-2 typo-bold-14">PAYMENT BREAKDOWN</h3>
         <div className="flex justify-between">
           <span>Cash Sales:</span>
           <span>
@@ -123,8 +125,10 @@ export function ZReportTemplate({
         </div>
       </div>
 
-      <div className="mb-4 text-xs space-y-1 border-b border-black border-dashed pb-2">
-        <h3 className="font-bold underline mb-2">CASH DRAW RECONCILIATION</h3>
+      <div className="mb-4 space-y-1 border-b border-black border-dashed pb-2 typo-regular-12">
+        <h3 className="underline mb-2 typo-bold-14">
+          CASH DRAW RECONCILIATION
+        </h3>
         <div className="flex justify-between">
           <span>Opening Float:</span>
           <span>
@@ -143,21 +147,21 @@ export function ZReportTemplate({
                     <span>- Cash Drops:</span>
                     <span>$0.00</span>
                 </div> */}
-        <div className="flex justify-between font-bold mt-1 border-t border-gray-400 pt-1">
+        <div className="flex justify-between mt-1 border-t border-gray-400 pt-1 typo-bold-14">
           <span>Expected Cash:</span>
           <span>
             {settings.currencySymbol}
             {(shift.startAmount + salesSummary.cashSales).toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between font-bold">
+        <div className="flex justify-between typo-bold-14">
           <span>Actual Count:</span>
           <span>
             {settings.currencySymbol}
             {(shift.endAmount || 0).toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between font-bold mt-1">
+        <div className="flex justify-between mt-1 typo-bold-14">
           <span>Discrepancy:</span>
           <span
             className={
@@ -177,9 +181,9 @@ export function ZReportTemplate({
         </div>
       </div>
 
-      <div className="text-center text-xs mt-4">
+      <div className="text-center mt-4 typo-regular-12">
         <p>*** END OF SHIFT ***</p>
-        <p className="mt-2 font-mono text-[10px]">Powered by Aura POS</p>
+        <p className="mt-2 text-[10px]">Powered by Aura POS</p>
       </div>
 
       <div className="mt-4 text-center text-[10px] text-gray-400">

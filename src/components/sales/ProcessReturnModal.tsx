@@ -98,22 +98,22 @@ export function ProcessReturnModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-150 p-0 gap-0 overflow-hidden bg-background">
         <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-xl font-bold">
+          <DialogTitle className="typo-bold-20">
             {t("modal.title", "Process Return")}
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground typo-regular-14">
             {t("modal.subtitle", "Select items to return and provide a reason")}
           </p>
         </DialogHeader>
 
-        <div className="px-6 py-4 bg-muted/30 border-y border-border flex justify-between items-center text-sm">
+        <div className="px-6 py-4 bg-muted/30 border-y border-border flex justify-between items-center typo-regular-14">
           <div>
             <p className="text-muted-foreground">Invoice</p>
-            <p className="font-bold text-foreground">{sale.invoiceNo}</p>
+            <p className="text-foreground typo-bold-14">{sale.invoiceNo}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Date</p>
-            <p className="font-bold text-foreground">
+            <p className="text-foreground typo-bold-14">
               {sale.completedAt
                 ? format(new Date(sale.completedAt), "MMM dd, yyyy")
                 : "-"}
@@ -121,7 +121,7 @@ export function ProcessReturnModal({
           </div>
           <div className="text-right">
             <p className="text-muted-foreground">Total</p>
-            <p className="font-bold text-foreground">
+            <p className="text-foreground typo-bold-14">
               ${Number(sale.total).toFixed(2)}
             </p>
           </div>
@@ -148,10 +148,10 @@ export function ProcessReturnModal({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-foreground truncate">
+                  <h4 className="text-foreground truncate typo-semibold-14">
                     {item.name}
                   </h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground typo-regular-14">
                     ${item.unitPrice.toFixed(2)} • {t("modal.max", "Max")}:{" "}
                     {item.quantity}
                   </p>
@@ -166,7 +166,7 @@ export function ProcessReturnModal({
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
-                  <span className="w-4 text-center font-medium">
+                  <span className="w-4 text-center typo-medium-14">
                     {quantities[item.id] || 0}
                   </span>
                   <Button
@@ -180,10 +180,10 @@ export function ProcessReturnModal({
                   </Button>
                 </div>
                 <div className="text-right min-w-20">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground typo-regular-12">
                     {t("modal.refund", "Refund")}
                   </p>
-                  <p className="font-bold text-destructive">
+                  <p className="text-destructive typo-bold-14">
                     ${(item.unitPrice * (quantities[item.id] || 0)).toFixed(2)}
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export function ProcessReturnModal({
           </div>
 
           <div className="mt-6 space-y-2">
-            <label className="text-sm font-medium text-foreground">
+            <label className="text-foreground typo-medium-14">
               {t("modal.reasonLabel", "Reason for Return *")}
             </label>
             <Textarea
@@ -217,7 +217,7 @@ export function ProcessReturnModal({
             />
             <label
               htmlFor="restock"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 typo-medium-14"
             >
               Restock items to inventory?
             </label>
@@ -226,16 +226,16 @@ export function ProcessReturnModal({
 
         <div className="p-6 bg-muted/30 border-t border-border mt-auto">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium">
+            <span className="typo-medium-14">
               {t("modal.itemsToReturn", "Items to Return:")}
             </span>
-            <span className="font-bold">{totalItemsToReturn}</span>
+            <span className="typo-bold-14">{totalItemsToReturn}</span>
           </div>
           <div className="flex justify-between items-center mb-6">
-            <span className="text-lg font-bold">
+            <span className="typo-bold-18">
               {t("modal.totalRefund", "Total Refund:")}
             </span>
-            <span className="text-lg font-bold text-destructive">
+            <span className="text-destructive typo-bold-18">
               ${totalRefund.toFixed(2)}
             </span>
           </div>

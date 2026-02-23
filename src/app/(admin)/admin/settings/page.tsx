@@ -70,7 +70,7 @@ export default function SettingsPage() {
               <Card className="rounded-xl border border-sidebar-border shadow-sm">
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <Store className="w-5 h-5" />
-                  <CardTitle className="text-lg font-bold">
+                  <CardTitle className="typo-bold-18">
                     {t("sections.store.title", "Store Settings")}
                   </CardTitle>
                 </CardHeader>
@@ -134,7 +134,7 @@ export default function SettingsPage() {
               <Card className="rounded-xl border border-sidebar-border shadow-sm">
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <FileText className="w-5 h-5" />
-                  <CardTitle className="text-lg font-bold">
+                  <CardTitle className="typo-bold-18">
                     {t("sections.receipt.title", "Receipt Content")}
                   </CardTitle>
                 </CardHeader>
@@ -189,7 +189,7 @@ export default function SettingsPage() {
               <Card className="rounded-xl border border-sidebar-border shadow-sm">
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <DollarSign className="w-5 h-5" />
-                  <CardTitle className="text-lg font-bold">
+                  <CardTitle className="typo-bold-18">
                     {t("sections.currencyTax.title", "Currency & Tax")}
                   </CardTitle>
                 </CardHeader>
@@ -245,7 +245,7 @@ export default function SettingsPage() {
               <Card className="rounded-xl border border-sidebar-border shadow-sm">
                 <CardHeader className="flex flex-row items-center gap-2 pb-2">
                   <Printer className="w-5 h-5" />
-                  <CardTitle className="text-lg font-bold">
+                  <CardTitle className="typo-bold-18">
                     {t("sections.hardware.title", "Hardware Configuration")}
                   </CardTitle>
                 </CardHeader>
@@ -256,7 +256,7 @@ export default function SettingsPage() {
                     </Label>
                     <select
                       id="paperWidth"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file: file: placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 typo-medium-14"
                       value={localSettings.paperWidth}
                       onChange={(e) =>
                         handleChange("paperWidth", e.target.value)
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                     </select>
                   </div>
 
-                  <div className="p-4 bg-yellow-50 text-yellow-800 text-sm rounded-lg border border-yellow-200">
+                  <div className="p-4 bg-yellow-50 text-yellow-800 rounded-lg border border-yellow-200 typo-regular-14">
                     <strong>{t("sections.hardware.note", "Note")}:</strong>{" "}
                     {t(
                       "sections.hardware.noteMessage",

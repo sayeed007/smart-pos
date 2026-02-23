@@ -192,7 +192,7 @@ export function StockAdjustmentDialog({
               )}
             />
             {errors.type && (
-              <p className="text-sm text-destructive">{errors.type.message}</p>
+              <p className="text-destructive typo-regular-14">{errors.type.message}</p>
             )}
           </div>
 
@@ -226,7 +226,7 @@ export function StockAdjustmentDialog({
               )}
             />
             {errors.locationId && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive typo-regular-14">
                 {errors.locationId.message}
               </p>
             )}
@@ -270,7 +270,7 @@ export function StockAdjustmentDialog({
               )}
             />
             {errors.productId && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive typo-regular-14">
                 {errors.productId.message}
               </p>
             )}
@@ -350,7 +350,7 @@ export function StockAdjustmentDialog({
               )}
             />
             {errors.quantity && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive typo-regular-14">
                 {errors.quantity.message}
               </p>
             )}
@@ -368,7 +368,7 @@ export function StockAdjustmentDialog({
               className={cn("w-full", errors.reason && "border-destructive")}
             />
             {errors.reason && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive typo-regular-14">
                 {errors.reason.message}
               </p>
             )}

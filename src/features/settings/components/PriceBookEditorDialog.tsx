@@ -113,7 +113,7 @@ export function PriceBookEditorDialog({
         </div>
 
         <div className="flex-1 overflow-auto border rounded-md">
-          <table className="w-full text-sm">
+          <table className="w-full typo-regular-14">
             <thead className="bg-muted sticky top-0 z-10">
               <tr>
                 <th className="p-3 text-left">Product</th>
@@ -133,8 +133,8 @@ export function PriceBookEditorDialog({
                     className="border-b last:border-0 hover:bg-muted/10"
                   >
                     <td className="p-3">
-                      <div className="font-medium">{p.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="typo-medium-14">{p.name}</div>
+                      <div className="text-muted-foreground typo-regular-12">
                         {p.sku}
                       </div>
                     </td>
@@ -143,12 +143,12 @@ export function PriceBookEditorDialog({
                     </td>
                     <td className="p-3 text-right">
                       <div className="relative">
-                        <span className="absolute left-2 top-1.5 text-muted-foreground text-xs">
+                        <span className="absolute left-2 top-1.5 text-muted-foreground typo-regular-12">
                           $
                         </span>
                         <input
                           type="number"
-                          className={`w-full border rounded px-2 py-1 pl-4 text-right ${hasOverride ? "border-primary font-bold bg-primary/5" : "border-input"}`}
+                          className={`w-full border rounded px-2 py-1 pl-4 text-right ${hasOverride ? "border-primary bg-primary/5" : "border-input"} typo-bold-14`}
                           placeholder={p.sellingPrice.toFixed(2)}
                           value={hasOverride ? override : ""}
                           onChange={(e) =>

@@ -44,10 +44,10 @@ export function PaymentMethodsList({ data }: PaymentMethodsListProps) {
               key={method.name}
               className="flex items-center justify-between p-4 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors"
             >
-              <span className="font-medium">
+              <span className="typo-medium-14">
                 {formatMethod(method.name)} Payments
               </span>
-              <span className="font-bold text-lg">
+              <span className="typo-bold-18">
                 $
                 {method.value.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

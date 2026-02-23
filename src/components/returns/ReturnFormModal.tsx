@@ -293,10 +293,10 @@ export function ReturnFormModal({
                           className="flex items-start gap-2"
                         >
                           <div className="flex flex-col">
-                            <span className="text-sm font-medium">
+                            <span className="typo-medium-14">
                               {sale.invoiceNo}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground typo-regular-12">
                               {sale.customerName ||
                                 t(
                                   "form.walkInCustomer",
@@ -322,7 +322,7 @@ export function ReturnFormModal({
         {isEdit && (
           <div className="grid gap-2">
             <Label>{t("table.invoiceNo", "Invoice No")}</Label>
-            <div className="text-sm font-medium">{saleSearch}</div>
+            <div className="typo-medium-14">{saleSearch}</div>
           </div>
         )}
 
@@ -343,8 +343,8 @@ export function ReturnFormModal({
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <div className="text-sm font-medium">{line.name}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="typo-medium-14">{line.name}</div>
+                          <div className="text-muted-foreground typo-regular-12">
                             {t("form.sold", "Sold")}: {line.soldQuantity} |{" "}
                             {t("form.returned", "Returned")}:{" "}
                             {line.alreadyReturnedQuantity} |{" "}
@@ -352,7 +352,7 @@ export function ReturnFormModal({
                             {line.returnableQuantity}
                           </div>
                         </div>
-                        <div className="text-sm font-semibold">
+                        <div className="typo-semibold-14">
                           ${(line.unitRefund * qty).toFixed(2)}
                         </div>
                       </div>
@@ -386,7 +386,7 @@ export function ReturnFormModal({
                         </div>
                         <div className="space-y-1">
                           <Label>{t("form.unitRefund", "Unit Refund")}</Label>
-                          <div className="h-10 rounded-md border bg-muted/40 px-3 flex items-center text-sm">
+                          <div className="h-10 rounded-md border bg-muted/40 px-3 flex items-center typo-regular-14">
                             ${line.unitRefund.toFixed(2)}
                           </div>
                         </div>
@@ -395,7 +395,7 @@ export function ReturnFormModal({
                   );
                 })}
                 {returnableLines.length === 0 && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-muted-foreground typo-regular-14">
                     {t(
                       "form.noReturnableItemsForSale",
                       "No returnable items for this sale.",
@@ -465,10 +465,10 @@ export function ReturnFormModal({
             )}
 
             <div className="flex justify-between items-center bg-muted/50 p-3 rounded-lg">
-              <span className="font-semibold text-sm">
+              <span className="typo-semibold-14">
                 {t("form.totalRefundAmount", "Total Refund Amount")}
               </span>
-              <span className="font-bold text-xl">
+              <span className="typo-bold-20">
                 ${refundAmount.toFixed(2)}
               </span>
             </div>

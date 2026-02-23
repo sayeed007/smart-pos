@@ -27,7 +27,7 @@ export function PaymentMethodView({
 
   return (
     <div className="bg-card rounded-3xl p-6 shadow-2xl">
-      <h3 className="text-xl font-black text-foreground tracking-tight mb-6 text-center">
+      <h3 className="text-foreground tracking-tight mb-6 text-center typo-regular-20 typo-bold-14">
         {t("payment.options", "Payment Options")}
       </h3>
       <div className="grid grid-cols-2 gap-3">
@@ -41,7 +41,7 @@ export function PaymentMethodView({
             <div className="w-12 h-12 bg-card rounded-xl shadow-sm flex items-center justify-center text-muted-foreground group-hover:text-primary">
               <Icon size={24} />
             </div>
-            <span className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary typo-bold-14">
               {label}
             </span>
           </Button>
@@ -56,7 +56,7 @@ export function PaymentMethodView({
           <div className="w-12 h-12 bg-card rounded-xl shadow-sm flex items-center justify-center text-muted-foreground group-hover:text-primary">
             <Split size={24} />
           </div>
-          <span className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground group-hover:text-primary typo-bold-14">
             {t("payment.split", "Split")}
           </span>
         </Button>

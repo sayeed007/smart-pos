@@ -56,15 +56,15 @@ export function InvoiceDetailsModal({
             {/* Invoice Header */}
             <div className="flex justify-between items-start border-b border-border pb-6">
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                <h1 className="tracking-tight text-foreground typo-bold-24">
                   {t("invoice_modal.invoice")}
                 </h1>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-muted-foreground typo-medium-14">
                   #{sale.invoiceNo}
                 </p>
               </div>
-              <div className="text-right space-y-1 text-sm">
-                <h2 className="font-semibold text-foreground">
+              <div className="text-right space-y-1 typo-regular-14">
+                <h2 className="text-foreground typo-semibold-14">
                   {settings.storeName || "Aura POS Store"}
                 </h2>
                 <p className="text-muted-foreground whitespace-pre-wrap">
@@ -81,46 +81,46 @@ export function InvoiceDetailsModal({
             </div>
 
             {/* Invoice Meta */}
-            <div className="grid grid-cols-2 gap-6 text-sm">
+            <div className="grid grid-cols-2 gap-6 typo-regular-14">
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  <p className="text-muted-foreground uppercase tracking-wider mb-1 typo-medium-12">
                     {t("invoice_modal.dateIssued")}
                   </p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-foreground typo-semibold-14">
                     {sale.completedAt
                       ? format(new Date(sale.completedAt), "MMM dd, yyyy")
                       : "-"}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground typo-regular-12">
                     {sale.completedAt
                       ? format(new Date(sale.completedAt), "hh:mm a")
                       : ""}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  <p className="text-muted-foreground uppercase tracking-wider mb-1 typo-medium-12">
                     {t("invoice_modal.cashier")}
                   </p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-foreground typo-semibold-14">
                     {sale.cashier?.name || "Unknown"}
                   </p>
                 </div>
               </div>
               <div className="space-y-4 text-right md:text-left">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  <p className="text-muted-foreground uppercase tracking-wider mb-1 typo-medium-12">
                     {t("invoice_modal.customer")}
                   </p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-foreground typo-semibold-14">
                     {sale.customer?.name || t("invoice_modal.walkIn")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  <p className="text-muted-foreground uppercase tracking-wider mb-1 typo-medium-12">
                     {t("invoice_modal.paymentMethod")}
                   </p>
-                  <span className="inline-flex items-center px-2 py-1 rounded bg-secondary font-medium text-secondary-foreground capitalize text-xs shadow-sm">
+                  <span className="inline-flex items-center px-2 py-1 rounded bg-secondary text-secondary-foreground capitalize shadow-sm typo-medium-12">
                     {sale.payments?.[0]?.method || t("invoice_modal.mixed")}
                   </span>
                 </div>
@@ -129,8 +129,8 @@ export function InvoiceDetailsModal({
 
             {/* Line Items */}
             <div className="border rounded-lg overflow-hidden border-border shadow-sm">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-muted border-b border-border text-muted-foreground font-medium">
+              <table className="w-full text-left typo-regular-14">
+                <thead className="bg-muted border-b border-border text-muted-foreground typo-medium-14">
                   <tr>
                     <th className="py-3 px-4">{t("invoice_modal.item")}</th>
                     <th className="py-3 px-4 text-right">
@@ -148,11 +148,11 @@ export function InvoiceDetailsModal({
                   {sale.lines.map((line) => (
                     <tr key={line.id}>
                       <td className="py-3 px-4">
-                        <div className="font-medium text-foreground">
+                        <div className="text-foreground typo-medium-14">
                           {line.name}
                         </div>
                         {line.product?.categoryId && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
+                          <div className="text-muted-foreground mt-0.5 typo-regular-12">
                             {t("invoice_modal.ref")} {line.productId.slice(-6)}
                           </div>
                         )}
@@ -164,7 +164,7 @@ export function InvoiceDetailsModal({
                       <td className="py-3 px-4 text-center text-muted-foreground">
                         {line.quantity}
                       </td>
-                      <td className="py-3 px-4 text-right font-medium text-foreground">
+                      <td className="py-3 px-4 text-right text-foreground typo-medium-14">
                         {settings.currencySymbol}
                         {(Number(line.unitPrice) * line.quantity).toFixed(2)}
                       </td>
@@ -177,40 +177,40 @@ export function InvoiceDetailsModal({
             {/* Totals */}
             <div className="flex justify-end pt-4">
               <div className="w-64 space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between typo-regular-14">
                   <span className="text-muted-foreground">
                     {t("invoice_modal.subtotal")}
                   </span>
-                  <span className="font-medium text-foreground">
+                  <span className="text-foreground typo-medium-14">
                     {settings.currencySymbol}
                     {Number(sale.subtotal).toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between typo-regular-14">
                   <span className="text-muted-foreground">
                     {t("invoice_modal.tax")}
                   </span>
-                  <span className="font-medium text-foreground">
+                  <span className="text-foreground typo-medium-14">
                     {settings.currencySymbol}
                     {Number(sale.taxTotal).toFixed(2)}
                   </span>
                 </div>
                 {Number(sale.discountTotal) > 0 && (
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typo-regular-14">
                     <span className="text-muted-foreground">
                       {t("invoice_modal.discount")}
                     </span>
-                    <span className="font-medium text-emerald-600">
+                    <span className="text-emerald-600 typo-medium-14">
                       -{settings.currencySymbol}
                       {Number(sale.discountTotal).toFixed(2)}
                     </span>
                   </div>
                 )}
                 <div className="border-t border-border pt-2 mt-2 flex justify-between items-center">
-                  <span className="font-bold text-foreground">
+                  <span className="text-foreground typo-bold-14">
                     {t("invoice_modal.total")}
                   </span>
-                  <span className="text-xl font-bold text-foreground">
+                  <span className="text-foreground typo-bold-20">
                     {settings.currencySymbol}
                     {Number(sale.total).toFixed(2)}
                   </span>
@@ -218,7 +218,7 @@ export function InvoiceDetailsModal({
               </div>
             </div>
 
-            <div className="pt-8 text-center text-xs text-muted-foreground print:mt-12">
+            <div className="pt-8 text-center text-muted-foreground print:mt-12 typo-regular-12">
               <p>
                 {settings.receiptFooter ||
                   `${t("invoice_modal.generatedBy")} ${settings.storeName || "Aura POS"}`}

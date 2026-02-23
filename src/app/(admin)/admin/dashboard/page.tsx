@@ -136,7 +136,7 @@ export default function DashboardPage() {
                 id="date"
                 variant="outline"
                 className={cn(
-                  "w-full sm:w-65 justify-start text-left font-normal bg-card",
+                  "w-full sm:w-65 justify-start text-left bg-card typo-regular-14",
                   !date && "text-muted-foreground",
                 )}
               >

@@ -48,8 +48,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col">
-                <span className="font-medium">{lang.name}</span>
-                <span className="text-xs text-muted-foreground">
+                <span className="typo-medium-14">{lang.name}</span>
+                <span className="text-muted-foreground typo-regular-12">
                   {lang.nativeName}
                 </span>
               </div>

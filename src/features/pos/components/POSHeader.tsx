@@ -18,8 +18,8 @@ export function POSHeader() {
   return (
     <div className="flex items-center justify-between mb-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
       <div>
-        <h1 className="text-2xl font-black text-gray-900">{t("title")}</h1>
-        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">
+        <h1 className="text-gray-900 typo-regular-24 typo-bold-14">{t("title")}</h1>
+        <p className="text-gray-400 uppercase tracking-wider typo-semibold-12">
           {instance.companyName}
         </p>
       </div>

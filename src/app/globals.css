@@ -211,4 +211,271 @@
     line-height: 100% !important;
     letter-spacing: 0px !important;
   }
+
+  /* Automatically Generated Typography Classes */
+  /* 30px Size */
+  .typo-bold-30 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 30px !important;
+    line-height: 36px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-30 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 30px !important;
+    line-height: 36px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-30 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 30px !important;
+    line-height: 36px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-30 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 30px !important;
+    line-height: 36px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 24px Size */
+  .typo-bold-24 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 24px !important;
+    line-height: 32px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-24 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 24px !important;
+    line-height: 32px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-24 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 24px !important;
+    line-height: 32px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-24 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 24px !important;
+    line-height: 32px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 20px Size */
+  .typo-bold-20 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 20px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-20 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 20px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-20 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 20px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-20 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 20px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 18px Size */
+  .typo-bold-18 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 18px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-18 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 18px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-18 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 18px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-18 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 18px !important;
+    line-height: 28px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 16px Size */
+  .typo-bold-16 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-16 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-16 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-16 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 14px Size */
+  .typo-bold-14 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-14 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-14 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-14 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 14px !important;
+    line-height: 24px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 12px Size */
+  .typo-bold-12 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-12 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-12 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-12 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    letter-spacing: 0px !important;
+  }
+  /* 11px Size */
+  .typo-bold-11 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 11px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-11 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 11px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-11 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 11px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-11 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 11px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+
 }

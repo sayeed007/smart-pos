@@ -26,7 +26,7 @@ export function CriticalStockAlerts({
         <CardTitle>
           {t("sections.criticalAlerts", "Critical Stock Alerts")}
         </CardTitle>
-        <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+        <span className="bg-red-100 text-red-600 px-2 py-1 rounded typo-bold-12">
           {totalAlerts} {t("alerts.units", "items")}
         </span>
       </CardHeader>
@@ -50,19 +50,19 @@ export function CriticalStockAlerts({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-sm truncate">{product.name}</h4>
-              <p className="text-xs text-muted-foreground truncate">
+              <h4 className="truncate typo-bold-14">{product.name}</h4>
+              <p className="text-muted-foreground truncate typo-regular-12">
                 SKU: {product.sku} • {t("alerts.min", "Min")}:{" "}
                 {product.minStockLevel}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-red-600 font-bold text-sm">
+              <p className="text-red-600 typo-bold-14">
                 {product.stockQuantity} {t("alerts.units", "units")}
               </p>
               <Button
                 size="sm"
-                className="h-7 text-xs bg-red-600 hover:bg-red-700 mt-1"
+                className="h-7 bg-red-600 hover:bg-red-700 mt-1 typo-regular-12"
                 onClick={() => onRestock(product)}
               >
                 {t("alerts.restock", "Restock")}

@@ -31,7 +31,7 @@ export function LowStockAlert({ products }: LowStockAlertProps) {
         <CardTitle className="typo-bold-18 text-foreground">
           {t("charts.lowStockAlert", "Low Stock Alert")}
         </CardTitle>
-        <span className="bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs px-2 py-1 rounded-md font-medium">
+        <span className="bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-md typo-medium-12">
           {lowStockItems.length} {t("sales.items", "Items")}
         </span>
       </CardHeader>

@@ -184,7 +184,7 @@ export default function SalesHistoryPage() {
               id="date"
               variant={"outline"}
               className={cn(
-                "w-75 justify-start text-left font-normal bg-card",
+                "w-75 justify-start text-left bg-card typo-regular-14",
                 !date && "text-muted-foreground",
               )}
             >
@@ -220,50 +220,50 @@ export default function SalesHistoryPage() {
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
         <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
+            <p className="text-muted-foreground mb-1 typo-semibold-14">
               {t("stats.totalRevenue")}
             </p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-green-600 typo-bold-24">
               ${summary?.totalSales?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
+            <p className="text-muted-foreground mb-1 typo-semibold-14">
               {t("stats.totalOrders")}
             </p>
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-foreground typo-bold-24">
               {summary?.totalOrders || 0}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
+            <p className="text-muted-foreground mb-1 typo-semibold-14">
               {t("stats.avgOrderValue")}
             </p>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-blue-600 typo-bold-24">
               ${summary?.averageOrderValue?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
+            <p className="text-muted-foreground mb-1 typo-semibold-14">
               {t("stats.totalDiscount")}
             </p>
-            <p className="text-2xl font-bold text-orange-500">
+            <p className="text-orange-500 typo-bold-24">
               ${summary?.totalDiscount?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-xl border-none shadow-sm bg-card">
           <CardContent className="pt-6">
-            <p className="text-sm font-semibold text-muted-foreground mb-1">
+            <p className="text-muted-foreground mb-1 typo-semibold-14">
               {t("stats.totalTax")}
             </p>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-purple-600 typo-bold-24">
               ${summary?.totalTax?.toFixed(2) || "0.00"}
             </p>
           </CardContent>
@@ -273,7 +273,7 @@ export default function SalesHistoryPage() {
       {/* Recent Sales Table */}
       <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-card">
         <div className="px-6 pt-2">
-          <h2 className="text-lg font-bold text-foreground mb-4">
+          <h2 className="text-foreground mb-4 typo-bold-18">
             {t("table.title")}
           </h2>
         </div>
@@ -383,7 +383,7 @@ export default function SalesHistoryPage() {
                         </Button>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-500">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 text-emerald-500 typo-medium-12">
                           {t(
                             `status.${(item.status || "completed").toLowerCase()}`,
                           )}
@@ -444,7 +444,7 @@ export default function SalesHistoryPage() {
             </PaginationItem>
 
             <PaginationItem>
-              <span className="text-sm font-medium text-muted-foreground px-4">
+              <span className="text-muted-foreground px-4 typo-medium-14">
                 Page {sales?.meta?.page || 1} of {sales?.meta?.totalPages || 1}
               </span>
             </PaginationItem>

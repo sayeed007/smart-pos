@@ -145,7 +145,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
             variant="ghost"
             onClick={() => setCategory("all")}
             className={cn(
-              "px-3 py-2 h-auto rounded-lg transition-all shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
+              "px-3 py-2 h-auto rounded-lg transition-all shrink-0 hover:bg-transparent sm:text-sm typo-semibold-12",
               selectedCategory === "all"
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/30"
                 : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",
@@ -159,7 +159,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
               variant="ghost"
               onClick={() => setCategory(cat.id)}
               className={cn(
-                "px-3 py-2 h-auto rounded-lg transition-all whitespace-nowrap shrink-0 font-semibold hover:bg-transparent text-xs sm:text-sm",
+                "px-3 py-2 h-auto rounded-lg transition-all whitespace-nowrap shrink-0 hover:bg-transparent sm:text-sm typo-semibold-12",
                 selectedCategory === cat.id
                   ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/30"
                   : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground border border-border",

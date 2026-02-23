@@ -48,12 +48,12 @@ export function CashierHeader({
           </Sheet>
         </div>
 
-        <h2 className="text-xl font-black text-gray-900 tracking-tight leading-none">
+        <h2 className="text-gray-900 tracking-tight leading-none typo-regular-20 typo-bold-14">
           {currentTitle}
         </h2>
       </div>
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-100 shadow-sm">
+        <div className="hidden sm:flex bg-green-50 text-green-600 px-4 py-2 rounded-full text-[10px] uppercase tracking-widest border border-green-100 shadow-sm typo-bold-14">
           Live Terminal #01
         </div>
         <Button

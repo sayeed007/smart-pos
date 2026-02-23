@@ -27,7 +27,7 @@ export function StockByCategory({ data }: StockByCategoryProps) {
       <CardContent className="space-y-6">
         {data.map((cat, i) => (
           <div key={i} className="space-y-2">
-            <div className="flex justify-between text-sm font-medium">
+            <div className="flex justify-between typo-medium-14">
               <span>{cat.name}</span>
               <span>{cat.count}</span>
             </div>

@@ -354,7 +354,7 @@ function ProductMultiSelect({
                 />
                 <label
                   htmlFor={checkboxId}
-                  className="flex-1 cursor-pointer flex justify-between text-sm"
+                  className="flex-1 cursor-pointer flex justify-between typo-regular-14"
                 >
                   <span>{product.name}</span>
                   <span className="text-muted-foreground">
@@ -365,7 +365,7 @@ function ProductMultiSelect({
             );
           })}
           {filtered.length === 0 && (
-            <div className="p-2 text-sm text-muted-foreground">
+            <div className="p-2 text-muted-foreground typo-regular-14">
               {emptyText || "No results"}
             </div>
           )}
@@ -814,7 +814,7 @@ export function OfferForm({
         )}
         {watchType === "buy_x_get_y" && (
           <div className="rounded-md border p-4 space-y-4">
-            <div className="text-sm font-semibold">
+            <div className="typo-semibold-14">
               {t("types.buy_x_get_y")}
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -989,7 +989,7 @@ export function OfferForm({
         )}
         {watchType === "bundle" && (
           <div className="rounded-md border p-4 space-y-4">
-            <div className="text-sm font-semibold">{t("types.bundle")}</div>
+            <div className="typo-semibold-14">{t("types.bundle")}</div>
             <FormField
               control={form.control}
               name="bundle.productIds"

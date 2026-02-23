@@ -332,7 +332,7 @@ export function CreateTransferDialog({
           {/* Header Bar: From -> To (Compact) */}
           <div className="flex items-center gap-4 bg-muted/20 p-4 rounded-lg border">
             <div className="flex-1 space-y-1.5">
-              <Label className="text-xs uppercase text-muted-foreground font-bold">
+              <Label className="uppercase text-muted-foreground typo-bold-12">
                 {t("dialogs.createTransfer.from")}
               </Label>
               <Select value={fromLocationId} onValueChange={setFromLocationId}>
@@ -356,7 +356,7 @@ export function CreateTransferDialog({
               <ArrowRight size={18} />
             </div>
             <div className="flex-1 space-y-1.5">
-              <Label className="text-xs uppercase text-muted-foreground font-bold">
+              <Label className="uppercase text-muted-foreground typo-bold-12">
                 {t("dialogs.createTransfer.to")}
               </Label>
               <Select value={toLocationId} onValueChange={setToLocationId}>
@@ -379,7 +379,7 @@ export function CreateTransferDialog({
           </div>
 
           <div className="space-y-4">
-            <Label className="font-semibold text-sm">
+            <Label className="typo-semibold-14">
               {t("dialogs.createTransfer.addItem")}
             </Label>
 
@@ -413,7 +413,7 @@ export function CreateTransferDialog({
                         </SelectTrigger>
                         <SelectContent>
                           {filteredProducts.length === 0 ? (
-                            <div className="p-2 text-xs text-muted-foreground text-center">
+                            <div className="p-2 text-muted-foreground text-center typo-regular-12">
                               No products with stock in source
                             </div>
                           ) : (
@@ -490,15 +490,15 @@ export function CreateTransferDialog({
                       )}
                     />
                   </div>
-                  <div className="flex items-center justify-end min-w-28 text-xs text-muted-foreground whitespace-nowrap px-1">
+                  <div className="flex items-center justify-end min-w-28 text-muted-foreground whitespace-nowrap px-1 typo-regular-12">
                     {stock !== null && (
                       <>
                         Available:{" "}
                         <span
                           className={
                             stock > 0
-                              ? "font-bold text-green-600 ml-1"
-                              : "font-bold text-destructive ml-1"
+                              ? "text-green-600 ml-1 typo-bold-14"
+                              : "text-destructive ml-1 typo-bold-14"
                           }
                         >
                           {stock}
@@ -508,13 +508,13 @@ export function CreateTransferDialog({
                   </div>
                 </div>
               ) : selectedProduct ? (
-                <div className="text-xs text-right text-muted-foreground mt-1">
+                <div className="text-right text-muted-foreground mt-1 typo-regular-12">
                   Available at Source:{" "}
                   <span
                     className={
                       stock > 0
-                        ? "font-bold text-green-600"
-                        : "font-bold text-destructive"
+                        ? "text-green-600 typo-bold-14"
+                        : "text-destructive typo-bold-14"
                     }
                   >
                     {stock}
@@ -526,7 +526,7 @@ export function CreateTransferDialog({
               {/* End of Stock Message Logic */}
 
               {errors.productId && (
-                <p className="text-xs text-destructive">
+                <p className="text-destructive typo-regular-12">
                   {errors.productId.message}
                 </p>
               )}
@@ -535,7 +535,7 @@ export function CreateTransferDialog({
 
           {/* Items Table */}
           <div className="border rounded-md min-h-37.5 overflow-hidden flex flex-col">
-            <div className="bg-muted/50 px-4 py-2 flex text-xs font-medium text-muted-foreground border-b uppercase">
+            <div className="bg-muted/50 px-4 py-2 flex text-muted-foreground border-b uppercase typo-medium-12">
               <div className="flex-1">
                 {t("dialogs.createTransfer.product")}
               </div>
@@ -547,7 +547,7 @@ export function CreateTransferDialog({
 
             <div className="flex-1 overflow-y-auto max-h-50 p-0 divide-y">
               {items.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-xs py-8">
+                <div className="h-full flex flex-col items-center justify-center text-muted-foreground py-8 typo-regular-12">
                   <Package size={24} className="mb-2 opacity-50" />
                   {t("dialogs.createTransfer.noItems")}
                 </div>
@@ -558,7 +558,7 @@ export function CreateTransferDialog({
                     className="flex items-center px-4 py-3 hover:bg-muted/5"
                   >
                     <div className="flex-1 min-w-0 pr-4">
-                      <div className="font-medium text-sm whitespace-normal">
+                      <div className="whitespace-normal typo-medium-14">
                         {item.name}
                       </div>
                       <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
@@ -585,7 +585,7 @@ export function CreateTransferDialog({
                       </Button>
                       <Input
                         type="number"
-                        className="h-7 w-12 text-center text-xs p-0 px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="h-7 w-12 text-center p-0 px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none typo-regular-12"
                         value={item.quantity}
                         onChange={(e) =>
                           handleUpdateItemQuantity(

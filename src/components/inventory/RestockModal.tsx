@@ -71,10 +71,10 @@ export function RestockModal({
             )}
           </div>
           <div>
-            <DialogTitle className="text-xl font-bold">
+            <DialogTitle className="typo-bold-20">
               {t("modal.title", "Restock Product")}
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">{product.name}</p>
+            <p className="text-muted-foreground typo-regular-14">{product.name}</p>
           </div>
         </DialogHeader>
 
@@ -84,10 +84,10 @@ export function RestockModal({
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex gap-3 text-destructive">
               <AlertCircle className="w-5 h-5 shrink-0" />
               <div>
-                <p className="font-semibold text-sm">
+                <p className="typo-semibold-14">
                   {t("modal.alert.title", "Low Stock Alert")}
                 </p>
-                <p className="text-xs mt-0.5">
+                <p className="mt-0.5 typo-regular-12">
                   {t("modal.alert.message", {
                     current: product.stockQuantity,
                     min: product.minStockLevel,
@@ -98,16 +98,16 @@ export function RestockModal({
           )}
 
           {/* Product Details Grid */}
-          <div className="bg-muted/30 rounded-xl p-4 grid grid-cols-2 gap-y-2 text-sm">
+          <div className="bg-muted/30 rounded-xl p-4 grid grid-cols-2 gap-y-2 typo-regular-14">
             <span className="text-muted-foreground">
               {t("modal.sku", "SKU")}:
             </span>
-            <span className="text-right font-medium">{product.sku}</span>
+            <span className="text-right typo-medium-14">{product.sku}</span>
 
             <span className="text-muted-foreground">
               {t("modal.category", "Category")}:
             </span>
-            <span className="text-right font-medium">
+            <span className="text-right typo-medium-14">
               {/* Assuming category fetching outside or name passed, but Product has categoryId only unless joined.
                   For UI simplicity, I'll mock or assume category name not strictly available. Or pass categories prop?
                   I'll omit mapping for now or use "Unknown" if not strictly required to fetch.
@@ -124,8 +124,7 @@ export function RestockModal({
               {t("modal.currentStock", "Current Stock")}:
             </span>
             <span
-              className={`text-right font-bold ${
-                isLowStock ? "text-destructive" : "text-emerald-600"
+              className={`text-right ${ isLowStock ? typo-bold-14"text-destructive" : "text-emerald-600"
               }`}
             >
               {product.stockQuantity} {t("alerts.units", "units")}
@@ -134,7 +133,7 @@ export function RestockModal({
 
           {/* Restock Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">
+            <label className="typo-medium-14">
               {t("modal.restockQuantity", "Restock Quantity *")}
             </label>
             <Input
@@ -144,7 +143,7 @@ export function RestockModal({
               className="h-11 rounded-lg border-input bg-background"
             />
             {quantityNum > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground typo-regular-12">
                 {t("modal.recommended", { amount: quantityNum })}
               </p>
             )}
@@ -152,10 +151,10 @@ export function RestockModal({
 
           {/* Cost Preview */}
           <div className="bg-orange-50/50 rounded-xl p-4 flex justify-between items-center">
-            <span className="text-sm font-medium text-foreground/80">
+            <span className="text-foreground/80 typo-medium-14">
               {t("modal.cost", "Cost:")}
             </span>
-            <span className="text-xl font-bold text-foreground">
+            <span className="text-foreground typo-bold-20">
               ${cost.toFixed(2)}
             </span>
           </div>

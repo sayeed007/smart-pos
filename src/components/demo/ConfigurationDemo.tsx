@@ -39,11 +39,11 @@ export function ConfigurationDemo() {
 
   return (
     <div className="p-8 space-y-6">
-      <h1 className="text-3xl font-bold">Configuration System Demo</h1>
+      <h1 className="typo-bold-30">Configuration System Demo</h1>
 
       {/* Instance Configuration */}
       <Card className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="mb-4 typo-semibold-24">
           1. Instance Configuration (Multi-Tenancy)
         </h2>
 
@@ -57,18 +57,18 @@ export function ConfigurationDemo() {
               className="rounded-lg"
             />
             <div>
-              <p className="font-semibold text-lg">{instance.companyName}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="typo-semibold-18">{instance.companyName}</p>
+              <p className="text-muted-foreground typo-regular-14">
                 {instance.tagline}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground typo-regular-12">
                 Instance ID: {instance.instanceId}
               </p>
             </div>
           </div>
 
           {instance.contact && (
-            <div className="text-sm space-y-1">
+            <div className="space-y-1 typo-regular-14">
               <p>
                 <strong>Email:</strong> {instance.contact.email}
               </p>
@@ -79,8 +79,8 @@ export function ConfigurationDemo() {
           )}
 
           {instance.features && (
-            <div className="text-sm">
-              <p className="font-semibold mb-2">Enabled Features:</p>
+            <div className="typo-regular-14">
+              <p className="mb-2 typo-semibold-14">Enabled Features:</p>
               <ul className="list-disc list-inside space-y-1">
                 {instance.features.enableInventory && (
                   <li>Inventory Management</li>
@@ -100,20 +100,20 @@ export function ConfigurationDemo() {
 
       {/* Theme System */}
       <Card className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">2. Theme System</h2>
+        <h2 className="mb-4 typo-semibold-24">2. Theme System</h2>
 
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-semibold mb-2">
+            <p className="mb-2 typo-semibold-14">
               Current Theme: {themeConfig.name}
             </p>
-            <p className="text-sm font-semibold mb-2">
+            <p className="mb-2 typo-semibold-14">
               Current Mode: {theme || "system"}
             </p>
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2">Light/Dark Mode:</p>
+            <p className="mb-2 typo-semibold-14">Light/Dark Mode:</p>
             <div className="flex gap-2">
               <Button
                 size="sm"
@@ -140,7 +140,7 @@ export function ConfigurationDemo() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2">Color Themes:</p>
+            <p className="mb-2 typo-semibold-14">Color Themes:</p>
             <div className="flex gap-2 flex-wrap">
               {availableThemes.map((themeName) => (
                 <Button
@@ -159,28 +159,28 @@ export function ConfigurationDemo() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2">Theme Colors:</p>
+            <p className="mb-2 typo-semibold-14">Theme Colors:</p>
             <div className="grid grid-cols-3 gap-2">
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded border"
                   style={{ backgroundColor: themeConfig.light.primary }}
                 />
-                <span className="text-xs">Primary</span>
+                <span className="typo-regular-12">Primary</span>
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded border"
                   style={{ backgroundColor: themeConfig.light.secondary }}
                 />
-                <span className="text-xs">Secondary</span>
+                <span className="typo-regular-12">Secondary</span>
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded border"
                   style={{ backgroundColor: themeConfig.light.accent }}
                 />
-                <span className="text-xs">Accent</span>
+                <span className="typo-regular-12">Accent</span>
               </div>
             </div>
           </div>
@@ -189,13 +189,13 @@ export function ConfigurationDemo() {
 
       {/* i18n */}
       <Card className="p-6">
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="mb-4 typo-semibold-24">
           3. Internationalization (i18n)
         </h2>
 
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-semibold mb-2">
+            <p className="mb-2 typo-semibold-14">
               Current Language:{" "}
               {
                 availableLanguages.find((l) => l.code === currentLanguage)
@@ -205,7 +205,7 @@ export function ConfigurationDemo() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2">Available Languages:</p>
+            <p className="mb-2 typo-semibold-14">Available Languages:</p>
             <div className="flex gap-2 flex-wrap">
               {availableLanguages.map((lang) => (
                 <Button
@@ -223,8 +223,8 @@ export function ConfigurationDemo() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold mb-2">Translation Example:</p>
-            <div className="space-y-2 text-sm">
+            <p className="mb-2 typo-semibold-14">Translation Example:</p>
+            <div className="space-y-2 typo-regular-14">
               <p>
                 <strong>Welcome:</strong> {t("welcome")}
               </p>
@@ -244,8 +244,8 @@ export function ConfigurationDemo() {
 
       {/* Integration Example */}
       <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
-        <h2 className="text-2xl font-semibold mb-4">All Together</h2>
-        <div className="space-y-2 text-sm">
+        <h2 className="mb-4 typo-semibold-24">All Together</h2>
+        <div className="space-y-2 typo-regular-14">
           <p>
             <strong>{instance.companyName}</strong> is using the{" "}
             <strong>{themeConfig.name}</strong> theme in{" "}

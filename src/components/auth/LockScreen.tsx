@@ -44,16 +44,16 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-3xl font-black tracking-tight drop-shadow-md">
+              <h2 className="tracking-tight drop-shadow-md typo-regular-30 typo-bold-14">
                 Session Locked
               </h2>
-              <p className="text-red-100 font-medium text-sm max-w-xs mx-auto leading-relaxed">
+              <p className="text-red-100 max-w-xs mx-auto leading-relaxed typo-medium-14">
                 Your session has been secured due to inactivity. Please verify
                 your identity to continue.
               </p>
             </div>
 
-            <div className="pt-8 flex gap-3 text-[10px] font-bold uppercase tracking-widest text-red-100/60">
+            <div className="pt-8 flex gap-3 text-[10px] uppercase tracking-widest text-red-100/60 typo-bold-14">
               <span>Secure</span>
               <span>•</span>
               <span>Encrypted</span>
@@ -67,21 +67,21 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
         <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[#fcfdfe] relative">
           <div className="space-y-6 w-full max-w-xs mx-auto">
             <div className="text-center md:text-left space-y-1">
-              <h3 className="text-xl font-bold text-gray-900">Welcome Back</h3>
-              <p className="text-gray-500 text-sm">
+              <h3 className="text-gray-900 typo-bold-20">Welcome Back</h3>
+              <p className="text-gray-500 typo-regular-14">
                 Enter your PIN to resume work
               </p>
             </div>
 
             <div className="space-y-4 pt-4">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                <label className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
                   Security PIN
                 </label>
                 <div className="relative">
                   <Input
                     type={showPin ? "text" : "password"}
-                    className="text-center text-3xl tracking-[0.5em] h-16 font-mono placeholder:tracking-widest bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-[#f87171] rounded-xl transition-all shadow-sm pr-12"
+                    className="text-center tracking-[0.5em] h-16 placeholder:tracking-widest bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-[#f87171] rounded-xl transition-all shadow-sm pr-12 typo-regular-30"
                     placeholder="••••"
                     maxLength={4}
                     value={pin}
@@ -111,14 +111,14 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
               </div>
 
               {error && (
-                <div className="flex items-center justify-center gap-2 text-destructive text-sm font-medium animate-in slide-in-from-top-1 bg-destructive/10 p-2 rounded-lg">
+                <div className="flex items-center justify-center gap-2 text-destructive animate-in slide-in-from-top-1 bg-destructive/10 p-2 rounded-lg typo-medium-14">
                   <ShieldAlert size={16} />
                   <span>Invalid PIN. Please try again.</span>
                 </div>
               )}
 
               <PrimaryActionButton
-                className="w-full h-12 text-base rounded-xl mt-2"
+                className="w-full h-12 rounded-xl mt-2 typo-regular-16"
                 onClick={handleUnlock}
                 disabled={pin.length < 4 || isLoading}
               >
@@ -133,7 +133,7 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
               </PrimaryActionButton>
             </div>
 
-            <p className="text-center text-[10px] text-gray-300 font-bold uppercase tracking-widest pt-8">
+            <p className="text-center text-[10px] text-gray-300 uppercase tracking-widest pt-8 typo-bold-14">
               Current User: Admin
             </p>
           </div>

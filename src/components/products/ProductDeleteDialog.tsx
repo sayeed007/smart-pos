@@ -68,7 +68,7 @@ export function ProductDeleteDialog({
               i18nKey="description.delete"
               ns="products"
               values={{ name: product.name }}
-              components={{ 1: <span className="font-bold text-foreground" /> }}
+              components={{ 1: <span className="text-foreground typo-bold-14" /> }}
             />
           </DialogDescription>
         </DialogHeader>

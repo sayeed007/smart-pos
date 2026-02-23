@@ -304,14 +304,14 @@ export function ProductListTable({
                   sideOffset={8}
                 >
                   <div className="space-y-2 min-w-[160px]">
-                    <p className="text-xs font-semibold text-foreground border-b border-border pb-1.5 mb-2">
+                    <p className="text-foreground border-b border-border pb-1.5 mb-2 typo-semibold-12">
                       Variant SKUs
                     </p>
                     <div className="space-y-1.5">
                       {variantSkus.map((sku) => (
                         <div
                           key={sku}
-                          className="text-xs text-muted-foreground font-medium"
+                          className="text-muted-foreground typo-medium-12"
                         >
                           {sku}
                         </div>
@@ -487,23 +487,21 @@ export function ProductListTable({
                 sideOffset={8}
               >
                 <div className="space-y-2 min-w-[180px]">
-                  <p className="text-xs font-semibold text-foreground border-b border-border pb-1.5 mb-2">
+                  <p className="text-foreground border-b border-border pb-1.5 mb-2 typo-semibold-12">
                     Stock by Location
                   </p>
                   <div className="space-y-1.5">
                     {locationData!.map((loc, index) => (
                       <div
                         key={loc.locationId}
-                        className={`flex items-center justify-between gap-6 text-xs ${
-                          index !== locationData!.length - 1
-                            ? "pb-1.5 border-b border-border/50"
+                        className={`flex items-center justify-between gap-6 ${ index !== locationData!.length - 1 ? typo-regular-12"pb-1.5 border-b border-border/50"
                             : ""
                         }`}
                       >
-                        <span className="text-muted-foreground font-medium">
+                        <span className="text-muted-foreground typo-medium-14">
                           {loc.locationName}
                         </span>
-                        <span className="text-foreground font-bold tabular-nums">
+                        <span className="text-foreground tabular-nums typo-bold-14">
                           {loc.stock}
                         </span>
                       </div>
@@ -523,8 +521,7 @@ export function ProductListTable({
         const status = getValue() as string;
         return (
           <span
-            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-              status === "inactive"
+            className={`inline-flex items-center px-2 py-1 rounded-full ${ status === typo-medium-12"inactive"
                 ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
                 : "bg-chart-2/10 text-chart-2 ring-1 ring-inset ring-chart-2/20"
             }`}
@@ -684,7 +681,7 @@ export function ProductListTable({
 
             {/* Simple Page Indicator for now to avoid logic complexity without a helper, or we can iterate */}
             <PaginationItem>
-              <span className="text-sm font-medium text-muted-foreground px-4">
+              <span className="text-muted-foreground px-4 typo-medium-14">
                 Page {pagination.pageIndex + 1} of {pageCount}
               </span>
             </PaginationItem>
@@ -717,7 +714,7 @@ export function ProductListTable({
             printProduct.type === "variable" ? (
               <div className="space-y-3">
                 {(printProduct.variants || []).length === 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground typo-regular-14">
                     No variants available.
                   </p>
                 )}
@@ -731,11 +728,11 @@ export function ProductListTable({
                           handleSelectAllVariants(checked === true)
                         }
                       />
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground typo-regular-14">
                         Select all
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground typo-regular-12">
                       {variantSelectionStats.selectedCount}/
                       {variantSelectionStats.selectableCount} selected
                     </span>
@@ -767,8 +764,8 @@ export function ProductListTable({
                         }
                       />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold">{variant.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="typo-semibold-14">{variant.name}</p>
+                        <p className="text-muted-foreground typo-regular-12">
                           {variant.sku || "-"} - {barcode || "No barcode"}
                         </p>
                       </div>
@@ -799,8 +796,8 @@ export function ProductListTable({
             ) : (
               <div className="space-y-3">
                 <div className="rounded-lg border border-border p-3">
-                  <p className="text-sm font-semibold">{printProduct.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="typo-semibold-14">{printProduct.name}</p>
+                  <p className="text-muted-foreground typo-regular-12">
                     {printProduct.sku || "-"} -{" "}
                     {resolveBarcode(
                       printProduct.barcode,
@@ -809,7 +806,7 @@ export function ProductListTable({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Copies</span>
+                  <span className="text-muted-foreground typo-regular-14">Copies</span>
                   <Input
                     type="number"
                     min={1}
@@ -826,7 +823,7 @@ export function ProductListTable({
                   printProduct.barcode,
                   printProduct.barcodes,
                 ) && (
-                  <p className="text-xs text-destructive">
+                  <p className="text-destructive typo-regular-12">
                     No barcode available for this product.
                   </p>
                 )}

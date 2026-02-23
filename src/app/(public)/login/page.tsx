@@ -87,22 +87,22 @@ export default function LoginPage() {
           <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl skew-y-3 border border-white/30">
             <Smartphone size={48} className="text-white drop-shadow-md" />
           </div>
-          <h1 className="text-6xl font-black mb-4 tracking-tight drop-shadow-lg">
+          <h1 className="text-6xl mb-4 tracking-tight drop-shadow-lg typo-bold-14">
             Aura POS
           </h1>
-          <p className="text-xl font-medium text-red-100 max-w-md mx-auto leading-relaxed">
+          <p className="text-red-100 max-w-md mx-auto leading-relaxed typo-medium-20">
             The next generation retail platform for seamless commerce and
             superior customer experiences.
           </p>
 
           <div className="mt-12 flex justify-center gap-4">
-            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 text-sm font-bold">
+            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 typo-bold-14">
               Fast
             </div>
-            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 text-sm font-bold">
+            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 typo-bold-14">
               Secure
             </div>
-            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 text-sm font-bold">
+            <div className="px-6 py-3 bg-white/10 rounded-full backdrop-blur-md border border-white/20 typo-bold-14">
               Reliable
             </div>
           </div>
@@ -113,10 +113,10 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-[#fcfdfe] h-screen overflow-hidden">
         <div className="w-full max-w-sm space-y-6 animate-in slide-in-from-right duration-500">
           <div className="text-center lg:text-left">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+            <h2 className="text-gray-900 tracking-tight typo-regular-24 typo-bold-14">
               Welcome Back
             </h2>
-            <p className="text-gray-400 font-medium mt-1 text-sm">
+            <p className="text-gray-400 mt-1 typo-medium-14">
               Please select your role and sign in
             </p>
           </div>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="space-y-1.5">
-                      <FormLabel className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                      <FormLabel className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
                         Email Address
                       </FormLabel>
                       <FormControl>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem className="space-y-1.5">
-                      <FormLabel className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                      <FormLabel className="text-[10px] text-gray-400 uppercase tracking-widest ml-1 typo-bold-14">
                         Password
                       </FormLabel>
                       <FormControl>
@@ -184,7 +184,7 @@ export default function LoginPage() {
               <PrimaryActionButton
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-6 text-base rounded-xl"
+                className="w-full py-6 rounded-xl typo-regular-16"
               >
                 {isLoading ? (
                   <>
@@ -198,22 +198,22 @@ export default function LoginPage() {
             </form>
           </Form>
 
-          <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+          <p className="text-center text-[10px] text-gray-300 uppercase tracking-widest typo-bold-14">
             Protected by Aura Security
           </p>
           {isDev && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] text-amber-900">
-              <p className="font-bold uppercase tracking-widest text-[10px] text-amber-700">
+              <p className="uppercase tracking-widest text-[10px] text-amber-700 typo-bold-14">
                 Dev Credentials
               </p>
               <div className="mt-2 space-y-1">
                 <p>
-                  <span className="font-semibold">Admin:</span>{" "}
+                  <span className="typo-semibold-14">Admin:</span>{" "}
                   {devAdminEmail || "admin@aura-demo.com"} /{" "}
                   {devAdminPassword || "SecureP@ss123"}
                 </p>
                 <p>
-                  <span className="font-semibold">Cashier:</span>{" "}
+                  <span className="typo-semibold-14">Cashier:</span>{" "}
                   {devCashierEmail || "cashier@aura-demo.com"} /{" "}
                   {devCashierPassword || "Cashier@123!"}
                 </p>

@@ -83,7 +83,7 @@ export function ProductPerformanceTable({
                   Number(product.sellingPrice || 0);
                 return (
                   <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="typo-medium-14">{product.name}</TableCell>
                     <TableCell>{categoryName}</TableCell>
                     <TableCell className="text-right">
                       ${Number(product.sellingPrice || 0).toFixed(2)}
@@ -91,7 +91,7 @@ export function ProductPerformanceTable({
                     <TableCell className="text-right">
                       {product.stockQuantity}
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className="text-right typo-bold-14">
                       ${value.toFixed(2)}
                     </TableCell>
                   </TableRow>

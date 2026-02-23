@@ -232,7 +232,7 @@ export function CartPanel({ offers }: CartPanelProps) {
         {cart.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10 opacity-50">
             <ShoppingCart size={48} className="mb-4" />
-            <p className="font-medium">{t("cart.empty")}</p>
+            <p className="typo-medium-14">{t("cart.empty")}</p>
           </div>
         ) : (
           cart.map((item) => (
@@ -299,8 +299,8 @@ export function CartPanel({ offers }: CartPanelProps) {
         </div>
 
         {customer && (
-          <div className="flex justify-end -mt-2 mb-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1 text-emerald-600 font-medium">
+          <div className="flex justify-end -mt-2 mb-3 text-muted-foreground typo-regular-12">
+            <span className="flex items-center gap-1 text-emerald-600 typo-medium-14">
               <TicketPercent size={10} />+
               {Math.floor(
                 total *
@@ -317,7 +317,7 @@ export function CartPanel({ offers }: CartPanelProps) {
 
         {/* Complete Sale Button */}
         <PrimaryActionButton
-          className="w-full text-base font-bold shadow-lg hover:shadow-xl transition-all h-12"
+          className="w-full shadow-lg hover:shadow-xl transition-all h-12 typo-bold-16"
           disabled={cart.length === 0}
           onClick={() => setModal("checkout")}
         >

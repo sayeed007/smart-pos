@@ -14,7 +14,7 @@ export function ProcessingView() {
           <CreditCard size={20} />
         </div>
       </div>
-      <h2 className="text-lg font-black text-foreground">
+      <h2 className="text-foreground typo-regular-18 typo-bold-14">
         {t("checkout.processing", "Processing...")}
       </h2>
     </div>

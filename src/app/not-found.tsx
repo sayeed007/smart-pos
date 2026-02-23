@@ -38,7 +38,7 @@ export default function NotFound() {
 
         {/* Large 404 Text - Decorative */}
         <span
-          className="mb-3 text-7xl font-black tracking-tighter text-primary/5 sm:text-9xl"
+          className="mb-3 text-7xl tracking-tighter text-primary/5 sm:text-9xl typo-bold-14"
           aria-hidden="true"
         >
           {t("notFound.title", "404")}
@@ -46,10 +46,10 @@ export default function NotFound() {
 
         {/* Main Content */}
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="tracking-tight text-foreground sm:text-4xl typo-bold-30">
             {t("notFound.subtitle", "Page not found")}
           </h1>
-          <p className="text-base text-muted-foreground max-w-sm mx-auto text-balance">
+          <p className="text-muted-foreground max-w-sm mx-auto text-balance typo-regular-16">
             {t(
               "notFound.description",
               "Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.",

@@ -19,10 +19,10 @@ export function VariantSelectorView({
 
   return (
     <div className="bg-card rounded-3xl p-6 shadow-2xl animate-in zoom-in-95 duration-200 min-w-80 max-w-md">
-      <h3 className="text-xl font-black text-foreground tracking-tight mb-1 text-center">
+      <h3 className="text-foreground tracking-tight mb-1 text-center typo-regular-20 typo-bold-14">
         {t("variant.selectOption", "Select Option")}
       </h3>
-      <p className="text-sm text-muted-foreground font-medium mb-6 text-center">
+      <p className="text-muted-foreground mb-6 text-center typo-medium-14">
         {product.name}
       </p>
 

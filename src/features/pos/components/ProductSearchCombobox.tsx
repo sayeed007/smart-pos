@@ -319,7 +319,7 @@ export function ProductSearchCombobox({
             allowOpenOnFocusRef.current = false;
           }}
           onKeyDown={handleKeyDown}
-          className="pl-11 pr-10 h-12 font-medium"
+          className="pl-11 pr-10 h-12 typo-medium-14"
         />
         {search && (
           <Button
@@ -359,16 +359,16 @@ export function ProductSearchCombobox({
                 onMouseEnter={() => setSelectedIndex(index)}
               >
                 <div className="min-w-0 flex-1 text-left">
-                  <p className="text-sm font-semibold text-foreground truncate">
+                  <p className="text-foreground truncate typo-semibold-14">
                     {product.name}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">
+                  <p className="text-muted-foreground truncate mt-0.5 typo-regular-12">
                     {product.type === "variable" && product.variants?.length
                       ? `${product.variants.length} variant${product.variants.length > 1 ? "s" : ""}`
                       : product.sku || "No SKU"}
                   </p>
                 </div>
-                <div className="text-sm font-bold text-chart-1 shrink-0">
+                <div className="text-chart-1 shrink-0 typo-bold-14">
                   $
                   {product.type === "variable" && product.variants?.length
                     ? Math.min(...product.variants.map((v) => v.price)).toFixed(
@@ -379,12 +379,12 @@ export function ProductSearchCombobox({
               </Button>
             ))}
             {isLoading && (
-              <div className="px-4 py-3 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-3 text-center text-muted-foreground typo-regular-14">
                 Loading more...
               </div>
             )}
             {!hasMore && !search.trim() && products.length > 0 && (
-              <div className="px-4 py-3 text-center text-xs text-muted-foreground">
+              <div className="px-4 py-3 text-center text-muted-foreground typo-regular-12">
                 All products loaded
               </div>
             )}

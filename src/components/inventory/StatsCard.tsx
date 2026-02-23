@@ -39,15 +39,15 @@ export function StatsCard({
         <div className="space-y-1">
           <p
             className={cn(
-              "text-2xl font-bold tracking-tight text-foreground",
+              "tracking-tight text-foreground typo-bold-24",
               valueColor,
             )}
           >
             {value}
           </p>
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="text-muted-foreground typo-medium-14">{title}</p>
           {description && (
-            <p className="text-xs text-red-500 font-medium pt-1">
+            <p className="text-red-500 pt-1 typo-medium-12">
               {description}
             </p>
           )}

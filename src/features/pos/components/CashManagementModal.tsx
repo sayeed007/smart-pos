@@ -110,13 +110,13 @@ export function CashManagementModal() {
 
   if (step === "report" && currentShift && salesSummary) {
     return (
-      <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-[400px] max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-black text-gray-900 tracking-tight mb-4 text-center">
+      <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100 max-h-[90vh] overflow-y-auto">
+        <h3 className="text-gray-900 tracking-tight mb-4 text-center typo-regular-20 typo-bold-14">
           Shift Report Preview
         </h3>
 
         {/* Preview Area */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4 font-mono text-sm max-h-[50vh] overflow-y-auto">
+        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mb-4 max-h-[50vh] overflow-y-auto typo-regular-14">
           <ZReportTemplate
             shift={{ ...currentShift, endAmount: parseFloat(amount) }}
             salesSummary={salesSummary}
@@ -125,7 +125,7 @@ export function CashManagementModal() {
 
         <div className="space-y-4">
           <Button
-            className="w-full h-12 text-lg bg-red-600 hover:bg-red-700 text-white"
+            className="w-full h-12 bg-red-600 hover:bg-red-700 text-white typo-regular-18"
             onClick={handleAction}
             disabled={loading}
           >
@@ -157,13 +157,13 @@ export function CashManagementModal() {
   }
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-[400px]">
-      <h3 className="text-xl font-black text-gray-900 tracking-tight mb-4 text-center">
+    <div className="bg-white rounded-3xl p-6 shadow-2xl min-w-100">
+      <h3 className="text-gray-900 tracking-tight mb-4 text-center typo-regular-20 typo-bold-14">
         {currentShift ? "Close Shift" : "Open Shift"}
       </h3>
 
       {currentShift && (
-        <div className="mb-4 text-sm text-center bg-gray-50 p-3 rounded-lg">
+        <div className="mb-4 text-center bg-gray-50 p-3 rounded-lg typo-regular-14">
           <p>
             Shift started: {format(new Date(currentShift.startTime), "PP p")}
           </p>
@@ -182,13 +182,13 @@ export function CashManagementModal() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
-            className="text-lg font-bold"
+            className="typo-bold-18"
             autoFocus
           />
         </div>
 
         <Button
-          className="w-full h-12 text-lg"
+          className="w-full h-12 typo-regular-18"
           onClick={handleAction}
           disabled={loading || !amount}
         >

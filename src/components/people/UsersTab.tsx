@@ -313,7 +313,7 @@ export function UsersTab() {
                 />
               </PaginationItem>
               <PaginationItem>
-                <span className="text-sm font-medium text-muted-foreground px-4">
+                <span className="text-muted-foreground px-4 typo-medium-14">
                   {t("common:page", "Page {{current}} of {{total}}", {
                     current: meta.page,
                     total: meta.totalPages,

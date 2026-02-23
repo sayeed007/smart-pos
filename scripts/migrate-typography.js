@@ -3,6 +3,7 @@ import path from 'path';
 
 // Define the mappings
 const SIZE_MAP = {
+    'text-\\[11px\\]': '11',
     'text-xs': '12',
     'text-sm': '14',
     'text-base': '16',
@@ -10,7 +11,8 @@ const SIZE_MAP = {
     'text-xl': '20',
     'text-2xl': '24',
     'text-3xl': '30',
-    'text-[11px]': '11',
+    'text-4xl': '36',
+    'text-5xl': '48',
 };
 
 const WEIGHT_MAP = {
@@ -18,43 +20,9 @@ const WEIGHT_MAP = {
     'font-medium': 'medium',
     'font-semibold': 'semibold',
     'font-bold': 'bold',
+    'font-extrabold': 'bold',
+    'font-black': 'bold',
 };
-
-// Generate CSS for missing Typo classes
-const SIZES = [30, 24, 20, 18, 16, 14, 12, 11];
-const WEIGHTS = [
-    { name: 'bold', value: 700 },
-    { name: 'semibold', value: 600 },
-    { name: 'medium', value: 500 },
-    { name: 'regular', value: 400 },
-];
-
-function generateCSS() {
-    let css = '\n  /* Automatically Generated Typography Classes */\n';
-    for (const size of SIZES) {
-        let lineHeight = '100%';
-        if (size === 12) lineHeight = '16px';
-        if (size === 14) lineHeight = '24px';
-        if (size === 16) lineHeight = '24px';
-        if (size === 18) lineHeight = '28px';
-        if (size === 20) lineHeight = '28px';
-        if (size === 24) lineHeight = '32px';
-        if (size === 30) lineHeight = '36px';
-
-        css += `  /* ${size}px Size */\n`;
-        for (const weight of WEIGHTS) {
-            css += `  .typo-${weight.name}-${size} {\n`;
-            css += `    font-family: var(--font-inter), sans-serif !important;\n`;
-            css += `    font-weight: ${weight.value} !important;\n`;
-            css += `    font-style: normal;\n`;
-            css += `    font-size: ${size}px !important;\n`;
-            css += `    line-height: ${lineHeight} !important;\n`;
-            css += `    letter-spacing: 0px !important;\n`;
-            css += `  }\n`;
-        }
-    }
-    return css;
-}
 
 function processDirectory(dirPath) {
     const entries = fs.readdirSync(dirPath, { withFileTypes: true });
@@ -72,80 +40,81 @@ function processDirectory(dirPath) {
 
 function processFile(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
-    let modified = false;
+    let originalContent = content;
 
-    // Regex to match className attributes and strings within cn()
-    // We'll replace matching classes using a replacer function
-    const classRegex = /(className(?:={|=")|cn\()([\s\S]*?)(?:}|"|\))/g;
+    // We find all string literals: "...", '...', or `...`
+    // And we use the 's' flag so . matches newlines.
+    const stringLiteralRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/gs;
 
-    content = content.replace(classRegex, (match, prefix, classString) => {
-        let newClassString = classString;
+    content = content.replace(stringLiteralRegex, (match) => {
+        let newStr = match;
 
-        // Detect size
+        // Check if there is a match for our specific sizes or weights 
+        // BUT we must avoid hover:, focus:, sm:, lg:, etc.
+        let hasSize = false;
+        let hasWeight = false;
+
+        // A valid class should be preceded by a quote, start of line, a space, or a backtick/quote
+        const classBoundaryPrefix = `(^|["'\`]|\\s)`;
+
+        for (const twClass of Object.keys(SIZE_MAP)) {
+            if (new RegExp(`${classBoundaryPrefix}${twClass}\\b`).test(newStr)) hasSize = true;
+        }
+        for (const twClass of Object.keys(WEIGHT_MAP)) {
+            if (new RegExp(`${classBoundaryPrefix}${twClass}\\b`).test(newStr)) hasWeight = true;
+        }
+
+        if (!hasSize && !hasWeight) return match; // Nothing to do
+
+        // We have a match! Let's extract the first size and weight we find.
         let matchedSize = null;
-        let fallbackSize = '14'; // default fallback size if font-weight is specified without a size
+        let matchedWeight = null;
 
         for (const [tailwindSize, typoSize] of Object.entries(SIZE_MAP)) {
-            if (new RegExp(`\\b${tailwindSize.replace('[', '\\[').replace(']', '\\]')}\\b`).test(newClassString)) {
-                matchedSize = typoSize;
-                newClassString = newClassString.replace(new RegExp(`\\b${tailwindSize.replace('[', '\\[').replace(']', '\\]')}\\b`, 'g'), '');
-                break; // take the first size matched
+            const regex = new RegExp(`${classBoundaryPrefix}${tailwindSize}\\b`, 'g');
+            // If found, capture it and replace it with just the prefix so we don't eat the preceding space or quote
+            if (regex.test(newStr)) {
+                if (!matchedSize) matchedSize = typoSize;
+                newStr = newStr.replace(regex, '$1');
             }
         }
-
-        // Detect weight
-        let matchedWeight = null;
-        let fallbackWeight = 'regular'; // default to regular if weight not specified
 
         for (const [tailwindWeight, typoWeight] of Object.entries(WEIGHT_MAP)) {
-            if (new RegExp(`\\b${tailwindWeight}\\b`).test(newClassString)) {
-                matchedWeight = typoWeight;
-                newClassString = newClassString.replace(new RegExp(`\\b${tailwindWeight}\\b`, 'g'), '');
-                break; // take the first weight matched
+            const regex = new RegExp(`${classBoundaryPrefix}${tailwindWeight}\\b`, 'g');
+            if (regex.test(newStr)) {
+                if (!matchedWeight) matchedWeight = typoWeight;
+                newStr = newStr.replace(regex, '$1');
             }
         }
 
-        if (matchedSize || matchedWeight) {
-            const finalSize = matchedSize || fallbackSize;
-            const finalWeight = matchedWeight || fallbackWeight;
-            const typoClass = `typo-${finalWeight}-${finalSize}`;
+        // Default weight is regular if size is present but weight is not.
+        // Default size is 14 if weight is present but size is not.
+        const finalSize = matchedSize || '14';
+        const finalWeight = matchedWeight || 'regular';
+        const typoClass = `typo-${finalWeight}-${finalSize}`;
 
-            // Remove double spaces introduced by removing words
-            newClassString = newClassString.replace(/\s+/g, ' ').trim();
+        // Clean up multiple spaces that might have been left behind inside the string, 
+        // removing spaces without affecting the enclosing quotes if possible.
+        const quoteChar = newStr[0];
+        const endQuoteChar = newStr[newStr.length - 1]; // could be the same as quoteChar, but maybe `
 
-            // Append the new typo class
-            // To strictly match prefix style, we append it safely
-            newClassString = newClassString ? `${newClassString} ${typoClass}` : typoClass;
-            modified = true;
-        }
+        // We get the inner content
+        let innerContent = newStr.slice(1, -1);
 
-        return `${prefix}${newClassString}${match.slice(-1)}`; // Keep original closing char
+        // replace double spaces with single space
+        innerContent = innerContent.replace(/\s+/g, ' ').trim();
+
+        return `${quoteChar}${innerContent ? innerContent + ' ' : ''}${typoClass}${endQuoteChar}`;
     });
 
-    if (modified) {
+    if (content !== originalContent) {
         fs.writeFileSync(filePath, content, 'utf8');
         console.log(`Updated: ${filePath}`);
     }
 }
 
-// 1. Update globals.css with new Typography Expansion
-const globalsPath = path.join(__dirname, '../src/app/globals.css');
-if (fs.existsSync(globalsPath)) {
-    let cssContent = fs.readFileSync(globalsPath, 'utf8');
-
-    // We will append the generated classes to utilities layer
-    // But clear older typo definitions to avoid conflicts or just append if they are overriding.
-    // Actually, to make it safe, we'll strip out the old typo-* block if we want or just let standard CSS cascade.
-    console.log('Generating expanded CSS rules...');
-
-    // Simple injection before the closing brace of @layer utilities
-    cssContent = cssContent.replace(/}\n*$/, generateCSS() + '\n}\n');
-    fs.writeFileSync(globalsPath, cssContent);
-    console.log('Successfully injected typography expansion into globals.css');
-}
-
 // 2. Process the React files
-const rootDir = path.join(__dirname, '../src');
-console.log('Starting typography scan and replace across src/...');
+const rootDir = path.join(import.meta.dirname, '../src');
+console.log('Starting explicit typography sweep over all strings...');
 processDirectory(rootDir);
-console.log('Migration complete!');
+console.log('Sweep complete!');

@@ -124,7 +124,7 @@ export function CategoryFormModal({
                     <FormControl>
                       <>
                         {field.value ? (
-                          <span className="text-2xl mr-2">{field.value}</span>
+                          <span className="mr-2 typo-regular-24">{field.value}</span>
                         ) : (
                           <span className="text-muted-foreground">
                             {t("placeholders.selectIcon", "Select an icon")}

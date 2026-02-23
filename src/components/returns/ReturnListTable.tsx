@@ -58,13 +58,13 @@ export function ReturnListTable({
           ) : (
             returns?.map((ret) => (
               <TableRow key={ret.id}>
-                <TableCell className="font-medium">
+                <TableCell className="typo-medium-14">
                   {onInvoiceClick && ret.saleId ? (
                     <Button
                       variant="link"
                       type="button"
                       onClick={() => onInvoiceClick(ret)}
-                      className="p-0 h-auto font-semibold"
+                      className="p-0 h-auto typo-semibold-14"
                     >
                       {ret.invoiceNo}
                     </Button>
@@ -88,7 +88,7 @@ export function ReturnListTable({
                     {t(`status.${ret.status}`, ret.status)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right font-bold">
+                <TableCell className="text-right typo-bold-14">
                   ${ret.refundAmount.toFixed(2)}
                 </TableCell>
                 <TableCell className="text-right">

@@ -20,27 +20,25 @@ export function SuccessView({ sale, onNewSale }: SuccessViewProps) {
       <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white shadow-xl shadow-green-100 mb-6 mx-auto">
         <CheckCircle2 size={32} strokeWidth={3} />
       </div>
-      <h2 className="text-2xl font-black text-foreground mb-1">
+      <h2 className="text-foreground mb-1 typo-regular-24 typo-bold-14">
         {t("checkout.success", "Payment Successful!")}
       </h2>
-      <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px] mb-2">
+      <p className="text-muted-foreground uppercase tracking-widest text-[10px] mb-2 typo-bold-14">
         {t("checkout.transactionCompleted", "Transaction completed")}
       </p>
       {sale?.invoiceNo && (
-        <p className="text-sm font-mono text-primary font-bold mb-6">
-          {sale.invoiceNo}
-        </p>
+        <p className="text-primary mb-6 typo-bold-14">{sale.invoiceNo}</p>
       )}
       <div className="flex gap-2 mb-4">
         <PrimaryActionButton
-          className="flex-1 py-5 rounded-xl text-sm"
+          className="flex-1 py-5 rounded-xl typo-regular-14"
           onClick={onNewSale}
         >
           {t("common:newSale", "Start New Sale")}
         </PrimaryActionButton>
         <Button
           variant="outline"
-          className="flex-none py-5 px-4 rounded-xl text-sm border-border bg-card"
+          className="flex-none py-5 px-4 rounded-xl border-border bg-card typo-regular-14"
           onClick={() => window.print()}
           title={t("checkout.printReceipt", "Print Receipt")}
         >

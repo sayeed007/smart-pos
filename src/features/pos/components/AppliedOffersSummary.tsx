@@ -78,7 +78,7 @@ export function AppliedOffersSummary({
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
                 <span
                   className={cn(
-                    "text-xs font-medium truncate",
+                    "truncate typo-medium-12",
                     appliedOffers.length === 0
                       ? "text-muted-foreground"
                       : "text-emerald-900",
@@ -90,7 +90,7 @@ export function AppliedOffersSummary({
             </div>
 
             <div className="flex items-center gap-2 shrink-0 ml-2">
-              <span className="text-xs font-bold text-emerald-700">
+              <span className="text-emerald-700 typo-bold-12">
                 -{currencySymbol}
                 {offerDiscount.toFixed(2)}
               </span>
@@ -108,11 +108,11 @@ export function AppliedOffersSummary({
         >
           <div className="p-3 border-b border-border bg-muted/20">
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium text-sm flex items-center gap-2">
+              <h4 className="flex items-center gap-2 typo-medium-14">
                 <TicketPercent size={14} className="text-emerald-600" />
                 Available Offers
               </h4>
-              <span className="text-sm font-bold text-emerald-700">
+              <span className="text-emerald-700 typo-bold-14">
                 -{currencySymbol}
                 {offerDiscount.toFixed(2)}
               </span>
@@ -121,7 +121,7 @@ export function AppliedOffersSummary({
             <Button
               variant="ghost"
               onClick={handleToggleAll}
-              className="h-auto p-0 hover:bg-transparent text-[10px] font-semibold text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1"
+              className="h-auto p-0 hover:bg-transparent text-[10px] text-primary/80 hover:text-primary hover:underline transition-colors uppercase tracking-wider flex items-center gap-1 typo-semibold-14"
             >
               {allSelected ? (
                 <>
@@ -144,7 +144,7 @@ export function AppliedOffersSummary({
                 <div
                   key={offer.id}
                   className={cn(
-                    "flex items-start gap-2 p-2 rounded-md transition-colors text-sm cursor-pointer hover:bg-muted/50",
+                    "flex items-start gap-2 p-2 rounded-md transition-colors cursor-pointer hover:bg-muted/50 typo-regular-14",
                     !isApplied && "opacity-75",
                   )}
                   onClick={() => onToggleOffer(offer.id)}
@@ -162,7 +162,7 @@ export function AppliedOffersSummary({
                   <div className="flex-1">
                     <p
                       className={cn(
-                        "font-medium text-xs",
+                        "typo-medium-12",
                         isApplied ? "text-foreground" : "text-muted-foreground",
                       )}
                     >

@@ -16,12 +16,12 @@ export function StatsCards({ summary }: StatsCardsProps) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="rounded-xl border shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-muted-foreground typo-medium-14">
             Total Revenue
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-green-600">
+          <div className="text-green-600 typo-bold-30">
             $
             {revenue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -32,12 +32,12 @@ export function StatsCards({ summary }: StatsCardsProps) {
       </Card>
       <Card className="rounded-xl border shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-muted-foreground typo-medium-14">
             Total Profit
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-blue-600">
+          <div className="text-blue-600 typo-bold-30">
             $
             {profit.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -45,18 +45,18 @@ export function StatsCards({ summary }: StatsCardsProps) {
             })}
           </div>
           {summary?.profitEstimated && (
-            <p className="text-xs text-muted-foreground mt-1">Estimated</p>
+            <p className="text-muted-foreground mt-1 typo-regular-12">Estimated</p>
           )}
         </CardContent>
       </Card>
       <Card className="rounded-xl border shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-muted-foreground typo-medium-14">
             Total Sales
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold">{count}</div>
+          <div className="typo-bold-30">{count}</div>
         </CardContent>
       </Card>
     </div>

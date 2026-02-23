@@ -99,7 +99,7 @@ export default function CategoriesPage() {
             className="p-4 flex flex-row items-center gap-4 border-none shadow-sm"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
-              <span className="text-2xl" role="img" aria-label={category.name}>
+              <span className="typo-regular-24" role="img" aria-label={category.name}>
                 {category.icon || "📦"}
               </span>
             </div>

@@ -323,7 +323,7 @@ export function UserFormDialog({
                       </Button>
                     </div>
                   </FormControl>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-muted-foreground mt-1 typo-regular-12">
                     Must be at least 8 characters long.
                   </p>
                   <FormMessage />

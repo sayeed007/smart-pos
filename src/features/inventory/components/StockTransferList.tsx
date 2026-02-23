@@ -93,7 +93,7 @@ export function StockTransferList({
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-60 justify-start text-left font-normal",
+                  "w-60 justify-start text-left typo-regular-14",
                   !date && "text-muted-foreground",
                 )}
               >
@@ -157,18 +157,18 @@ export function StockTransferList({
                   const isIncoming = transfer.toLocationId === locationId;
                   return (
                     <TableRow key={transfer.id}>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell className="text-muted-foreground typo-regular-12">
                         {transfer.id.slice(0, 8)}
                       </TableCell>
                       <TableCell>
                         {format(new Date(transfer.createdAt), "MMM dd, yyyy")}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 text-xs">
+                        <div className="flex items-center gap-2 typo-regular-12">
                           <span
                             className={
                               !isIncoming
-                                ? "font-bold"
+                                ? "typo-bold-14"
                                 : "text-muted-foreground"
                             }
                           >
@@ -181,7 +181,9 @@ export function StockTransferList({
                           />
                           <span
                             className={
-                              isIncoming ? "font-bold" : "text-muted-foreground"
+                              isIncoming
+                                ? "typo-bold-14"
+                                : "text-muted-foreground"
                             }
                           >
                             {transfer.toLocation?.name || transfer.toLocationId}
@@ -203,7 +205,7 @@ export function StockTransferList({
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-col text-xs max-w-50">
+                        <div className="flex flex-col max-w-50 typo-regular-12">
                           {transfer.lines.slice(0, 2).map((line, idx) => (
                             <span key={idx} className="truncate">
                               {line.quantity} x{" "}
@@ -233,7 +235,7 @@ export function StockTransferList({
                           <Button
                             size="sm"
                             variant="default"
-                            className="ml-2 h-7 text-xs"
+                            className="ml-2 h-7 typo-regular-12"
                             onClick={() => handleView(transfer)}
                           >
                             {translate("dialogs.transferList.receive")}
@@ -270,7 +272,7 @@ export function StockTransferList({
                   />
                 </PaginationItem>
                 <PaginationItem>
-                  <span className="text-sm font-medium text-muted-foreground px-4">
+                  <span className="text-muted-foreground px-4 typo-medium-14">
                     Page {meta.page} of {meta.totalPages}
                   </span>
                 </PaginationItem>

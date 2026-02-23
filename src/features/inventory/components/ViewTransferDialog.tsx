@@ -63,7 +63,7 @@ export function ViewTransferDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="flex justify-between text-sm text-muted-foreground">
+          <div className="flex justify-between text-muted-foreground typo-regular-14">
             <span>
               {t("dialogs.viewTransfer.from")}{" "}
               <strong>
@@ -79,7 +79,7 @@ export function ViewTransferDialog({
           </div>
 
           <div className="border rounded-lg p-0 overflow-hidden">
-            <table className="w-full text-sm">
+            <table className="w-full typo-regular-14">
               <thead className="bg-muted">
                 <tr>
                   <th className="p-2 text-left">
@@ -96,9 +96,7 @@ export function ViewTransferDialog({
                     <td className="p-2">
                       {item.variant ? item.variant.name : item.product.name}
                     </td>
-                    <td className="p-2 text-right font-mono">
-                      {item.quantity}
-                    </td>
+                    <td className="p-2 text-right">{item.quantity}</td>
                   </tr>
                 ))}
               </tbody>
@@ -107,7 +105,7 @@ export function ViewTransferDialog({
 
           {canReceive && (
             <Button
-              className="w-full py-6 text-md font-bold bg-green-600 hover:bg-green-700"
+              className="w-full py-6 text-md bg-green-600 hover:bg-green-700 typo-bold-14"
               onClick={handleReceive}
             >
               <CheckCircle2 className="mr-2" />
@@ -116,9 +114,9 @@ export function ViewTransferDialog({
           )}
 
           {!canReceive && (
-            <div className="text-center text-sm text-muted-foreground bg-muted p-2 rounded">
+            <div className="text-center text-muted-foreground bg-muted p-2 rounded typo-regular-14">
               {t("dialogs.viewTransfer.status")}{" "}
-              <span className="font-bold uppercase">{transfer.status}</span>
+              <span className="uppercase typo-bold-14">{transfer.status}</span>
             </div>
           )}
         </div>

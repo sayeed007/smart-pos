@@ -207,7 +207,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       {/* Sync Indicator */}
       {pendingCount > 0 && (
         <div
-          className="fixed bottom-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-50 animate-pulse cursor-pointer hover:bg-orange-600 transition-colors"
+          className="fixed bottom-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full shadow-lg z-50 animate-pulse cursor-pointer hover:bg-orange-600 transition-colors typo-bold-12"
           onClick={syncSales}
           title="Click to Sync Now"
         >

@@ -151,15 +151,15 @@ export function PriceBookManager() {
               className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent/10 transition-colors"
             >
               <div>
-                <div className="font-bold flex items-center gap-2">
+                <div className="flex items-center gap-2 typo-bold-14">
                   {book.name}
                   {book.isDefault && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">
+                    <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider typo-bold-14">
                       Default
                     </span>
                   )}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground typo-regular-14">
                   {book.description || "No description"}
                 </div>
               </div>

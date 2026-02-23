@@ -199,9 +199,10 @@ export function ProductFormModal({
     if (currentId && currentId !== "default" && locations.length === 0) {
       return currentId;
     }
-    return locations[0]?.id ?? (currentId && currentId !== "default"
-      ? currentId
-      : "");
+    return (
+      locations[0]?.id ??
+      (currentId && currentId !== "default" ? currentId : "")
+    );
   }, [currentLocation, locations]);
 
   const locationOptions = useMemo(() => {
@@ -401,620 +402,627 @@ export function ProductFormModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="typo-bold-18">
-            {productToEdit ? t("title.edit") : t("title.add")}
-          </DialogTitle>
-          <DialogDescription className="typo-regular-14">
-            {productToEdit ? t("description.edit") : t("description.add")}
-          </DialogDescription>
-        </DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="typo-bold-18">
+              {productToEdit ? t("title.edit") : t("title.add")}
+            </DialogTitle>
+            <DialogDescription className="typo-regular-14">
+              {productToEdit ? t("description.edit") : t("description.add")}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="grid gap-6 py-4">
-          {/* Main Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="typo-semibold-14">
-                {t("fields.name")} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder={t("fields.namePlaceholder")}
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-              />
-              {fieldErrors.name?.[0] && (
-                <p className="text-xs text-red-500">{fieldErrors.name[0]}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="category" className="typo-semibold-14">
-                {t("fields.category")} <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                value={formData.categoryId}
-                onValueChange={(val) => {
-                  if (val === "__create__") {
-                    setIsCategoryModalOpen(true);
-                    return;
-                  }
-                  setFormData({ ...formData, categoryId: val });
-                }}
-              >
-                <SelectTrigger id="category" className="w-full">
-                  <SelectValue placeholder={t("fields.categoryPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {sortedCategories.length === 0 && (
-                    <SelectItem value="no-categories" disabled>
-                      No categories found
-                    </SelectItem>
-                  )}
-                  {sortedCategories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                  <div className="my-1 h-px bg-border" />
-                  <SelectItem value="__create__">
-                    + Create new category
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {fieldErrors.categoryId?.[0] && (
-                <p className="text-xs text-red-500">
-                  {fieldErrors.categoryId[0]}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="typo-semibold-14">Product Type</Label>
-            <RadioGroup
-              value={formData.type}
-              onValueChange={(val: "simple" | "variable") =>
-                setFormData({ ...formData, type: val })
-              }
-              className="flex gap-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="simple" id="simple" />
-                <Label htmlFor="simple">Simple Product</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="variable" id="variable" />
-                <Label htmlFor="variable">
-                  Variable Product (with Variants)
+          <div className="grid gap-6 py-4">
+            {/* Main Info */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="typo-semibold-14">
+                  {t("fields.name")} <span className="text-red-500">*</span>
                 </Label>
+                <Input
+                  id="name"
+                  placeholder={t("fields.namePlaceholder")}
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
+                {fieldErrors.name?.[0] && (
+                  <p className="text-red-500 typo-regular-12">
+                    {fieldErrors.name[0]}
+                  </p>
+                )}
               </div>
-            </RadioGroup>
-          </div>
-
-          {/* Simple Product Fields */}
-          {formData.type === "simple" && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sku" className="typo-semibold-14">
-                    {t("fields.sku")}{" "}
-                    {formData.type === "simple" && (
-                      <span className="text-red-500">*</span>
-                    )}
-                  </Label>
-                  <Input
-                    id="sku"
-                    placeholder={t("fields.skuPlaceholder")}
-                    value={formData.sku}
-                    onChange={(e) =>
-                      setFormData({ ...formData, sku: e.target.value })
+              <div className="space-y-2">
+                <Label htmlFor="category" className="typo-semibold-14">
+                  {t("fields.category")} <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.categoryId}
+                  onValueChange={(val) => {
+                    if (val === "__create__") {
+                      setIsCategoryModalOpen(true);
+                      return;
                     }
-                  />
-                  {fieldErrors.sku?.[0] && (
-                    <p className="text-xs text-red-500">{fieldErrors.sku[0]}</p>
-                  )}
+                    setFormData({ ...formData, categoryId: val });
+                  }}
+                >
+                  <SelectTrigger id="category" className="w-full">
+                    <SelectValue
+                      placeholder={t("fields.categoryPlaceholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortedCategories.length === 0 && (
+                      <SelectItem value="no-categories" disabled>
+                        No categories found
+                      </SelectItem>
+                    )}
+                    {sortedCategories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                    <div className="my-1 h-px bg-border" />
+                    <SelectItem value="__create__">
+                      + Create new category
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {fieldErrors.categoryId?.[0] && (
+                  <p className="text-red-500 typo-regular-12">
+                    {fieldErrors.categoryId[0]}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="typo-semibold-14">Product Type</Label>
+              <RadioGroup
+                value={formData.type}
+                onValueChange={(val: "simple" | "variable") =>
+                  setFormData({ ...formData, type: val })
+                }
+                className="flex gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="simple" id="simple" />
+                  <Label htmlFor="simple">Simple Product</Label>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="barcode" className="typo-semibold-14">
-                    {t("fields.barcode")}
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="variable" id="variable" />
+                  <Label htmlFor="variable">
+                    Variable Product (with Variants)
                   </Label>
-                  <div className="flex gap-2">
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Simple Product Fields */}
+            {formData.type === "simple" && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="sku" className="typo-semibold-14">
+                      {t("fields.sku")}{" "}
+                      {formData.type === "simple" && (
+                        <span className="text-red-500">*</span>
+                      )}
+                    </Label>
                     <Input
-                      id="barcode"
-                      placeholder={t("fields.barcodePlaceholder")}
-                      value={formData.barcode}
+                      id="sku"
+                      placeholder={t("fields.skuPlaceholder")}
+                      value={formData.sku}
                       onChange={(e) =>
-                        setFormData({ ...formData, barcode: e.target.value })
+                        setFormData({ ...formData, sku: e.target.value })
                       }
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="px-3"
-                      onClick={() =>
+                    {fieldErrors.sku?.[0] && (
+                      <p className="text-red-500 typo-regular-12">
+                        {fieldErrors.sku[0]}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode" className="typo-semibold-14">
+                      {t("fields.barcode")}
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="barcode"
+                        placeholder={t("fields.barcodePlaceholder")}
+                        value={formData.barcode}
+                        onChange={(e) =>
+                          setFormData({ ...formData, barcode: e.target.value })
+                        }
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="px-3"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            barcode: generateBarcodeValue(),
+                          })
+                        }
+                        title="Generate barcode"
+                      >
+                        <Wand2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="costPrice" className="typo-semibold-14">
+                      {t("fields.costPrice")}
+                    </Label>
+                    <Input
+                      id="costPrice"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.costPrice}
+                      onChange={(e) =>
                         setFormData({
                           ...formData,
-                          barcode: generateBarcodeValue(),
+                          costPrice: parseFloat(e.target.value),
                         })
                       }
-                      title="Generate barcode"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sellingPrice" className="typo-semibold-14">
+                      {t("fields.sellingPrice")}{" "}
+                      <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="sellingPrice"
+                      type="number"
+                      placeholder="0.00"
+                      value={formData.sellingPrice}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          sellingPrice: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                    {fieldErrors.sellingPrice?.[0] && (
+                      <p className="text-red-500 typo-regular-12">
+                        {fieldErrors.sellingPrice[0]}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="stock" className="typo-semibold-14">
+                      {t("fields.stockQuantity")}
+                    </Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      placeholder="0"
+                      value={formData.stockQuantity}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          stockQuantity: parseFloat(e.target.value),
+                        })
+                      }
+                      disabled={!!productToEdit}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* UOM and Barcodes (Common) */}
+            <div className="grid grid-cols-2 gap-4 border-t pt-4">
+              <div className="space-y-2">
+                <Label>Unit of Measure</Label>
+                <Select
+                  value={formData.uom}
+                  onValueChange={(v) => setFormData({ ...formData, uom: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pcs">Pieces (pcs)</SelectItem>
+                    <SelectItem value="kg">Kilograms (kg)</SelectItem>
+                    <SelectItem value="m">Meters (m)</SelectItem>
+                    <SelectItem value="l">Liters (l)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end pb-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="decimals"
+                    checked={formData.allowDecimals}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        allowDecimals: checked as boolean,
+                      })
+                    }
+                  />
+                  <Label htmlFor="decimals">Allow Decimal Quantities</Label>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Additional Barcodes (One per line)</Label>
+              <Textarea
+                value={formData.barcodes}
+                onChange={(e) =>
+                  setFormData({ ...formData, barcodes: e.target.value })
+                }
+                placeholder="e.g. STORE-123&#10;MFR-456"
+                className="typo-regular-14"
+              />
+            </div>
+
+            {/* Variable Product Fields */}
+            {formData.type === "variable" && (
+              <div className="space-y-4 border p-4 rounded-lg bg-muted/20">
+                <h3 className="typo-semibold-14">Variants</h3>
+
+                {/* Add Variant Inline Form */}
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="col-span-1 space-y-1">
+                    <Label className="typo-regular-12">
+                      Variant (e.g. Red/L){" "}
+                      <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      value={newVariant.name}
+                      onChange={(e) =>
+                        setNewVariant({ ...newVariant, name: e.target.value })
+                      }
+                      className="h-8 typo-regular-12"
+                    />
+                  </div>
+                  <div className="col-span-1 space-y-1">
+                    <Label className="typo-regular-12">
+                      SKU <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      value={newVariant.sku}
+                      onChange={(e) =>
+                        setNewVariant({ ...newVariant, sku: e.target.value })
+                      }
+                      className="h-8 typo-regular-12"
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-1">
+                    <Label className="typo-regular-12">
+                      Barcode <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newVariant.barcode}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            barcode: e.target.value,
+                          })
+                        }
+                        className="h-8 typo-regular-12"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-8 px-2"
+                        onClick={() =>
+                          setNewVariant({
+                            ...newVariant,
+                            barcode: generateBarcodeValue(),
+                          })
+                        }
+                        title="Generate barcode"
+                      >
+                        <Wand2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 items-end">
+                  <div className="col-span-1 space-y-1">
+                    <Label className="typo-regular-12">Cost</Label>
+                    <Input
+                      type="number"
+                      value={newVariant.costPrice}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          costPrice: parseFloat(e.target.value),
+                        })
+                      }
+                      className="h-8 typo-regular-12"
+                    />
+                  </div>
+                  <div className="col-span-1 space-y-1">
+                    <Label className="typo-regular-12">Price</Label>
+                    <Input
+                      type="number"
+                      value={newVariant.price}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          price: parseFloat(e.target.value),
+                        })
+                      }
+                      className="h-8 typo-regular-12"
+                    />
+                  </div>
+                  <div className="col-span-1 space-y-1">
+                    <Label className="typo-regular-12">Stock</Label>
+                    <Input
+                      type="number"
+                      value={newVariant.stockQuantity}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          stockQuantity: parseFloat(e.target.value),
+                        })
+                      }
+                      className="h-8 typo-regular-12"
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <Button
+                      onClick={addVariant}
+                      size="sm"
+                      className="w-full h-8 bg-primary"
                     >
-                      <Wand2 className="h-4 w-4" />
+                      Add
                     </Button>
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
+                {/* Variants List */}
                 <div className="space-y-2">
-                  <Label htmlFor="costPrice" className="typo-semibold-14">
-                    {t("fields.costPrice")}
-                  </Label>
-                  <Input
-                    id="costPrice"
-                    type="number"
-                    placeholder="0.00"
-                    value={formData.costPrice}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        costPrice: parseFloat(e.target.value),
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sellingPrice" className="typo-semibold-14">
-                    {t("fields.sellingPrice")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="sellingPrice"
-                    type="number"
-                    placeholder="0.00"
-                    value={formData.sellingPrice}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        sellingPrice: parseFloat(e.target.value),
-                      })
-                    }
-                  />
-                  {fieldErrors.sellingPrice?.[0] && (
-                    <p className="text-xs text-red-500">
-                      {fieldErrors.sellingPrice[0]}
+                  {formData.variants.length === 0 && (
+                    <p className="text-muted-foreground italic typo-regular-12">
+                      No variants added.
                     </p>
                   )}
+                  {fieldErrors.variants?.[0] && (
+                    <p className="text-red-500 typo-regular-12">
+                      {fieldErrors.variants[0]}
+                    </p>
+                  )}
+                  {formData.variants.map((variant) => (
+                    <div
+                      key={variant.id}
+                      className="flex items-center justify-between p-2 bg-card border rounded typo-regular-14"
+                    >
+                      <div className="grid grid-cols-6 gap-4 flex-1">
+                        <span className="truncate typo-medium-14">
+                          {variant.name}
+                        </span>
+                        <span className="text-muted-foreground truncate">
+                          {variant.sku}
+                        </span>
+                        <span className="text-muted-foreground truncate">
+                          {variant.barcode || "—"}
+                        </span>
+                        <span>${variant.price}</span>
+                        <span className="text-muted-foreground">
+                          Cost: ${variant.costPrice ?? 0}
+                        </span>
+                        <span>Qty: {variant.stockQuantity}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground"
+                          onClick={() =>
+                            setNewVariant({
+                              name: `${variant.name} Copy`,
+                              sku: "",
+                              price: variant.price,
+                              costPrice: variant.costPrice || 0,
+                              barcode: variant.barcode || "",
+                              stockQuantity: variant.stockQuantity || 0,
+                            })
+                          }
+                        >
+                          <CopyPlus className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-destructive"
+                          onClick={() => removeVariant(variant.id)}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="stock" className="typo-semibold-14">
-                    {t("fields.stockQuantity")}
-                  </Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    placeholder="0"
-                    value={formData.stockQuantity}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        stockQuantity: parseFloat(e.target.value),
-                      })
-                    }
-                    disabled={!!productToEdit}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* UOM and Barcodes (Common) */}
-          <div className="grid grid-cols-2 gap-4 border-t pt-4">
-            <div className="space-y-2">
-              <Label>Unit of Measure</Label>
-              <Select
-                value={formData.uom}
-                onValueChange={(v) => setFormData({ ...formData, uom: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pcs">Pieces (pcs)</SelectItem>
-                  <SelectItem value="kg">Kilograms (kg)</SelectItem>
-                  <SelectItem value="m">Meters (m)</SelectItem>
-                  <SelectItem value="l">Liters (l)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-end pb-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="decimals"
-                  checked={formData.allowDecimals}
-                  onCheckedChange={(checked) =>
+            {/* Common Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="minStockLevel" className="typo-semibold-14">
+                  Min Stock Level
+                </Label>
+                <Input
+                  id="minStockLevel"
+                  type="number"
+                  placeholder="0"
+                  value={formData.minStockLevel ?? ""}
+                  onChange={(e) =>
                     setFormData({
                       ...formData,
-                      allowDecimals: checked as boolean,
+                      minStockLevel:
+                        e.target.value === ""
+                          ? undefined
+                          : parseFloat(e.target.value),
                     })
                   }
                 />
-                <Label htmlFor="decimals">Allow Decimal Quantities</Label>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status" className="typo-semibold-14">
+                  {t("fields.status")}
+                </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(val: "active" | "inactive") =>
+                    setFormData({ ...formData, status: val })
+                  }
+                >
+                  <SelectTrigger id="status" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">{t("fields.active")}</SelectItem>
+                    <SelectItem value="inactive">
+                      {t("fields.inactive")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label>Additional Barcodes (One per line)</Label>
-            <Textarea
-              value={formData.barcodes}
-              onChange={(e) =>
-                setFormData({ ...formData, barcodes: e.target.value })
-              }
-              placeholder="e.g. STORE-123&#10;MFR-456"
-              className="font-mono text-sm"
-            />
-          </div>
-
-          {/* Variable Product Fields */}
-          {formData.type === "variable" && (
-            <div className="space-y-4 border p-4 rounded-lg bg-muted/20">
-              <h3 className="font-semibold text-sm">Variants</h3>
-
-              {/* Add Variant Inline Form */}
-              <div className="grid grid-cols-4 gap-2">
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">
-                    Variant (e.g. Red/L) <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={newVariant.name}
-                    onChange={(e) =>
-                      setNewVariant({ ...newVariant, name: e.target.value })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">
-                    SKU <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={newVariant.sku}
-                    onChange={(e) =>
-                      setNewVariant({ ...newVariant, sku: e.target.value })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="col-span-2 space-y-1">
-                  <Label className="text-xs">
-                    Barcode <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newVariant.barcode}
-                      onChange={(e) =>
-                        setNewVariant({
-                          ...newVariant,
-                          barcode: e.target.value,
-                        })
+            {/* Location (only on create) */}
+            {!productToEdit && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="typo-semibold-14">Location</Label>
+                  {canChooseLocation ? (
+                    <Select
+                      value={formData.locationId}
+                      onValueChange={(val) =>
+                        setFormData({ ...formData, locationId: val })
                       }
-                      className="h-8 text-xs"
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locationOptions.length === 0 && (
+                          <SelectItem value="no-locations" disabled>
+                            No locations available
+                          </SelectItem>
+                        )}
+                        {locationOptions.map((loc) => (
+                          <SelectItem key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      value={
+                        locationOptions.find(
+                          (loc) => loc.id === formData.locationId,
+                        )?.name ||
+                        currentLocation?.name ||
+                        ""
+                      }
+                      disabled
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label className="typo-semibold-14">Product Image</Label>
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${
+                  formData.image
+                    ? "border-chart-1 bg-chart-1/5"
+                    : "border-border hover:bg-muted/30 hover:border-chart-1/50"
+                }`}
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) {
+                      setFormData({
+                        ...formData,
+                        image: file,
+                      });
+                    }
+                  };
+                  input.click();
+                }}
+              >
+                {formData.image ? (
+                  <div className="relative w-full">
+                    <ServerImage
+                      src={
+                        formData.image instanceof File
+                          ? URL.createObjectURL(formData.image)
+                          : (formData.image as string)
+                      }
+                      alt="Product preview"
+                      width={400}
+                      height={192}
+                      className="max-h-48 mx-auto rounded-lg object-cover"
+                      unoptimized
                     />
                     <Button
-                      type="button"
-                      variant="outline"
-                      className="h-8 px-2"
-                      onClick={() =>
-                        setNewVariant({
-                          ...newVariant,
-                          barcode: generateBarcodeValue(),
-                        })
-                      }
-                      title="Generate barcode"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFormData({ ...formData, image: undefined });
+                      }}
                     >
-                      <Wand2 className="h-3.5 w-3.5" />
+                      Remove
                     </Button>
                   </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-2 items-end">
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">Cost</Label>
-                  <Input
-                    type="number"
-                    value={newVariant.costPrice}
-                    onChange={(e) =>
-                      setNewVariant({
-                        ...newVariant,
-                        costPrice: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">Price</Label>
-                  <Input
-                    type="number"
-                    value={newVariant.price}
-                    onChange={(e) =>
-                      setNewVariant({
-                        ...newVariant,
-                        price: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs">Stock</Label>
-                  <Input
-                    type="number"
-                    value={newVariant.stockQuantity}
-                    onChange={(e) =>
-                      setNewVariant({
-                        ...newVariant,
-                        stockQuantity: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <Button
-                    onClick={addVariant}
-                    size="sm"
-                    className="w-full h-8 bg-primary"
-                  >
-                    Add
-                  </Button>
-                </div>
-              </div>
-
-              {/* Variants List */}
-              <div className="space-y-2">
-                {formData.variants.length === 0 && (
-                  <p className="text-muted-foreground text-xs italic">
-                    No variants added.
-                  </p>
-                )}
-                {fieldErrors.variants?.[0] && (
-                  <p className="text-xs text-red-500">
-                    {fieldErrors.variants[0]}
-                  </p>
-                )}
-                {formData.variants.map((variant) => (
-                  <div
-                    key={variant.id}
-                    className="flex items-center justify-between p-2 bg-card border rounded text-sm"
-                  >
-                    <div className="grid grid-cols-6 gap-4 flex-1">
-                      <span className="font-medium truncate">
-                        {variant.name}
-                      </span>
-                      <span className="text-muted-foreground truncate">
-                        {variant.sku}
-                      </span>
-                      <span className="text-muted-foreground truncate">
-                        {variant.barcode || "—"}
-                      </span>
-                      <span>${variant.price}</span>
-                      <span className="text-muted-foreground">
-                        Cost: ${variant.costPrice ?? 0}
-                      </span>
-                      <span>Qty: {variant.stockQuantity}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground"
-                        onClick={() =>
-                          setNewVariant({
-                            name: `${variant.name} Copy`,
-                            sku: "",
-                            price: variant.price,
-                            costPrice: variant.costPrice || 0,
-                            barcode: variant.barcode || "",
-                            stockQuantity: variant.stockQuantity || 0,
-                          })
-                        }
-                      >
-                        <CopyPlus className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-destructive"
-                        onClick={() => removeVariant(variant.id)}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Common Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="minStockLevel" className="typo-semibold-14">
-                Min Stock Level
-              </Label>
-              <Input
-                id="minStockLevel"
-                type="number"
-                placeholder="0"
-                value={formData.minStockLevel ?? ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    minStockLevel:
-                      e.target.value === ""
-                        ? undefined
-                        : parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status" className="typo-semibold-14">
-                {t("fields.status")}
-              </Label>
-              <Select
-                value={formData.status}
-                onValueChange={(val: "active" | "inactive") =>
-                  setFormData({ ...formData, status: val })
-                }
-              >
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">{t("fields.active")}</SelectItem>
-                  <SelectItem value="inactive">
-                    {t("fields.inactive")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Location (only on create) */}
-          {!productToEdit && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="typo-semibold-14">Location</Label>
-                {canChooseLocation ? (
-                  <Select
-                    value={formData.locationId}
-                    onValueChange={(val) =>
-                      setFormData({ ...formData, locationId: val })
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {locationOptions.length === 0 && (
-                        <SelectItem value="no-locations" disabled>
-                          No locations available
-                        </SelectItem>
-                      )}
-                      {locationOptions.map((loc) => (
-                        <SelectItem key={loc.id} value={loc.id}>
-                          {loc.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
                 ) : (
-                  <Input
-                    value={
-                      locationOptions.find(
-                        (loc) => loc.id === formData.locationId,
-                      )?.name ||
-                      currentLocation?.name ||
-                      ""
-                    }
-                    disabled
-                  />
+                  <>
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <Upload className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <p className="typo-semibold-14 text-foreground">
+                      {t("fields.imageDrag", "Click to upload image")}
+                    </p>
+                  </>
                 )}
               </div>
             </div>
-          )}
-
-          {/* Image Upload */}
-          <div className="space-y-2">
-            <Label className="typo-semibold-14">Product Image</Label>
-            <div
-              className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${
-                formData.image
-                  ? "border-chart-1 bg-chart-1/5"
-                  : "border-border hover:bg-muted/30 hover:border-chart-1/50"
-              }`}
-              onClick={() => {
-                const input = document.createElement("input");
-                input.type = "file";
-                input.accept = "image/*";
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) {
-                    setFormData({
-                      ...formData,
-                      image: file,
-                    });
-                  }
-                };
-                input.click();
-              }}
-            >
-              {formData.image ? (
-                <div className="relative w-full">
-                  <ServerImage
-                    src={
-                      formData.image instanceof File
-                        ? URL.createObjectURL(formData.image)
-                        : (formData.image as string)
-                    }
-                    alt="Product preview"
-                    width={400}
-                    height={192}
-                    className="max-h-48 mx-auto rounded-lg object-cover"
-                    unoptimized
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFormData({ ...formData, image: undefined });
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <Upload className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <p className="typo-semibold-14 text-foreground">
-                    {t("fields.imageDrag", "Click to upload image")}
-                  </p>
-                </>
-              )}
-            </div>
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="typo-semibold-14"
-          >
-            {t("actions.cancel")}
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className=" bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
-          >
-            {isSaving ? t("actions.saving") : t("actions.save")}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="typo-semibold-14"
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className=" bg-chart-1 hover:bg-chart-1/90 text-primary-foreground typo-semibold-14"
+            >
+              {isSaving ? t("actions.saving") : t("actions.save")}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       <CategoryFormModal

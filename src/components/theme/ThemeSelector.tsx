@@ -44,7 +44,7 @@ export function ThemeSelector({ className }: { className?: string }) {
         <DropdownMenuSeparator />
 
         {/* Light/Dark Mode */}
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+        <DropdownMenuLabel className="text-muted-foreground typo-regular-12">
           Mode
         </DropdownMenuLabel>
         <DropdownMenuItem onClick={() => setTheme("light")}>
@@ -66,7 +66,7 @@ export function ThemeSelector({ className }: { className?: string }) {
         <DropdownMenuSeparator />
 
         {/* Color Themes */}
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+        <DropdownMenuLabel className="text-muted-foreground typo-regular-12">
           Color Theme
         </DropdownMenuLabel>
         {availableThemes.map((themeName) => (

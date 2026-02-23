@@ -257,7 +257,7 @@ export function CustomerSearchCombobox({
             allowOpenOnFocusRef.current = false;
           }}
           onKeyDown={handleKeyDown}
-          className="pl-11 pr-10 h-11 font-medium"
+          className="pl-11 pr-10 h-11 typo-medium-14"
         />
         {search && (
           <Button
@@ -298,26 +298,26 @@ export function CustomerSearchCombobox({
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
                   <div className="min-w-0 flex-1 text-left">
-                    <p className="text-sm font-semibold text-foreground truncate">
+                    <p className="text-foreground truncate typo-semibold-14">
                       {customer.name}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    <p className="text-muted-foreground truncate mt-0.5 typo-regular-12">
                       {customer.phone}
                     </p>
                   </div>
                   {customer.loyaltyPoints > 0 && (
-                    <div className="text-xs font-medium text-amber-600 shrink-0">
+                    <div className="text-amber-600 shrink-0 typo-medium-12">
                       {customer.loyaltyPoints} pts
                     </div>
                   )}
                 </Button>
               ))
             ) : (
-              <div className="px-4 py-3 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-3 text-center text-muted-foreground typo-regular-14">
                 {search.trim() ? (
                   <div className="flex flex-col items-center gap-2">
                     <span>No customer found.</span>
-                    <span className="text-xs opacity-70">
+                    <span className="opacity-70 typo-regular-12">
                       Press Enter to create new
                     </span>
                   </div>
@@ -330,7 +330,7 @@ export function CustomerSearchCombobox({
             )}
 
             {isLoading && customers.length > 0 && (
-              <div className="px-4 py-2 text-center text-xs text-muted-foreground">
+              <div className="px-4 py-2 text-center text-muted-foreground typo-regular-12">
                 Loading more...
               </div>
             )}
@@ -357,7 +357,7 @@ export function CustomerSearchCombobox({
                 }}
               >
                 <Plus size={16} className="mr-2" />
-                <span className="font-semibold text-sm">
+                <span className="typo-semibold-14">
                   Create new &quot;{search}&quot;
                 </span>
               </Button>

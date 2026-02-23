@@ -172,7 +172,7 @@ export function MemberSearchView({
                 >
                   <div className="text-left">
                     <div className="typo-bold-14 text-foreground">{c.name}</div>
-                    <div className="typo-regular-12 text-muted-foreground font-normal">
+                    <div className="typo-regular-12 text-muted-foreground typo-regular-14">
                       {c.phone}
                     </div>
                   </div>
@@ -182,11 +182,11 @@ export function MemberSearchView({
                 </Button>
               ))
             ) : query ? (
-              <div className="text-center py-8 text-muted-foreground text-sm">
+              <div className="text-center py-8 text-muted-foreground typo-regular-14">
                 {t("customer.noCustomersFound", "No customers found.")}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground text-sm">
+              <div className="text-center py-8 text-muted-foreground typo-regular-14">
                 {t("customer.typeToSearch", "Type above to search...")}
               </div>
             )}

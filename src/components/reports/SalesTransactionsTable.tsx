@@ -70,7 +70,7 @@ export function SalesTransactionsTable({
             ) : (
               sales?.map((sale) => (
                 <TableRow key={sale.id}>
-                  <TableCell className="font-medium">
+                  <TableCell className="typo-medium-14">
                     {sale.invoiceNo}
                   </TableCell>
                   <TableCell>
@@ -82,7 +82,7 @@ export function SalesTransactionsTable({
                     {sale.lines?.length || 0} items
                   </TableCell>
                   <TableCell>{sale.payments?.[0]?.method || "Cash"}</TableCell>
-                  <TableCell className="text-right font-bold">
+                  <TableCell className="text-right typo-bold-14">
                     ${Number(sale.total || 0).toFixed(2)}
                   </TableCell>
                 </TableRow>

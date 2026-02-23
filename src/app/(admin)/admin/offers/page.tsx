@@ -203,13 +203,12 @@ export default function OffersPage() {
                       {getOfferIcon(offer.type)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-base leading-tight mb-1 line-clamp-2">
+                      <h3 className="leading-tight mb-1 line-clamp-2 typo-bold-16">
                         {offer.name}
                       </h3>
                       <Badge
                         variant="secondary"
-                        className={`border-none rounded-sm px-2 py-0.5 h-auto font-normal text-xs ${
-                          offer.status === "active"
+                        className={`border-none rounded-sm px-2 py-0.5 h-auto ${ offer.status === typo-regular-12"active"
                             ? "bg-green-100 text-green-700 hover:bg-green-100/80"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-100/80"
                         }`}
@@ -222,34 +221,34 @@ export default function OffersPage() {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
+                <p className="text-muted-foreground line-clamp-2 min-h-10 typo-regular-14">
                   {offer.description}
                 </p>
 
                 {/* Details */}
                 <div className="space-y-2 pt-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typo-regular-14">
                     <span className="text-muted-foreground">
                       {t("fields.type", "Type")}:
                     </span>
-                    <span className="font-medium text-foreground capitalize">
+                    <span className="text-foreground capitalize typo-medium-14">
                       {offer.type === "buy_x_get_y" ? "Bogo" : offer.type}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typo-regular-14">
                     <span className="text-muted-foreground">
                       {offer.type === "fixed"
                         ? t("fields.discountAmount", "Discount")
                         : t("fields.discountValue", "Discount")}
                       :
                     </span>
-                    <span className="font-bold text-green-600">
+                    <span className="text-green-600 typo-bold-14">
                       {getOfferValueDisplay(offer)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typo-regular-14">
                     <span className="text-muted-foreground">Valid Until:</span>
-                    <span className="font-medium text-foreground">
+                    <span className="text-foreground typo-medium-14">
                       {formatDate(offer.endDate)}
                     </span>
                   </div>
@@ -307,7 +306,7 @@ export default function OffersPage() {
                 />
               </PaginationItem>
               <PaginationItem>
-                <span className="text-sm font-medium text-muted-foreground px-4">
+                <span className="text-muted-foreground px-4 typo-medium-14">
                   Page {meta.page} of {meta.totalPages}
                 </span>
               </PaginationItem>

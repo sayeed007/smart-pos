@@ -59,7 +59,7 @@ export function SalesByCategoryChart({ data }: SalesByCategoryChartProps) {
             return (
             <div
               key={entry.name}
-              className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase"
+              className="flex items-center gap-2 text-gray-500 uppercase typo-bold-12"
             >
               <div
                 className="w-3 h-3 rounded-full"
@@ -68,7 +68,7 @@ export function SalesByCategoryChart({ data }: SalesByCategoryChartProps) {
                 }}
               ></div>
               {entry.name}
-              <span className="text-[11px] font-semibold text-gray-400">
+              <span className="text-[11px] text-gray-400 typo-semibold-14">
                 {percent.toFixed(1)}%
               </span>
             </div>

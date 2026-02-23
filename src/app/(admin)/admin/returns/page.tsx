@@ -199,7 +199,7 @@ export default function ReturnsPage() {
           </PaginationItem>
 
           <PaginationItem>
-            <span className="text-sm font-medium text-muted-foreground px-4">
+            <span className="text-muted-foreground px-4 typo-medium-14">
               {t("page", {
                 current: returnsData?.meta?.page || 1,
                 total: returnsData?.meta?.totalPages || 1,

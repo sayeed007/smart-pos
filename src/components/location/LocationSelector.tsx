@@ -41,7 +41,7 @@ export function LocationSelector({
         <SelectTrigger className="h-9 border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg shadow-sm transition-all w-full">
           <div className="flex items-center gap-2 truncate">
             <MapPin size={16} className="shrink-0" />
-            <span className="truncate text-xs font-medium">
+            <span className="truncate typo-medium-12">
               {currentLocation.name}
             </span>
           </div>

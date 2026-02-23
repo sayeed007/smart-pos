@@ -82,7 +82,7 @@ export function CheckoutView({
           <span className="typo-semibold-12 text-muted-foreground uppercase tracking-widest">
             {t("checkout.totalToPay", "Total to Pay")}
           </span>
-          <span className="text-3xl font-bold text-foreground mt-1">
+          <span className="text-foreground mt-1 typo-bold-30">
             {currencySymbol}
             {totalAmount.toFixed(2)}
           </span>

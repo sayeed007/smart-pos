@@ -140,7 +140,7 @@ export function InventoryLedger({
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-60 justify-start text-left font-normal",
+                  "w-60 justify-start text-left typo-regular-14",
                   !date && "text-muted-foreground",
                 )}
               >
@@ -225,7 +225,7 @@ export function InventoryLedger({
                   filteredTransactions.map((tx) => {
                     return (
                       <TableRow key={tx.id}>
-                        <TableCell className="font-medium text-xs text-muted-foreground whitespace-nowrap">
+                        <TableCell className="text-muted-foreground whitespace-nowrap typo-medium-12">
                           {format(
                             new Date(
                               tx.createdAt || tx.timestamp || new Date(),
@@ -236,23 +236,23 @@ export function InventoryLedger({
                         <TableCell>{getTypeBadge(tx.type)}</TableCell>
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-semibold text-sm">
+                            <span className="typo-semibold-14">
                               {tx.product?.name || t("messages.unknownProduct")}
                             </span>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground typo-regular-12">
                               {tx.product?.sku || "N/A"}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm">
+                        <TableCell className="typo-regular-14">
                           {locationName}
                         </TableCell>
                         <TableCell>
                           <span
                             className={
                               tx.type === "IN" || tx.type === "RETURN"
-                                ? "text-green-600 font-bold"
-                                : "text-red-600 font-bold"
+                                ? "text-green-600 typo-bold-14"
+                                : "text-red-600 typo-bold-14"
                             }
                           >
                             {tx.type === "OUT" ? "-" : "+"}
@@ -260,16 +260,16 @@ export function InventoryLedger({
                           </span>
                         </TableCell>
                         <TableCell>
-                          <div className="flex flex-col text-sm">
+                          <div className="flex flex-col typo-regular-14">
                             <span>{tx.reason}</span>
                             {tx.referenceId && (
-                              <span className="text-xs text-muted-foreground font-mono">
+                              <span className="text-muted-foreground typo-regular-12">
                                 {tx.referenceId}
                               </span>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-muted-foreground typo-regular-14">
                           {tx.performedBy}
                         </TableCell>
                       </TableRow>
@@ -307,7 +307,7 @@ export function InventoryLedger({
                       />
                     </PaginationItem>
                     <PaginationItem>
-                      <span className="text-sm font-medium text-muted-foreground px-4">
+                      <span className="text-muted-foreground px-4 typo-medium-14">
                         Page {meta.page} of {meta.totalPages}
                       </span>
                     </PaginationItem>

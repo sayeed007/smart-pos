@@ -125,8 +125,8 @@ export function Sidebar({
                   ? "justify-center w-12 h-12 mx-auto rounded-md"
                   : "gap-3 px-4 py-3 rounded-md mx-2",
                 isActive
-                  ? "bg-primary/10 text-primary font-bold shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground font-medium",
+                  ? "bg-primary/10 text-primary shadow-sm typo-bold-14"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground typo-medium-14",
               )}
               title={collapsed ? item.name : undefined}
             >
@@ -141,7 +141,7 @@ export function Sidebar({
                 {item.icon}
               </span>
               {!collapsed && (
-                <span className="text-sm animate-in fade-in duration-300 whitespace-nowrap">
+                <span className="animate-in fade-in duration-300 whitespace-nowrap typo-regular-14">
                   {item.name}
                 </span>
               )}
@@ -167,15 +167,15 @@ export function Sidebar({
             collapsed ? "justify-center" : "px-2",
           )}
         >
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-xs shrink-0 border border-primary/20 shadow-sm">
+          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20 shadow-sm typo-regular-12 typo-bold-14">
             {user?.name?.charAt(0) || "U"}
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-foreground truncate leading-none mb-1">
+              <p className="text-foreground truncate leading-none mb-1 typo-bold-14">
                 {user?.name || "User"}
               </p>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate leading-none">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate leading-none typo-bold-14">
                 {typeof user?.role === "object"
                   ? (user.role as { name: string }).name
                   : user?.role || t("role")}

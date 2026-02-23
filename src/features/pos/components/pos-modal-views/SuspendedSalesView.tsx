@@ -49,7 +49,7 @@ export function SuspendedSalesView({ onClose }: SuspendedSalesViewProps) {
 
   return (
     <div className="bg-card rounded-3xl p-6 shadow-2xl min-w-125 max-h-[80vh] flex flex-col">
-      <h3 className="text-xl font-black text-foreground tracking-tight mb-4 text-center">
+      <h3 className="text-foreground tracking-tight mb-4 text-center typo-regular-20 typo-bold-14">
         {t("suspended.title", "Suspended Sales")}
       </h3>
       <div className="flex-1 overflow-y-auto space-y-3 p-1">
@@ -64,14 +64,14 @@ export function SuspendedSalesView({ onClose }: SuspendedSalesViewProps) {
               className="border border-border rounded-xl p-4 flex justify-between items-center bg-muted/50 hover:bg-muted/80 transition-colors"
             >
               <div>
-                <div className="font-bold text-sm text-foreground">
+                <div className="text-foreground typo-bold-14">
                   {t("suspended.sale", "Sale")} #{sale.id.substr(0, 8)}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground typo-regular-12">
                   {formatDistanceToNow(new Date(sale.createdAt))} ago &bull;{" "}
                   {sale.items.length} {t("suspended.items", "items")}
                 </div>
-                <div className="font-mono text-emerald-600 font-bold mt-1">
+                <div className="text-emerald-600 mt-1 typo-bold-14">
                   ${sale.total.toFixed(2)}
                 </div>
               </div>
