@@ -39,7 +39,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ServerImage } from "@/components/ui/server-image";
-import { ProcessReturnModal } from "@/components/sales/ProcessReturnModal";
+import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { useInventoryStore } from "@/features/inventory/store/inventory-store";
 import { toast } from "sonner";
@@ -105,18 +105,19 @@ export default function SalesHistoryPage() {
   };
 
   const handleReturnConfirm = (
-    saleId: string,
-    items: { itemId: string; quantity: number }[],
-    reason: string,
-    restock: boolean,
+    data: Partial<import("@/types").Return> & { restock?: boolean },
   ) => {
     // In a real app, this would be an API call to create a Return entity
+    const items = data.items || [];
+    const reason = data.reason || "";
+    const restock = data.restock || false;
+    const saleId = data.saleId || "";
 
     if (restock) {
       // Optimistically update inventory if requested
       const transactions = items.map((i) => ({
-        id: `ret-${Date.now()}-${i.itemId}`,
-        productId: i.itemId,
+        id: `ret-${Date.now()}-${i.id}`,
+        productId: i.id,
         type: "IN" as const,
         quantity: i.quantity,
         reason: `Return: ${reason}`,
@@ -408,12 +409,12 @@ export default function SalesHistoryPage() {
         </CardContent>
       </Card>
 
-      <ProcessReturnModal
+      <ReturnFormModal
         key={returnSale?.id}
         isOpen={!!returnSale}
         onClose={() => setReturnSale(null)}
-        sale={returnSale}
-        onConfirm={handleReturnConfirm}
+        initialInvoiceNo={returnSale?.invoiceNo}
+        onSubmit={handleReturnConfirm}
       />
 
       <InvoiceDetailsModal

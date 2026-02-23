@@ -69,6 +69,7 @@ interface ReturnFormModalProps {
   onClose: () => void;
   onSubmit: (data: Partial<Return> & { restock?: boolean }) => void;
   initialData?: Return | null;
+  initialInvoiceNo?: string;
 }
 
 export function ReturnFormModal({
@@ -76,6 +77,7 @@ export function ReturnFormModal({
   onClose,
   onSubmit,
   initialData,
+  initialInvoiceNo,
 }: ReturnFormModalProps) {
   const { t } = useTranslation(["returns", "common"]);
   const [saleSearch, setSaleSearch] = useState("");
@@ -95,6 +97,8 @@ export function ReturnFormModal({
     },
   );
 
+  const isEdit = !!initialData;
+
   useEffect(() => {
     if (initialData) {
       setStatus(initialData.status);
@@ -109,16 +113,31 @@ export function ReturnFormModal({
         }, {}),
       );
     } else {
-      setSaleSearch("");
+      setSaleSearch(initialInvoiceNo || "");
       setSelectedSale(null);
       setReturnQuantities({});
       setReason("");
       setStatus("Pending");
       setRestock(true);
     }
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, initialInvoiceNo]);
 
-  const isEdit = !!initialData;
+  useEffect(() => {
+    if (
+      !isEdit &&
+      initialInvoiceNo &&
+      !selectedSale &&
+      refundableSales &&
+      refundableSales.length > 0
+    ) {
+      const match = refundableSales.find(
+        (s) => s.invoiceNo === initialInvoiceNo,
+      );
+      if (match) {
+        setSelectedSale(match);
+      }
+    }
+  }, [initialInvoiceNo, selectedSale, refundableSales, isEdit]);
 
   const returnableLines: RefundableSaleLine[] = useMemo(() => {
     if (isEdit && initialData) {
@@ -468,9 +487,7 @@ export function ReturnFormModal({
               <span className="typo-semibold-14">
                 {t("form.totalRefundAmount", "Total Refund Amount")}
               </span>
-              <span className="typo-bold-20">
-                ${refundAmount.toFixed(2)}
-              </span>
+              <span className="typo-bold-20">${refundAmount.toFixed(2)}</span>
             </div>
 
             <DialogFooter>
