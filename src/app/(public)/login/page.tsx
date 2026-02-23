@@ -87,7 +87,7 @@ export default function LoginPage() {
           <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl skew-y-3 border border-white/30">
             <Smartphone size={48} className="text-white drop-shadow-md" />
           </div>
-          <h1 className="text-6xl mb-4 tracking-tight drop-shadow-lg typo-bold-14">
+          <h1 className="mb-4 tracking-tight drop-shadow-lg typo-bold-60">
             Aura POS
           </h1>
           <p className="text-red-100 max-w-md mx-auto leading-relaxed typo-medium-20">

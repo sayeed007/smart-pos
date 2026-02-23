@@ -478,4 +478,204 @@
     letter-spacing: 0px !important;
   }
 
+  /* Extra Large Sizes */
+  /* 36px Size */
+  .typo-bold-36 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 36px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-36 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 36px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-36 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 36px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-36 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 36px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  /* 48px Size */
+  .typo-bold-48 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 48px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-48 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 48px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-48 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 48px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-48 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 48px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  /* 60px Size */
+  .typo-bold-60 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 60px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-60 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 60px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-60 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 60px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-60 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 60px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  /* 72px Size */
+  .typo-bold-72 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 72px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-72 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 72px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-72 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 72px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-72 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 72px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  /* 96px Size */
+  .typo-bold-96 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 96px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-96 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 96px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-96 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 96px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-96 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 96px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  /* 128px Size */
+  .typo-bold-128 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    font-size: 128px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-semibold-128 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    font-size: 128px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-medium-128 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 500 !important;
+    font-style: normal;
+    font-size: 128px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+  .typo-regular-128 {
+    font-family: var(--font-inter), sans-serif !important;
+    font-weight: 400 !important;
+    font-style: normal;
+    font-size: 128px !important;
+    line-height: 100% !important;
+    letter-spacing: 0px !important;
+  }
+
 }
