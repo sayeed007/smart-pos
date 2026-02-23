@@ -7,7 +7,8 @@
     "totalSales": "মোট বিক্রয়",
     "totalProducts": "মোট পণ্য",
     "customers": "গ্রাহকগণ",
-    "lowStock": "কম স্টক"
+    "lowStock": "কম স্টক",
+    "totalOrders": "[EN] Total Orders"
   },
   "charts": {
     "revenueOverview": "আয়ের সারসংক্ষেপ",
@@ -18,12 +19,16 @@
     "last30days": "গত ৩০ দিন",
     "topCategories": "শীর্ষ বিভাগ",
     "lowStockAlert": "স্বল্প স্টক সতর্কতা",
-    "paymentMethods": "পেমেন্ট পদ্ধতি"
+    "paymentMethods": "পেমেন্ট পদ্ধতি",
+    "selectedRange": "[EN] Selected range"
   },
   "units": "ইউনিট",
   "sales": {
     "items": "আইটেম",
     "noSales": "এখনও কোনো বিক্রয় নেই",
     "viewAll": "সব দেখুন"
-  }
+  },
+  "card": "[EN] Card",
+  "digital_wallet": "[EN] Digital Wallet",
+  "cash": "[EN] Cash"
 }
