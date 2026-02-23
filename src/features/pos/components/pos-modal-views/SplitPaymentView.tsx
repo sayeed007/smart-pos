@@ -57,7 +57,7 @@ export function SplitPaymentView({
           {t("checkout.remainingDue", "Remaining Due")}
         </span>
         <span
-          className={`${ remainingDue > 0 ? typo-regular-24"text-red-500" : "text-green-500" } typo-bold-14`}
+          className={`${remainingDue > 0 ? "text-red-500" : "text-green-500"} typo-bold-14 typo-regular-24`}
         >
           ${remainingDue.toFixed(2)}
         </span>

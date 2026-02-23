@@ -79,7 +79,9 @@ export default function OffersPage() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(getErrorMessage(error, t("common:error", "An error occurred")));
+      toast.error(
+        getErrorMessage(error, t("common:error", "An error occurred")),
+      );
       throw error;
     }
   };
@@ -208,7 +210,8 @@ export default function OffersPage() {
                       </h3>
                       <Badge
                         variant="secondary"
-                        className={`border-none rounded-sm px-2 py-0.5 h-auto ${ offer.status === typo-regular-12"active"
+                        className={`border-none rounded-sm px-2 py-0.5 h-auto typo-regular-12 ${
+                          offer.status === "active"
                             ? "bg-green-100 text-green-700 hover:bg-green-100/80"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-100/80"
                         }`}

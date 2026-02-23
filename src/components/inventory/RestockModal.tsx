@@ -74,7 +74,9 @@ export function RestockModal({
             <DialogTitle className="typo-bold-20">
               {t("modal.title", "Restock Product")}
             </DialogTitle>
-            <p className="text-muted-foreground typo-regular-14">{product.name}</p>
+            <p className="text-muted-foreground typo-regular-14">
+              {product.name}
+            </p>
           </div>
         </DialogHeader>
 
@@ -124,8 +126,7 @@ export function RestockModal({
               {t("modal.currentStock", "Current Stock")}:
             </span>
             <span
-              className={`text-right ${ isLowStock ? typo-bold-14"text-destructive" : "text-emerald-600"
-              }`}
+              className={`text-right typo-bold-14 ${isLowStock ? "text-destructive" : "text-emerald-600"}`}
             >
               {product.stockQuantity} {t("alerts.units", "units")}
             </span>

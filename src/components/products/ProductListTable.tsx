@@ -494,7 +494,9 @@ export function ProductListTable({
                     {locationData!.map((loc, index) => (
                       <div
                         key={loc.locationId}
-                        className={`flex items-center justify-between gap-6 ${ index !== locationData!.length - 1 ? typo-regular-12"pb-1.5 border-b border-border/50"
+                        className={`flex items-center justify-between gap-6 typo-regular-12 ${
+                          index !== locationData!.length - 1
+                            ? "pb-1.5 border-b border-border/50"
                             : ""
                         }`}
                       >
@@ -521,7 +523,8 @@ export function ProductListTable({
         const status = getValue() as string;
         return (
           <span
-            className={`inline-flex items-center px-2 py-1 rounded-full ${ status === typo-medium-12"inactive"
+            className={`inline-flex items-center px-2 py-1 rounded-full typo-medium-12 ${
+              status === "inactive"
                 ? "bg-muted text-muted-foreground ring-1 ring-inset ring-border"
                 : "bg-chart-2/10 text-chart-2 ring-1 ring-inset ring-chart-2/20"
             }`}
@@ -806,7 +809,9 @@ export function ProductListTable({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground typo-regular-14">Copies</span>
+                  <span className="text-muted-foreground typo-regular-14">
+                    Copies
+                  </span>
                   <Input
                     type="number"
                     min={1}
