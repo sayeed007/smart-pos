@@ -3,7 +3,8 @@
 import { CartItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { useTranslation } from "react-i18next";
 
 interface CartItemCardProps {
@@ -30,17 +31,11 @@ export function CartItemCard({
             ${item.sellingPrice.toFixed(2)} {t("cart.each")}
           </p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-3 right-3 h-6 w-6 text-muted-foreground/40 hover:text-destructive hover:bg-transparent"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-        >
-          <Trash2 size={16} />
-        </Button>
+        <DeleteButton
+          className="absolute top-3 right-3 h-6 w-6 hover:bg-transparent"
+          onClick={onRemove}
+          label="Remove item"
+        />
       </div>
 
       <div className="flex items-center justify-between">

@@ -28,13 +28,13 @@ import {
   Loader2,
   Plus,
   Shield,
-  Trash2,
   User as UserIcon,
   Users,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 export default function UsersPage() {
   const [search, setSearch] = useState("");
@@ -237,14 +237,10 @@ export default function UsersPage() {
                         >
                           <Edit size={16} />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                        <DeleteButton
                           onClick={() => handleDelete(user)}
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
+                          label="Delete user"
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

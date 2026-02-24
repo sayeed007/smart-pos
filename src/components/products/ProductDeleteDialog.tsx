@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Trash2 } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { useTranslation, Trans } from "react-i18next";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
@@ -40,7 +40,10 @@ export function ProductDeleteDialog({
     } catch (error) {
       console.error("Failed to delete", error);
       toast.error(
-        getErrorMessage(error, t("toasts.deleteError", "Failed to delete product")),
+        getErrorMessage(
+          error,
+          t("toasts.deleteError", "Failed to delete product"),
+        ),
       );
     } finally {
       setIsDeleting(false);
@@ -50,15 +53,7 @@ export function ProductDeleteDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        {trigger || <DeleteButton onClick={() => {}} label="Delete product" />}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -68,7 +63,9 @@ export function ProductDeleteDialog({
               i18nKey="description.delete"
               ns="products"
               values={{ name: product.name }}
-              components={{ 1: <span className="text-foreground typo-bold-14" /> }}
+              components={{
+                1: <span className="text-foreground typo-bold-14" />,
+              }}
             />
           </DialogDescription>
         </DialogHeader>

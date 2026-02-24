@@ -10,9 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Location } from "@/types";
-import { Edit, Loader2, MapPin, Trash2 } from "lucide-react";
+import { Edit, Loader2, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 interface LocationListTableProps {
   locations: Location[] | undefined;
@@ -120,14 +121,10 @@ export function LocationListTable({
                       >
                         <Edit size={16} />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
+                      <DeleteButton
                         onClick={() => onDelete(location)}
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
+                        label="Delete location"
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

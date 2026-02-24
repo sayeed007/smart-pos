@@ -10,8 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Customer } from "@/types";
-import { Edit, Loader2, Trash2, Users } from "lucide-react";
+import { Edit, Loader2, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 interface CustomerListTableProps {
   customers: Customer[] | undefined;
@@ -115,14 +116,10 @@ export function CustomerListTable({
                       >
                         <Edit size={16} />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
+                      <DeleteButton
                         onClick={() => onDelete(customer)}
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-colors"
-                      >
-                        <Trash2 size={16} color="red" />
-                      </Button>
+                        label="Delete customer"
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

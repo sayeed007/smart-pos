@@ -24,7 +24,8 @@ import { useCreateTransfer, useShipTransfer } from "@/hooks/api/inventory";
 import { useLocations } from "@/hooks/api/locations";
 import { useProducts } from "@/hooks/api/products";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Minus, Package, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Minus, Package, Plus } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, Resolver, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -614,14 +615,11 @@ export function CreateTransferDialog({
                     </div>
 
                     <div className="w-10 flex justify-end">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      <DeleteButton
+                        size="sm"
                         onClick={() => handleRemoveItem(idx)}
-                      >
-                        <Trash2 size={16} color="red" />
-                      </Button>
+                        label="Remove item"
+                      />
                     </div>
                   </div>
                 ))

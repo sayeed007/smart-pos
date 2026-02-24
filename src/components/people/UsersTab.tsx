@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
   Table,
@@ -20,20 +20,12 @@ import {
   useUpdateUser,
   useUsers,
 } from "@/hooks/api/users";
+import { getErrorMessage } from "@/lib/errors";
 import { UserFormValues } from "@/lib/validations/user";
 import { User, UserRole } from "@/types";
-import {
-  Edit,
-  Loader2,
-  Plus,
-  Shield,
-  Trash2,
-  User as UserIcon,
-  Users,
-} from "lucide-react";
+import { Loader2, Plus, Shield, User as UserIcon, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errors";
 import { useDebounce } from "use-debounce";
 
 import {
@@ -44,8 +36,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
+import { useTranslation } from "react-i18next";
 
 export function UsersTab() {
   const { t } = useTranslation(["users", "common"]);
@@ -73,10 +65,10 @@ export function UsersTab() {
     setIsDialogOpen(true);
   };
 
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
-    setIsDialogOpen(true);
-  };
+  // const handleEdit = (user: User) => {
+  //   setSelectedUser(user);
+  //   setIsDialogOpen(true);
+  // };
 
   const handleDelete = (user: User) => {
     setUserToDelete(user);
@@ -92,7 +84,10 @@ export function UsersTab() {
     } catch (error) {
       console.error(error);
       toast.error(
-        getErrorMessage(error, t("toasts.deleteError", "Failed to delete user")),
+        getErrorMessage(
+          error,
+          t("toasts.deleteError", "Failed to delete user"),
+        ),
       );
     }
   };
@@ -265,22 +260,10 @@ export function UsersTab() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(user)}
-                          className="h-8 w-8 text-muted-foreground hover:text-chart-1 hover:bg-chart-1/10 cursor-pointer transition-colors"
-                        >
-                          <Edit size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                        <DeleteButton
                           onClick={() => handleDelete(user)}
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
+                          label="Delete user"
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

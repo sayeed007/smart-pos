@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { useTranslation } from "react-i18next";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 
@@ -109,14 +110,11 @@ export function SplitPaymentView({
                 </span>
                 <span>${p.amount.toFixed(2)}</span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon-xs"
+              <DeleteButton
+                size="sm"
                 onClick={() => handleRemovePayment(i)}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 size={14} />
-              </Button>
+                label="Remove payment"
+              />
             </div>
           ))
         )}

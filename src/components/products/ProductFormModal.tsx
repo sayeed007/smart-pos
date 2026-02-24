@@ -20,7 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { CopyPlus, Wand2, Upload, Trash2 } from "lucide-react";
+import { CopyPlus, Wand2, Upload } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
@@ -839,14 +840,11 @@ export function ProductFormModal({
                         >
                           <CopyPlus className="w-3 h-3" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-destructive"
+                        <DeleteButton
+                          size="sm"
                           onClick={() => removeVariant(variant.id)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+                          label="Remove variant"
+                        />
                       </div>
                     </div>
                   ))}

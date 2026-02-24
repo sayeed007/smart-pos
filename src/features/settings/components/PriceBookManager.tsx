@@ -11,7 +11,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Plus, Trash2, DollarSign } from "lucide-react";
+import { Plus, DollarSign } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { generateUUID } from "@/lib/utils";
@@ -173,14 +174,10 @@ export function PriceBookManager() {
                 >
                   <DollarSign className="w-4 h-4 mr-2" /> Prices
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-destructive"
+                <DeleteButton
                   onClick={() => handleDeleteClick(book.id, book.name)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                  label="Delete price book"
+                />
               </div>
             </div>
           ))}

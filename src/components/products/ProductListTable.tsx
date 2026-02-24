@@ -15,11 +15,11 @@ import {
   Package,
   Search,
   SquarePen,
-  Trash2,
   ArrowUpDown,
   Barcode,
 } from "lucide-react";
 import { ServerImage } from "@/components/ui/server-image";
+import { DeleteButton } from "@/components/ui/delete-button";
 import { ProductDeleteDialog } from "@/components/products/ProductDeleteDialog";
 import { Category, Product } from "@/types";
 import { useTranslation } from "react-i18next";
@@ -567,13 +567,7 @@ export function ProductListTable({
                 product={product}
                 onConfirm={onDelete}
                 trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-pointer h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </Button>
+                  <DeleteButton label="Delete product" onClick={() => {}} />
                 }
               />
             )}

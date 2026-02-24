@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Return } from "@/types";
-import { Trash2 } from "lucide-react";
+import { DeleteButton } from "@/components/ui/delete-button";
 
 interface ReturnListTableProps {
   returns: Return[] | undefined;
@@ -93,14 +93,10 @@ export function ReturnListTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <DeleteButton
                       onClick={() => onDelete(ret)}
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
+                      label="Delete return"
+                    />
                   </div>
                 </TableCell>
               </TableRow>
