@@ -77,10 +77,10 @@
   },
   "returns": {
     "validation": {
-      "invalidData": "Invalid return data.",
-      "successRestocked": "Items returned and restocked to inventory.",
-      "success": "Return processed successfully.",
-      "failure": "Failed to process return. Please try again."
+      "invalidData": "রিটার্ন ডেটা সঠিক নয়।",
+      "successRestocked": "পণ্য ফেরত নিয়ে ইনভেন্টরিতে পুনরায় যোগ করা হয়েছে।",
+      "success": "রিটার্ন সফলভাবে সম্পন্ন হয়েছে।",
+      "failure": "রিটার্ন প্রক্রিয়া করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
     }
   },
   "drawer": {

@@ -5,8 +5,8 @@
   "tabs": {
     "general": "সাধারণ",
     "pricing": "মূল্য নির্ধারণ নীতি",
-    "locations": "Locations",
-    "auditLogs": "Audit Logs"
+    "locations": "লোকেশনসমূহ",
+    "auditLogs": "অডিট লগ"
   },
   "sections": {
     "store": {
@@ -40,25 +40,25 @@
       "noteMessage": "বর্তমানে ব্রাউজার প্রিন্ট ডায়ালগের উপর নির্ভরশীল। দয়া করে নিশ্চিত করুন যে আপনার সিস্টেম ডিফল্ট প্রিন্টার সঠিক ভাবে সেট করা আছে।"
     },
     "branding": {
-      "title": "Branding",
-      "logo": "Company Logo",
-      "logoPlaceholder": "No logo",
-      "uploadLogo": "Upload Logo",
-      "removeLogo": "Remove Logo",
-      "tagline": "Tagline"
+      "title": "ব্র্যান্ডিং",
+      "logo": "কোম্পানির লোগো",
+      "logoPlaceholder": "কোনো লোগো নেই",
+      "uploadLogo": "লোগো আপলোড করুন",
+      "removeLogo": "লোগো সরান",
+      "tagline": "ট্যাগলাইন"
     }
   },
   "toasts": {
     "success": "সেটিংস সফলভাবে সংরক্ষিত হয়েছে",
-    "failure": "Failed to save settings. Please try again."
+    "failure": "সেটিংস সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
   },
   "actions": {
     "save": "সেটিংস সংরক্ষণ করুন"
   },
   "validation": {
-    "currencyCode": "Currency code must be 3 letters.",
-    "taxRate": "Tax rate must be a valid non-negative number.",
-    "logoFormat": "Only PNG, JPEG, and WebP logo files are allowed.",
-    "logoSize": "Logo file must be under 5MB."
+    "currencyCode": "মুদ্রার কোড অবশ্যই ৩ অক্ষরের হতে হবে।",
+    "taxRate": "করের হার অবশ্যই একটি বৈধ শূন্য বা ধনাত্মক সংখ্যা হতে হবে।",
+    "logoFormat": "শুধুমাত্র PNG, JPEG এবং WebP ফরম্যাটের লোগো ফাইল গ্রহণযোগ্য।",
+    "logoSize": "লোগো ফাইলের আকার ৫ এমবির কম হতে হবে।"
   }
 }

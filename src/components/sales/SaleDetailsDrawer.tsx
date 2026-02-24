@@ -66,7 +66,7 @@ export function SaleDetailsDrawer({
             <Clock className="w-4 h-4 text-muted-foreground" />
             <span className="text-muted-foreground typo-regular-14">
               {sale.completedAt
-                ? format(new Date(sale.completedAt), "MMM dd, yyyy • hh:mm a")
+                ? format(new Date(sale.completedAt), "MMM dd, yyyy - hh:mm a")
                 : t("common:unknown_date", "Unknown Date")}
             </span>
           </SheetDescription>
@@ -117,7 +117,7 @@ export function SaleDetailsDrawer({
                         {line.name}
                       </span>
                       <span className="text-xs text-muted-foreground mt-1">
-                        ${Number(line.unitPrice).toFixed(2)} × {line.quantity}
+                        ${Number(line.unitPrice).toFixed(2)} x {line.quantity}
                       </span>
                     </div>
                     <div className="pt-0.5 font-semibold text-sm">
@@ -210,3 +210,4 @@ export function SaleDetailsDrawer({
     </Sheet>
   );
 }
+
