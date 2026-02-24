@@ -45,19 +45,30 @@ import {
   useReportsTopCategories,
 } from "@/hooks/api/reports";
 import { ReportsService } from "@/lib/services/backend/reports.service";
+import { useLocationStore } from "@/features/locations/store";
 
 export default function ReportsPage() {
+  const { currentLocation } = useLocationStore();
   const [date, setDate] = useState<DateRange | undefined>(() => {
     const end = new Date();
     const start = new Date();
     start.setDate(end.getDate() - 30);
     return { from: start, to: end };
   });
-  const [locationFilter, setLocationFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState(() =>
+    currentLocation.id !== "default" ? currentLocation.id : "all",
+  );
   const [salesPage, setSalesPage] = useState(1);
   const [productsPage, setProductsPage] = useState(1);
   const [exportingSales, setExportingSales] = useState(false);
   const [exportingProducts, setExportingProducts] = useState(false);
+
+  // Sync reports location filter when admin switches location in the sidebar
+  useEffect(() => {
+    setLocationFilter(
+      currentLocation.id !== "default" ? currentLocation.id : "all",
+    );
+  }, [currentLocation.id]);
 
   const { data: locations = [], isLoading: locationsLoading } = useLocations();
 

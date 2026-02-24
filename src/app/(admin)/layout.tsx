@@ -21,8 +21,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import { useTranslation } from "react-i18next";
+import { useLocations } from "@/hooks/api/locations";
+import { useLocationStore } from "@/features/locations/store";
 
 export default function AdminLayout({
   children,
@@ -34,6 +35,32 @@ export default function AdminLayout({
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation("common");
+  const hasAdminAccess =
+    user?.role === UserRole.ADMIN || user?.role === UserRole.MANAGER;
+
+  // Fetch locations globally so admin can switch from the Sidebar
+  const { data: locationsData } = useLocations();
+  const { setLocations, setLocation, currentLocation } = useLocationStore();
+
+  useEffect(() => {
+    if (
+      locationsData &&
+      Array.isArray(locationsData) &&
+      locationsData.length > 0
+    ) {
+      setLocations(locationsData);
+      // Auto-select admin's defaultLocationId if they still have the generic placeholder
+      if (user?.defaultLocationId && currentLocation.id === "default") {
+        setLocation(user.defaultLocationId);
+      }
+    }
+  }, [
+    locationsData,
+    setLocations,
+    user?.defaultLocationId,
+    currentLocation.id,
+    setLocation,
+  ]);
 
   const adminNavItems = [
     {
@@ -100,10 +127,10 @@ export default function AdminLayout({
   ];
 
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== UserRole.ADMIN)) {
+    if (!isLoading && !hasAdminAccess) {
       router.push("/login");
     }
-  }, [user, isLoading, router]);
+  }, [hasAdminAccess, isLoading, router]);
 
   if (isLoading || !user) {
     return null; // Or loader

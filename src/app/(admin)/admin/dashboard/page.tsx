@@ -29,6 +29,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useLocationStore } from "@/features/locations/store";
 
 const STATS_CONFIG = [
   {
@@ -68,6 +69,10 @@ const STATS_CONFIG = [
 
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
+  const { currentLocation } = useLocationStore();
+  const locationId =
+    currentLocation.id !== "default" ? currentLocation.id : undefined;
+
   const [date, setDate] = useState<DateRange | undefined>(() => {
     const end = new Date();
     const start = new Date();
@@ -85,12 +90,18 @@ export default function DashboardPage() {
     return { startDate: start.toISOString(), endDate: end.toISOString() };
   }, [date]);
 
-  const { data: stats } = useDashboardStats(startDate, endDate);
-  const { data: revenueData } = useRevenueChart(startDate, endDate);
-  const { data: topCategoriesData } = useTopCategories(5, startDate, endDate);
+  const { data: stats } = useDashboardStats(startDate, endDate, locationId);
+  const { data: revenueData } = useRevenueChart(startDate, endDate, locationId);
+  const { data: topCategoriesData } = useTopCategories(
+    5,
+    startDate,
+    endDate,
+    locationId,
+  );
   const { data: paymentMethodsData } = usePaymentMethodStats(
     startDate,
     endDate,
+    locationId,
   );
 
   const { data: recentSalesData } = useSales({
@@ -100,6 +111,7 @@ export default function DashboardPage() {
     sortOrder: "desc",
     startDate,
     endDate,
+    locationId,
   });
 
   const { data: products } = useLowStockProducts(5);

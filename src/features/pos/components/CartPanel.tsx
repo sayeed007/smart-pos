@@ -19,6 +19,7 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
+import { generateUUID } from "@/lib/utils";
 import { CartItemCard } from "./CartItemCard";
 
 import { CustomerSearchCombobox } from "./CustomerSearchCombobox";
@@ -112,7 +113,7 @@ export function CartPanel({ offers }: CartPanelProps) {
   const handleSuspend = async () => {
     if (cart.length === 0) return;
     try {
-      const id = crypto.randomUUID();
+      const id = await generateUUID();
       await db.suspendedSales.add({
         id,
         items: cart.map((c) => ({

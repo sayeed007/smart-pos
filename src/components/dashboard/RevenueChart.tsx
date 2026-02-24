@@ -27,8 +27,7 @@ export function RevenueChart({ data = [], className }: RevenueChartProps) {
     return date.toLocaleDateString("en-US", { weekday: "short" });
   };
 
-  // Prepare chart data with formatted dates
-  const chartData = data.map((item) => ({
+  const chartData = (data || [])?.map((item) => ({
     ...item,
     displayDate: formatDate(item.date),
   }));

@@ -29,7 +29,6 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { login } = useAuth();
   const loginMutation = useLogin();
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const isDev = process.env.NODE_ENV === "development";
   const devAdminEmail = process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL ?? "";
@@ -46,7 +45,6 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
     loginMutation.mutate(
       {
         email: values.email,
@@ -54,25 +52,62 @@ export default function LoginPage() {
         deviceInfo: "aura-web",
       },
       {
-        onSuccess: (data) => {
-          const resolvedRole = mapBackendRoleToUiRole(data.user.roles);
-
-          const user: User = {
-            id: data.user.id,
-            name: data.user.name,
-            email: data.user.email,
-            role: resolvedRole,
-            status: "active",
+        onSuccess: (userData) => {
+          const data =
+            userData &&
+            typeof userData === "object" &&
+            "data" in userData &&
+            userData.data &&
+            typeof userData.data === "object" &&
+            "user" in userData.data
+              ? userData.data
+              : userData;
+          const payload = data as {
+            user?: {
+              id?: string;
+              name?: string;
+              email?: string;
+              tenantId?: string;
+              roles?: Array<string | { name?: string | null } | null | undefined>;
+              role?: string | { name?: string | null } | null | undefined;
+            };
           };
 
-          login(user, data.user.tenantId);
+          try {
+            const normalizedRoles = Array.isArray(payload?.user?.roles)
+              ? payload.user.roles
+              : payload?.user?.role
+                ? [payload.user.role]
+                : [];
+            const resolvedRole = mapBackendRoleToUiRole(normalizedRoles);
 
-          toast.success("Logged in successfully");
+            if (
+              !payload?.user?.id ||
+              !payload.user.email ||
+              !payload.user.name ||
+              !payload.user.tenantId
+            ) {
+              throw new Error("Invalid login response: missing user details");
+            }
+
+            const user: User = {
+              id: payload.user.id,
+              name: payload.user.name,
+              email: payload.user.email,
+              role: resolvedRole,
+              status: "active",
+            };
+
+            login(user, payload.user.tenantId);
+            toast.success("Logged in successfully");
+          } catch (error) {
+            console.error(error);
+            toast.error("Login succeeded but user data was invalid");
+          }
         },
         onError: (error) => {
           console.error(error);
           toast.error("Invalid credentials");
-          setIsLoading(false);
         },
       },
     );
@@ -183,10 +218,10 @@ export default function LoginPage() {
 
               <PrimaryActionButton
                 type="submit"
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
                 className="w-full py-6 rounded-xl typo-regular-16"
               >
-                {isLoading ? (
+                {loginMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Authenticating...

@@ -129,7 +129,7 @@ function applyThemeVariables(config: ThemeConfig) {
     :root {
       /* Typography */
       ${typoCss}
-      
+
       /* Spacing */
       ${spaceCss}
 
@@ -153,6 +153,37 @@ function applyThemeVariables(config: ThemeConfig) {
       --border: ${lc.border};
       --input: ${lc.input};
       --ring: ${lc.ring};
+
+      /* Sidebar */
+      --sidebar: ${lc.sidebar ?? lc.card};
+      --sidebar-foreground: ${lc.sidebarForeground ?? lc.foreground};
+      --sidebar-primary: ${lc.sidebarPrimary ?? lc.primary};
+      --sidebar-primary-foreground: ${lc.sidebarPrimaryForeground ?? lc.primaryForeground};
+      --sidebar-accent: ${lc.sidebarAccent ?? lc.accent};
+      --sidebar-accent-foreground: ${lc.sidebarAccentForeground ?? lc.accentForeground};
+      --sidebar-border: ${lc.sidebarBorder ?? lc.border};
+      --sidebar-ring: ${lc.sidebarRing ?? lc.ring};
+
+      /* Charts */
+      --chart-1: ${lc.chart1 ?? "#f87171"};
+      --chart-2: ${lc.chart2 ?? "#60a5fa"};
+      --chart-3: ${lc.chart3 ?? "#34d399"};
+      --chart-4: ${lc.chart4 ?? "#fbbf24"};
+      --chart-5: ${lc.chart5 ?? "#a78bfa"};
+
+      /* Toast tokens */
+      --success-bg: ${lc.successBg ?? "#f0fdf4"};
+      --success-text: ${lc.successText ?? "#166534"};
+      --success-border: ${lc.successBorder ?? "#86efac"};
+      --error-bg: ${lc.errorBg ?? "#fef2f2"};
+      --error-text: ${lc.errorText ?? "#991b1b"};
+      --error-border: ${lc.errorBorder ?? "#fca5a5"};
+      --warning-bg: ${lc.warningBg ?? "#fffbeb"};
+      --warning-text: ${lc.warningText ?? "#92400e"};
+      --warning-border: ${lc.warningBorder ?? "#fcd34d"};
+      --info-bg: ${lc.infoBg ?? "#eff6ff"};
+      --info-text: ${lc.infoText ?? "#1e40af"};
+      --info-border: ${lc.infoBorder ?? "#93c5fd"};
     }
 
     .dark {
@@ -176,6 +207,37 @@ function applyThemeVariables(config: ThemeConfig) {
       --border: ${dc.border};
       --input: ${dc.input};
       --ring: ${dc.ring};
+
+      /* Sidebar */
+      --sidebar: ${dc.sidebar ?? dc.card};
+      --sidebar-foreground: ${dc.sidebarForeground ?? dc.foreground};
+      --sidebar-primary: ${dc.sidebarPrimary ?? dc.primary};
+      --sidebar-primary-foreground: ${dc.sidebarPrimaryForeground ?? dc.primaryForeground};
+      --sidebar-accent: ${dc.sidebarAccent ?? dc.accent};
+      --sidebar-accent-foreground: ${dc.sidebarAccentForeground ?? dc.accentForeground};
+      --sidebar-border: ${dc.sidebarBorder ?? dc.border};
+      --sidebar-ring: ${dc.sidebarRing ?? dc.ring};
+
+      /* Charts */
+      --chart-1: ${dc.chart1 ?? "#f87171"};
+      --chart-2: ${dc.chart2 ?? "#60a5fa"};
+      --chart-3: ${dc.chart3 ?? "#34d399"};
+      --chart-4: ${dc.chart4 ?? "#fbbf24"};
+      --chart-5: ${dc.chart5 ?? "#a78bfa"};
+
+      /* Toast tokens */
+      --success-bg: ${dc.successBg ?? "#052e16"};
+      --success-text: ${dc.successText ?? "#86efac"};
+      --success-border: ${dc.successBorder ?? "#166534"};
+      --error-bg: ${dc.errorBg ?? "#450a0a"};
+      --error-text: ${dc.errorText ?? "#fca5a5"};
+      --error-border: ${dc.errorBorder ?? "#991b1b"};
+      --warning-bg: ${dc.warningBg ?? "#431407"};
+      --warning-text: ${dc.warningText ?? "#fcd34d"};
+      --warning-border: ${dc.warningBorder ?? "#92400e"};
+      --info-bg: ${dc.infoBg ?? "#0c1445"};
+      --info-text: ${dc.infoText ?? "#93c5fd"};
+      --info-border: ${dc.infoBorder ?? "#1e40af"};
     }
   `;
 }

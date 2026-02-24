@@ -31,6 +31,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { z } from "zod";
+import { Location } from "@/types";
 
 interface TransferItem {
   productId: string;
@@ -55,7 +56,12 @@ export function CreateTransferDialog({
   const createTransfer = useCreateTransfer();
   const shipTransfer = useShipTransfer();
   const { data: productsData } = useProducts({ page: 1, limit: 100 });
-  const { data: locations } = useLocations();
+  const { data: locationsData } = useLocations();
+  const locations: Location[] = Array.isArray(locationsData)
+    ? (locationsData as Location[])
+    : Array.isArray((locationsData as unknown as { data?: Location[] })?.data)
+      ? (locationsData as unknown as { data?: Location[] })!.data!
+      : [];
 
   const products = useMemo(() => productsData?.data || [], [productsData]);
 
@@ -340,7 +346,7 @@ export function CreateTransferDialog({
                   <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(locations || []).map((loc) => (
+                  {locations.map((loc) => (
                     <SelectItem
                       key={loc.id}
                       value={loc.id}
@@ -364,7 +370,7 @@ export function CreateTransferDialog({
                   <SelectValue placeholder="Dest." />
                 </SelectTrigger>
                 <SelectContent>
-                  {(locations || []).map((loc) => (
+                  {locations.map((loc) => (
                     <SelectItem
                       key={loc.id}
                       value={loc.id}

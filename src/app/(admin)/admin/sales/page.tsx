@@ -41,9 +41,10 @@ import {
 import { ServerImage } from "@/components/ui/server-image";
 import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
-import { useInventoryStore } from "@/features/inventory/store/inventory-store";
+import { useCreateReturn } from "@/hooks/api/returns";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/ui/page-header";
+import { useLocationStore } from "@/features/locations/store";
 
 // Mock mapping if categories aren't populated in items
 const CATEGORY_MAP: Record<string, string> = {
@@ -56,6 +57,10 @@ const CATEGORY_MAP: Record<string, string> = {
 
 export default function SalesHistoryPage() {
   const { t } = useTranslation("sales");
+  const { currentLocation } = useLocationStore();
+  const locationId =
+    currentLocation.id !== "default" ? currentLocation.id : undefined;
+
   const [date, setDate] = useState<DateRange | undefined>(() => {
     const now = new Date();
     return {
@@ -84,9 +89,15 @@ export default function SalesHistoryPage() {
     };
   }, [date, page]);
 
-  const { data: sales, isLoading: salesLoading } = useSales(dateParams);
-  const { data: summary, isLoading: summaryLoading } =
-    useSalesSummary(dateParams);
+  const { data: sales, isLoading: salesLoading } = useSales({
+    ...dateParams,
+    locationId,
+  });
+  const { data: summary, isLoading: summaryLoading } = useSalesSummary({
+    ...dateParams,
+    locationId,
+  });
+  const createReturnMutation = useCreateReturn();
 
   const { data: categories } = useCategories();
 
@@ -107,32 +118,51 @@ export default function SalesHistoryPage() {
   const handleReturnConfirm = (
     data: Partial<import("@/types").Return> & { restock?: boolean },
   ) => {
-    // In a real app, this would be an API call to create a Return entity
-    const items = data.items || [];
-    const reason = data.reason || "";
-    const restock = data.restock || false;
-    const saleId = data.saleId || "";
+    if (createReturnMutation.isPending) return;
 
-    if (restock) {
-      // Optimistically update inventory if requested
-      const transactions = items.map((i) => ({
-        id: `ret-${Date.now()}-${i.id}`,
-        productId: i.id,
-        type: "IN" as const,
-        quantity: i.quantity,
-        reason: `Return: ${reason}`,
-        referenceId: saleId,
-        performedBy: "admin",
-        createdAt: new Date().toISOString(),
-        locationId: "loc1",
-      }));
-      useInventoryStore.getState().addTransactions(transactions);
-      toast.success("Items returned and restocked to inventory.");
-    } else {
-      toast.success("Return processed (Items discarded).");
+    const items = data.items || [];
+    if (!data.saleId || items.length === 0) {
+      toast.error(t("returns.validation.invalidData", "Invalid return data."));
+      return;
     }
 
-    setReturnSale(null);
+    createReturnMutation.mutate(
+      {
+        saleId: data.saleId,
+        reason: data.reason || "",
+        restock: data.restock,
+        locationId: returnSale?.locationId,
+        lines: items.map((item) => ({
+          saleLineId: item.id,
+          quantity: item.quantity,
+        })),
+      },
+      {
+        onSuccess: () => {
+          if (data.restock !== false) {
+            toast.success(
+              t(
+                "returns.validation.successRestocked",
+                "Items returned and restocked to inventory.",
+              ),
+            );
+          } else {
+            toast.success(
+              t("returns.validation.success", "Return processed successfully."),
+            );
+          }
+          setReturnSale(null);
+        },
+        onError: () => {
+          toast.error(
+            t(
+              "returns.validation.failure",
+              "Failed to process return. Please try again.",
+            ),
+          );
+        },
+      },
+    );
   };
 
   // Flatten sales to items for the table view (matching reference)

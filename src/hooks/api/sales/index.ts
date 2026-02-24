@@ -6,7 +6,11 @@ import {
 import { ListQueryParams } from "@/types/backend";
 
 export function useSales(
-  params?: ListQueryParams & { startDate?: string; endDate?: string },
+  params?: ListQueryParams & {
+    startDate?: string;
+    endDate?: string;
+    locationId?: string;
+  },
 ) {
   return useQuery({
     queryKey: ["sales", "list", params],
@@ -17,6 +21,9 @@ export function useSales(
 export function useSalesSummary(params?: {
   startDate?: string;
   endDate?: string;
+  locationId?: string;
+  page?: number;
+  limit?: number;
 }) {
   return useQuery({
     queryKey: ["sales", "summary", params],

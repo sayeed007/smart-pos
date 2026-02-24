@@ -14,6 +14,7 @@ import {
 import { Plus, Trash2, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
+import { generateUUID } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -51,8 +52,9 @@ export function PriceBookManager() {
   const handleCreate = async () => {
     if (!newBookName) return;
     try {
+      const uuid = await generateUUID();
       const newBook: PriceBook = {
-        id: `pb-${crypto.randomUUID().slice(0, 8)}`,
+        id: `pb-${uuid.slice(0, 8)}`,
         name: newBookName,
         description: newBookDesc,
         isDefault: false,

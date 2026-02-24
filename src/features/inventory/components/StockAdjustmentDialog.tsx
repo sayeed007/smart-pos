@@ -33,6 +33,7 @@ import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
+import { Location } from "@/types";
 
 export function StockAdjustmentDialog({
   trigger,
@@ -75,7 +76,12 @@ export function StockAdjustmentDialog({
 
   const adjustStock = useAdjustStock();
   const { data: productsData } = useProducts({ page: 1, limit: 100 });
-  const { data: locations } = useLocations();
+  const { data: locationsData } = useLocations();
+  const locations: Location[] = Array.isArray(locationsData)
+    ? locationsData
+    : Array.isArray((locationsData as unknown as { data?: Location[] })?.data)
+      ? (locationsData as unknown as { data?: Location[] })!.data!
+      : [];
 
   const products = productsData?.data || [];
 
@@ -192,7 +198,9 @@ export function StockAdjustmentDialog({
               )}
             />
             {errors.type && (
-              <p className="text-destructive typo-regular-14">{errors.type.message}</p>
+              <p className="text-destructive typo-regular-14">
+                {errors.type.message}
+              </p>
             )}
           </div>
 
@@ -216,7 +224,7 @@ export function StockAdjustmentDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(locations || []).map((loc) => (
+                    {locations.map((loc) => (
                       <SelectItem key={loc.id} value={loc.id}>
                         {loc.name}
                       </SelectItem>

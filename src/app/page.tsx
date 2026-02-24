@@ -13,7 +13,10 @@ export default function Home() {
   useEffect(() => {
     if (!isLoading) {
       if (user) {
-        if (user.role === UserRole.ADMIN) {
+        if (
+          user.role === UserRole.ADMIN ||
+          user.role === UserRole.MANAGER
+        ) {
           router.push("/admin/dashboard");
         } else if (user.role === UserRole.CASHIER) {
           router.push("/cashier/pos");

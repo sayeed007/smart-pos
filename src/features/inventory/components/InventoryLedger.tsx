@@ -77,15 +77,50 @@ export function InventoryLedger({
   const { data: transactionsData, isLoading: isLoadingTransactions } =
     useAllInventoryTransactions(locationId, page, 10, startDate, endDate);
 
-  const transactions = transactionsData?.data || [];
-  const meta = transactionsData?.meta;
+  const transactions: InventoryTransaction[] = Array.isArray(
+    transactionsData?.data,
+  )
+    ? transactionsData.data
+    : Array.isArray(
+          (
+            transactionsData as unknown as {
+              data?: { data?: InventoryTransaction[] };
+            }
+          )?.data?.data,
+        )
+      ? (transactionsData as unknown as {
+          data?: { data?: InventoryTransaction[] };
+        })!.data!.data!
+      : Array.isArray(transactionsData)
+        ? transactionsData
+        : [];
+
+  interface PaginatedMeta {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  }
+
+  const meta = ((
+    transactionsData as unknown as {
+      data?: {
+        meta?: PaginatedMeta;
+      };
+    }
+  )?.data?.meta ||
+    (transactionsData as unknown as { meta?: PaginatedMeta })?.meta) as
+    | PaginatedMeta
+    | undefined;
 
   // Filter Logic (Client-side search/filter still applies to the fetched page, but ideally should be backend)
   // Since we are moving to backend pagination, client-side filtering only filters the current page.
   // Ideally, search and type filter should also be passed to backend, but the backend endpoint
   // doesn't support them yet based on my previous read.
   // For now, I will keep client-side filtering on the current page data.
-  const filteredTransactions = transactions.filter((tx) => {
+  const filteredTransactions = transactions?.filter((tx) => {
     const searchString =
       `${tx.product?.name || ""} ${tx.product?.sku || ""} ${tx.reason} ${tx.referenceId}`.toLowerCase();
     const matchesSearch = searchString.includes(searchTerm.toLowerCase());

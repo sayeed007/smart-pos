@@ -26,7 +26,11 @@ export default function InventoryPage() {
 
   // Fetch locations for dropdown
   const { data: locationsData } = useLocations();
-  const locations: Location[] = locationsData ?? [];
+  const locations: Location[] = Array.isArray(locationsData)
+    ? locationsData
+    : Array.isArray((locationsData as unknown as { data?: Location[] })?.data)
+      ? (locationsData as unknown as { data?: Location[] })!.data!
+      : [];
 
   // Get default location - prefer currentLocation if it exists in the list, otherwise use first location
   const defaultLocation =

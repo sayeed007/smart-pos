@@ -46,7 +46,7 @@ export function LocationSelector({
             </span>
           </div>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent position="popper" side="right" sideOffset={8}>
           {locations.map((loc) => (
             <SelectItem key={loc.id} value={loc.id}>
               {loc.name}

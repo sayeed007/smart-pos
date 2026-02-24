@@ -27,13 +27,18 @@ interface PaymentMethodStats {
   total: number;
 }
 
-export const useDashboardStats = (startDate?: string, endDate?: string) => {
+export const useDashboardStats = (
+  startDate?: string,
+  endDate?: string,
+  locationId?: string,
+) => {
   return useQuery<DashboardStats>({
-    queryKey: ["dashboard", "stats", startDate, endDate],
+    queryKey: ["dashboard", "stats", startDate, endDate, locationId],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      if (locationId) params.append("locationId", locationId);
       const response = await backendApi.get<ApiEnvelope<DashboardStats>>(
         `/dashboard/stats?${params.toString()}`,
       );
@@ -42,13 +47,18 @@ export const useDashboardStats = (startDate?: string, endDate?: string) => {
   });
 };
 
-export const useRevenueChart = (startDate?: string, endDate?: string) => {
+export const useRevenueChart = (
+  startDate?: string,
+  endDate?: string,
+  locationId?: string,
+) => {
   return useQuery<RevenueChartData[]>({
-    queryKey: ["dashboard", "revenue-chart", startDate, endDate],
+    queryKey: ["dashboard", "revenue-chart", startDate, endDate, locationId],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      if (locationId) params.append("locationId", locationId);
       const response = await backendApi.get<ApiEnvelope<RevenueChartData[]>>(
         `/dashboard/charts/revenue?${params.toString()}`,
       );
@@ -61,14 +71,23 @@ export const useTopCategories = (
   limit: number = 5,
   startDate?: string,
   endDate?: string,
+  locationId?: string,
 ) => {
   return useQuery<TopCategoryData[]>({
-    queryKey: ["dashboard", "top-categories", limit, startDate, endDate],
+    queryKey: [
+      "dashboard",
+      "top-categories",
+      limit,
+      startDate,
+      endDate,
+      locationId,
+    ],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.append("limit", limit.toString());
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      if (locationId) params.append("locationId", locationId);
       const response = await backendApi.get<ApiEnvelope<TopCategoryData[]>>(
         `/dashboard/charts/top-categories?${params.toString()}`,
       );
@@ -77,13 +96,18 @@ export const useTopCategories = (
   });
 };
 
-export const usePaymentMethodStats = (startDate?: string, endDate?: string) => {
+export const usePaymentMethodStats = (
+  startDate?: string,
+  endDate?: string,
+  locationId?: string,
+) => {
   return useQuery<PaymentMethodStats[]>({
-    queryKey: ["dashboard", "payment-methods", startDate, endDate],
+    queryKey: ["dashboard", "payment-methods", startDate, endDate, locationId],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (startDate) params.append("startDate", startDate);
       if (endDate) params.append("endDate", endDate);
+      if (locationId) params.append("locationId", locationId);
       const response = await backendApi.get<ApiEnvelope<PaymentMethodStats[]>>(
         `/dashboard/charts/payment-methods?${params.toString()}`,
       );
