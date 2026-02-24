@@ -5,6 +5,7 @@ import { ReturnListTable } from "@/components/returns/ReturnListTable";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
@@ -27,12 +28,13 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
   const pageSize = 10;
   const [search, setSearch] = useState("");
 
-  // Fetch returns from API (ideally filtered by locationId in the future if API supports it)
-  const { data: returnsData, isLoading } = useReturns({
+  const queryParams = {
     page,
     limit: pageSize,
     search: search || undefined,
-  });
+    locationId,
+  };
+  const { data: returnsData, isLoading } = useReturns(queryParams);
 
   const createReturnMutation = useCreateReturn();
 
@@ -169,79 +171,88 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center gap-4 bg-muted/20 p-4 rounded-lg border">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder={t("searchPlaceholder", "Search returns...")}
-            className="pl-8 bg-background"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("cards.returns", "Returns")}</CardTitle>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-2">
+          <div className="relative flex-1 max-w-sm w-full">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder={t("searchPlaceholder", "Search returns...")}
+              className="pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <PrimaryActionButton
+            onClick={() => {
+              setSelectedReturn(null);
+              setIsModalOpen(true);
+            }}
+            icon={Plus}
+          >
+            {t("addReturn", "Create Return")}
+          </PrimaryActionButton>
         </div>
-        <PrimaryActionButton
-          onClick={() => {
-            setSelectedReturn(null);
-            setIsModalOpen(true);
-          }}
-          icon={Plus}
-        >
-          {t("addReturn", "Create Return")}
-        </PrimaryActionButton>
-      </div>
+      </CardHeader>
 
-      <ReturnListTable
-        returns={returns}
-        isLoading={isLoading}
-        onDelete={handleDeleteReturn}
-        onInvoiceClick={handleInvoiceOpen}
-      />
+      <CardContent>
+        <ReturnListTable
+          returns={returns}
+          isLoading={isLoading}
+          onDelete={handleDeleteReturn}
+          onInvoiceClick={handleInvoiceOpen}
+        />
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                if (page > 1) setPage(page - 1);
-              }}
-              className={
-                page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"
-              }
-            />
-          </PaginationItem>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page > 1) setPage(page - 1);
+                  }}
+                  className={
+                    page <= 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
 
-          <PaginationItem>
-            <span className="text-muted-foreground px-4 typo-medium-14">
-              {t("page", {
-                current: returnsData?.meta?.page || 1,
-                total: returnsData?.meta?.totalPages || 1,
-              })}
-            </span>
-          </PaginationItem>
+              <PaginationItem>
+                <span className="text-muted-foreground px-4 typo-medium-14">
+                  {t("page", {
+                    current: returnsData?.meta?.page || 1,
+                    total: returnsData?.meta?.totalPages || 1,
+                  })}
+                </span>
+              </PaginationItem>
 
-          <PaginationItem>
-            <PaginationNext
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                const totalPages = Math.ceil(
-                  (returnsData?.meta.total || 0) / pageSize,
-                );
-                if (page < totalPages) setPage(page + 1);
-              }}
-              className={
-                page >= Math.ceil((returnsData?.meta.total || 0) / pageSize)
-                  ? "pointer-events-none opacity-50"
-                  : "cursor-pointer"
-              }
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const totalPages = Math.ceil(
+                      (returnsData?.meta.total || 0) / pageSize,
+                    );
+                    if (page < totalPages) setPage(page + 1);
+                  }}
+                  className={
+                    page >= Math.ceil((returnsData?.meta.total || 0) / pageSize)
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </CardContent>
 
       {isModalOpen && (
         <ReturnFormModal
@@ -275,6 +286,6 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
         }}
         sale={saleDetails || null}
       />
-    </div>
+    </Card>
   );
 }
