@@ -5,7 +5,6 @@ import { ReturnListTable } from "@/components/returns/ReturnListTable";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
-import { PageHeader } from "@/components/ui/page-header";
 import {
   Pagination,
   PaginationContent,
@@ -22,13 +21,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export default function ReturnsPage() {
+export function ReturnsTab({ locationId }: { locationId: string }) {
   const { t } = useTranslation(["returns", "common"]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [search, setSearch] = useState("");
 
-  // Fetch returns from API
+  // Fetch returns from API (ideally filtered by locationId in the future if API supports it)
   const { data: returnsData, isLoading } = useReturns({
     page,
     limit: pageSize,
@@ -170,33 +169,28 @@ export default function ReturnsPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <PageHeader
-        title={t("title", "Returns & Refunds")}
-        description={t("subtitle", "Process returns and refunds")}
-      >
-        <div className="flex gap-2">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder={t("searchPlaceholder", "Search returns...")}
-              className="pl-8 w-62.5"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <PrimaryActionButton
-            onClick={() => {
-              setSelectedReturn(null);
-              setIsModalOpen(true);
-            }}
-            icon={Plus}
-          >
-            {t("addReturn", "Create Return")}
-          </PrimaryActionButton>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center gap-4 bg-muted/20 p-4 rounded-lg border">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder={t("searchPlaceholder", "Search returns...")}
+            className="pl-8 bg-background"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-      </PageHeader>
+        <PrimaryActionButton
+          onClick={() => {
+            setSelectedReturn(null);
+            setIsModalOpen(true);
+          }}
+          icon={Plus}
+        >
+          {t("addReturn", "Create Return")}
+        </PrimaryActionButton>
+      </div>
 
       <ReturnListTable
         returns={returns}

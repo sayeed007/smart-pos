@@ -14,7 +14,6 @@ import {
   LayoutDashboard,
   Menu,
   Package,
-  RotateCcw,
   Settings,
   ShoppingCart,
   Tag,
@@ -106,11 +105,6 @@ export default function AdminLayout({
       name: t("reports"),
       icon: <FileText size={20} />,
       path: "/admin/reports",
-    },
-    {
-      name: t("returns"),
-      icon: <RotateCcw size={20} />,
-      path: "/admin/returns",
     },
     {
       name: t("settings"),

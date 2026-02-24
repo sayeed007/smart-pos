@@ -13,15 +13,22 @@ import { CreateTransferDialog } from "@/features/inventory/components/CreateTran
 import { InventoryLedger } from "@/features/inventory/components/InventoryLedger";
 import { InventoryTransfers } from "@/features/inventory/components/InventoryTransfers";
 import { StockAdjustmentDialog } from "@/features/inventory/components/StockAdjustmentDialog";
+import { ReturnsTab } from "@/features/inventory/components/ReturnsTab";
 import { useLocationStore } from "@/features/locations/store";
 import { useLocations } from "@/hooks/api/locations";
 import { Location } from "@/types";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function InventoryPage() {
   const { t } = useTranslation("inventory");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const currentTab = searchParams.get("tab") || "ledger";
+
   const { currentLocation } = useLocationStore();
 
   // Fetch locations for dropdown
@@ -78,10 +85,15 @@ export default function InventoryPage() {
         </div>
       </PageHeader>
 
-      <Tabs defaultValue="ledger" className="space-y-4">
+      <Tabs
+        value={currentTab}
+        onValueChange={(val) => router.push(`/admin/inventory?tab=${val}`)}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="ledger">{t("tabs.ledger")}</TabsTrigger>
           <TabsTrigger value="transfers">{t("tabs.transfers")}</TabsTrigger>
+          <TabsTrigger value="returns">Returns</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ledger">
@@ -93,6 +105,10 @@ export default function InventoryPage() {
 
         <TabsContent value="transfers">
           <InventoryTransfers locationId={effectiveLocationId} />
+        </TabsContent>
+
+        <TabsContent value="returns">
+          <ReturnsTab locationId={effectiveLocationId} />
         </TabsContent>
       </Tabs>
     </div>
