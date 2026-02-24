@@ -1,9 +1,24 @@
 "use client";
 
-import { Sale } from "@/types";
-import { useSales, useSalesSummary } from "@/hooks/api/sales";
-import { useCategories } from "@/hooks/api/categories";
-import { DateRange } from "react-day-picker";
+import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
+import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ServerImage } from "@/components/ui/server-image";
 import {
   Table,
   TableBody,
@@ -12,39 +27,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
+import { useLocationStore } from "@/features/locations/store";
+import { useCategories } from "@/hooks/api/categories";
+import { useCreateReturn } from "@/hooks/api/returns";
+import { useSales, useSalesSummary } from "@/hooks/api/sales";
+import { cn } from "@/lib/utils";
+import { Sale } from "@/types";
+import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import {
-  Loader2,
+  ArrowRightLeft,
   Calendar as CalendarIcon,
   FileText,
-  ArrowRightLeft,
+  Loader2,
   Package,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
-import { format, startOfDay, endOfDay, startOfMonth } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { ServerImage } from "@/components/ui/server-image";
-import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
-import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
-import { useCreateReturn } from "@/hooks/api/returns";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/ui/page-header";
-import { useLocationStore } from "@/features/locations/store";
 
 // Mock mapping if categories aren't populated in items
 const CATEGORY_MAP: Record<string, string> = {

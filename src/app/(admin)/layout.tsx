@@ -2,12 +2,15 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Button } from "@/components/ui/button";
+import { useLocationStore } from "@/features/locations/store";
+import { useLocations } from "@/hooks/api/locations";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { UserRole } from "@/types";
 import {
   Box,
   FileText,
+  Layers,
   LayoutDashboard,
   Menu,
   Package,
@@ -15,15 +18,11 @@ import {
   Settings,
   ShoppingCart,
   Tag,
-  Layers,
   Users,
-  MapPin,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocations } from "@/hooks/api/locations";
-import { useLocationStore } from "@/features/locations/store";
 
 export default function AdminLayout({
   children,
@@ -113,12 +112,6 @@ export default function AdminLayout({
       icon: <RotateCcw size={20} />,
       path: "/admin/returns",
     },
-    {
-      name: t("locations", "Locations"),
-      icon: <MapPin size={20} />,
-      path: "/admin/locations",
-    },
-
     {
       name: t("settings"),
       icon: <Settings size={20} />,

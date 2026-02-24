@@ -1,35 +1,35 @@
 "use client";
-import { useState, useMemo } from "react";
-import { DateRange } from "react-day-picker";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { DateRange } from "react-day-picker";
 
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { RevenueChart } from "@/components/dashboard/RevenueChart";
-import { TopCategories } from "@/components/dashboard/TopCategories";
-import { RecentSales } from "@/components/dashboard/RecentSales";
 import { LowStockAlert } from "@/components/dashboard/LowStockAlert";
 import { PaymentMethods } from "@/components/dashboard/PaymentMethods";
-import { useTranslation } from "react-i18next";
-import {
-  useDashboardStats,
-  useRevenueChart,
-  useTopCategories,
-  usePaymentMethodStats,
-  useLowStockProducts,
-} from "@/hooks/useDashboard";
-import { useSales } from "@/hooks/api/sales";
-import { PageHeader } from "@/components/ui/page-header";
+import { RecentSales } from "@/components/dashboard/RecentSales";
+import { RevenueChart } from "@/components/dashboard/RevenueChart";
+import { TopCategories } from "@/components/dashboard/TopCategories";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { useLocationStore } from "@/features/locations/store";
+import { useSales } from "@/hooks/api/sales";
+import {
+  useDashboardStats,
+  useLowStockProducts,
+  usePaymentMethodStats,
+  useRevenueChart,
+  useTopCategories,
+} from "@/hooks/useDashboard";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const STATS_CONFIG = [
   {

@@ -3,19 +3,19 @@
 import { CategoryFormModal } from "@/components/categories/CategoryFormModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-import { Category } from "@/types";
-import { Loader2, Plus, SquarePen } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errors";
 import {
   useCategories,
   useCreateCategory,
   useUpdateCategory,
 } from "@/hooks/api/categories";
-import { PageHeader } from "@/components/ui/page-header";
+import { getErrorMessage } from "@/lib/errors";
+import { Category } from "@/types";
+import { Loader2, Plus, SquarePen } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export default function CategoriesPage() {
   const { t } = useTranslation(["categories", "common"]);
@@ -99,7 +99,11 @@ export default function CategoriesPage() {
             className="p-4 flex flex-row items-center gap-4 border-none shadow-sm"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/20">
-              <span className="typo-regular-24" role="img" aria-label={category.name}>
+              <span
+                className="typo-regular-24"
+                role="img"
+                aria-label={category.name}
+              >
                 {category.icon || "📦"}
               </span>
             </div>

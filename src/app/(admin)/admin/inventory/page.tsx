@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
   SelectContent,
@@ -18,7 +19,6 @@ import { Location } from "@/types";
 import { MapPin } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PageHeader } from "@/components/ui/page-header";
 
 export default function InventoryPage() {
   const { t } = useTranslation("inventory");

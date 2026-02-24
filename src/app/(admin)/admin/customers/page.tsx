@@ -1,24 +1,9 @@
 "use client";
 
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
 import { CustomerListTable } from "@/components/customers/CustomerListTable";
 import { CustomerSearchBar } from "@/components/customers/CustomerSearchBar";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-import {
-  useCustomers,
-  useCreateCustomer,
-  useUpdateCustomer,
-  useDeleteCustomer,
-} from "@/hooks/api/customers";
-import { Customer } from "@/types";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errors";
-import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
-import { CustomerFormValues } from "@/lib/validations/customer";
-import { useDebounce } from "use-debounce";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { PageHeader } from "@/components/ui/page-header";
 import {
   Pagination,
@@ -27,6 +12,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import {
+  useCreateCustomer,
+  useCustomers,
+  useDeleteCustomer,
+  useUpdateCustomer,
+} from "@/hooks/api/customers";
+import { getErrorMessage } from "@/lib/errors";
+import { CustomerFormValues } from "@/lib/validations/customer";
+import { Customer } from "@/types";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");

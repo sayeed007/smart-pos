@@ -1,25 +1,25 @@
 "use client";
 
-import { LocationFormDialog } from "@/components/locations/LocationFormDialog";
-import { LocationListTable } from "@/components/locations/LocationListTable";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { Plus } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { PageHeader } from "@/components/ui/page-header";
+import { LocationListTable } from "@/components/locations/LocationListTable";
+import { LocationFormDialog } from "@/components/locations/LocationFormDialog";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import {
-  useCreateLocation,
-  useDeleteLocation,
   useLocations,
+  useCreateLocation,
   useUpdateLocation,
+  useDeleteLocation,
 } from "@/hooks/api/locations";
+import { Location } from "@/types";
 import { getErrorMessage } from "@/lib/errors";
 import { LocationFormValues } from "@/lib/validations/location";
-import { Location } from "@/types";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
-export default function AdminLocationsPage() {
+export function LocationsTab() {
+  const { t } = useTranslation("locations");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
@@ -27,9 +27,7 @@ export default function AdminLocationsPage() {
   const [locationToDelete, setLocationToDelete] = useState<Location | null>(
     null,
   );
-  const { t } = useTranslation("locations");
 
-  // API Hooks
   const { data: locations = [], isLoading } = useLocations();
   const createMutation = useCreateLocation();
   const updateMutation = useUpdateLocation();
@@ -60,7 +58,6 @@ export default function AdminLocationsPage() {
       createMutation.mutate(values, {
         onSuccess: () => {
           setIsDialogOpen(false);
-          setSelectedLocation(null);
           toast.success(
             t("toasts.createSuccess", "Location created successfully"),
           );
@@ -74,20 +71,6 @@ export default function AdminLocationsPage() {
           ),
       });
     }
-  };
-
-  const handleAddClick = () => {
-    setSelectedLocation(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleEditClick = (location: Location) => {
-    setSelectedLocation(location);
-    setIsDialogOpen(true);
-  };
-
-  const handleDeleteClick = (location: Location) => {
-    setLocationToDelete(location);
   };
 
   const handleConfirmDelete = async () => {
@@ -107,28 +90,37 @@ export default function AdminLocationsPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <PageHeader
-        title={t("page.title", "Locations")}
-        description={t(
-          "page.subtitle",
-          "Manage your business locations and branches",
-        )}
-      >
-        <PrimaryActionButton onClick={handleAddClick} icon={Plus}>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="typo-bold-18 text-foreground">
+            {t("page.title", "Locations")}
+          </h2>
+          <p className="typo-regular-14 text-muted-foreground mt-0.5">
+            {t("page.subtitle", "Manage your business locations and branches")}
+          </p>
+        </div>
+        <PrimaryActionButton
+          onClick={() => {
+            setSelectedLocation(null);
+            setIsDialogOpen(true);
+          }}
+          icon={Plus}
+        >
           {t("actions.addLocation", "Add Location")}
         </PrimaryActionButton>
-      </PageHeader>
+      </div>
 
       <LocationListTable
         locations={locations}
         isLoading={isLoading}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
+        onEdit={(loc) => {
+          setSelectedLocation(loc);
+          setIsDialogOpen(true);
+        }}
+        onDelete={(loc) => setLocationToDelete(loc)}
       />
 
-      {/* Add/Edit Location Dialog */}
       <LocationFormDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

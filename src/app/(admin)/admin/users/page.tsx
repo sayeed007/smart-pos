@@ -20,6 +20,7 @@ import {
   useUpdateUser,
   useUsers,
 } from "@/hooks/api/users";
+import { getErrorMessage } from "@/lib/errors";
 import { UserFormValues } from "@/lib/validations/user";
 import { User, UserRole } from "@/types";
 import {
@@ -33,7 +34,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errors";
 import { useDebounce } from "use-debounce";
 
 export default function UsersPage() {
@@ -76,22 +76,18 @@ export default function UsersPage() {
   };
 
   const handleSubmit = async (values: UserFormValues) => {
-    const payload: any = {
-      ...values,
-      roleIds: [values.roleId],
-    };
-    delete payload.roleId;
+    const { roleId, status, ...rest } = values;
 
     if (selectedUser) {
-      // Backend does not allow updating email
-      delete payload.email;
-      // Backend expects uppercase status
-      if (payload.status) {
-        payload.status = payload.status.toUpperCase();
-      }
+      // Build update payload — email and roleId are excluded, status uppercased
+      const updatePayload = {
+        ...rest,
+        roleIds: [roleId],
+        ...(status ? { status: status.toUpperCase() } : {}),
+      };
 
       await updateMutation.mutateAsync(
-        { id: selectedUser.id, data: payload },
+        { id: selectedUser.id, data: updatePayload },
         {
           onSuccess: () => {
             setIsDialogOpen(false);
@@ -104,8 +100,13 @@ export default function UsersPage() {
         },
       );
     } else {
-      delete payload.status; // Backend does not accept status on create
-      await createMutation.mutateAsync(payload, {
+      // Build create payload — status not accepted on create
+      const createPayload = {
+        ...rest,
+        roleIds: [roleId],
+      };
+
+      await createMutation.mutateAsync(createPayload, {
         onSuccess: () => {
           setIsDialogOpen(false);
           toast.success("User created successfully");

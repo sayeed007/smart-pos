@@ -1,8 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { LocationsTab } from "@/components/location/LocationsTab";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/ui/page-header";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { ServerImage } from "@/components/ui/server-image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { AuditLogsTab } from "@/features/settings/components/AuditLogsTab";
+import { PriceBookManager } from "@/features/settings/components/PriceBookManager";
+import {
+  buildSettingsPayload,
+  mapRemoteToLocalSettings,
+} from "@/features/settings/mappers";
+import type { SettingsState } from "@/features/settings/store";
+import { useSettingsStore } from "@/features/settings/store";
+import {
+  useRemoteSettings,
+  useUpdateRemoteSettings,
+} from "@/hooks/api/settings";
+import { useTenantProfile, useUpdateTenantProfile } from "@/hooks/api/tenants";
 import {
   DollarSign,
   FileText,
@@ -13,27 +32,9 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-import { PageHeader } from "@/components/ui/page-header";
-import { PriceBookManager } from "@/features/settings/components/PriceBookManager";
-import { AuditLogsTab } from "@/features/settings/components/AuditLogsTab";
-import { useSettingsStore } from "@/features/settings/store";
-import { ServerImage } from "@/components/ui/server-image";
-import { useTenantProfile, useUpdateTenantProfile } from "@/hooks/api/tenants";
-import {
-  useRemoteSettings,
-  useUpdateRemoteSettings,
-} from "@/hooks/api/settings";
-import {
-  buildSettingsPayload,
-  mapRemoteToLocalSettings,
-} from "@/features/settings/mappers";
-import type { SettingsState } from "@/features/settings/store";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 type SettingsFormState = Pick<
   SettingsState,
@@ -97,7 +98,11 @@ export default function SettingsPage() {
     if (isHydrated) return;
     if (!tenantProfile && !remoteSettings) return;
 
-    const merged = mapRemoteToLocalSettings(storeSettings, tenantProfile, remoteSettings);
+    const merged = mapRemoteToLocalSettings(
+      storeSettings,
+      tenantProfile,
+      remoteSettings,
+    );
     const timer = setTimeout(() => {
       setLocalSettings((prev) => ({ ...prev, ...merged }));
       setIsHydrated(true);
@@ -139,11 +144,18 @@ export default function SettingsPage() {
   const validate = () => {
     const currency = localSettings.currency.trim().toUpperCase();
     if (currency.length !== 3) {
-      toast.error(t("validation.currencyCode", "Currency code must be 3 letters."));
+      toast.error(
+        t("validation.currencyCode", "Currency code must be 3 letters."),
+      );
       return false;
     }
     if (Number.isNaN(localSettings.taxRate) || localSettings.taxRate < 0) {
-      toast.error(t("validation.taxRate", "Tax rate must be a valid non-negative number."));
+      toast.error(
+        t(
+          "validation.taxRate",
+          "Tax rate must be a valid non-negative number.",
+        ),
+      );
       return false;
     }
     return true;
@@ -254,6 +266,9 @@ export default function SettingsPage() {
           <TabsTrigger value="general">
             {t("tabs.general", "General")}
           </TabsTrigger>
+          <TabsTrigger value="locations">
+            {t("tabs.locations", "Locations")}
+          </TabsTrigger>
           <TabsTrigger value="pricing">
             {t("tabs.pricing", "Pricing Strategy")}
           </TabsTrigger>
@@ -282,7 +297,9 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>{t("sections.branding.logo", "Company Logo")}</Label>
+                      <Label>
+                        {t("sections.branding.logo", "Company Logo")}
+                      </Label>
                       <div className="flex items-center gap-4">
                         <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-lg border border-dashed border-border bg-muted/30">
                           {previewLogo ? (
@@ -295,7 +312,10 @@ export default function SettingsPage() {
                             />
                           ) : (
                             <span className="text-center typo-regular-12 text-muted-foreground">
-                              {t("sections.branding.logoPlaceholder", "No logo")}
+                              {t(
+                                "sections.branding.logoPlaceholder",
+                                "No logo",
+                              )}
                             </span>
                           )}
                         </div>
@@ -359,7 +379,9 @@ export default function SettingsPage() {
                       <Input
                         id="storeName"
                         value={localSettings.storeName}
-                        onChange={(e) => handleChange("storeName", e.target.value)}
+                        onChange={(e) =>
+                          handleChange("storeName", e.target.value)
+                        }
                         className="bg-muted/30"
                       />
                     </div>
@@ -383,7 +405,9 @@ export default function SettingsPage() {
                       <Input
                         id="phone"
                         value={localSettings.storePhone}
-                        onChange={(e) => handleChange("storePhone", e.target.value)}
+                        onChange={(e) =>
+                          handleChange("storePhone", e.target.value)
+                        }
                         className="bg-muted/30"
                       />
                     </div>
@@ -394,7 +418,9 @@ export default function SettingsPage() {
                       <Input
                         id="email"
                         value={localSettings.storeEmail}
-                        onChange={(e) => handleChange("storeEmail", e.target.value)}
+                        onChange={(e) =>
+                          handleChange("storeEmail", e.target.value)
+                        }
                         className="bg-muted/30"
                       />
                     </div>
@@ -456,7 +482,10 @@ export default function SettingsPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="currency">
-                        {t("sections.currencyTax.currencyCode", "Currency Code")}
+                        {t(
+                          "sections.currencyTax.currencyCode",
+                          "Currency Code",
+                        )}
                       </Label>
                       <Input
                         id="currency"
@@ -514,7 +543,10 @@ export default function SettingsPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="paperWidth">
-                        {t("sections.hardware.paperWidth", "Printer Paper Width")}
+                        {t(
+                          "sections.hardware.paperWidth",
+                          "Printer Paper Width",
+                        )}
                       </Label>
                       <select
                         id="paperWidth"
@@ -569,6 +601,10 @@ export default function SettingsPage() {
 
         <TabsContent value="pricing">
           <PriceBookManager />
+        </TabsContent>
+
+        <TabsContent value="locations">
+          <LocationsTab />
         </TabsContent>
 
         <TabsContent value="audit-logs" className="space-y-6">

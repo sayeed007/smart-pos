@@ -1,21 +1,31 @@
 "use client";
 
 import { OfferFormModal } from "@/components/offers/OfferFormModal";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
-import { Offer } from "@/types";
 import {
   useCreateOffer,
   useDeleteOffer,
   useOffers,
   useUpdateOffer,
 } from "@/hooks/api/offers";
+import { getErrorMessage } from "@/lib/errors";
 import { CreateOfferDto } from "@/lib/services/backend/offers.service";
+import { Offer } from "@/types";
 import {
+  Archive,
   DollarSign,
   Gift,
   Loader2,
@@ -24,20 +34,10 @@ import {
   Search,
   SquarePen,
   Tag,
-  Archive,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/errors";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { PageHeader } from "@/components/ui/page-header";
 
 export default function OffersPage() {
   const { t } = useTranslation(["offers", "common"]);

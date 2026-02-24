@@ -1,27 +1,26 @@
 "use client";
 
 import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { ReturnListTable } from "@/components/returns/ReturnListTable";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
-import { Return } from "@/types";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useReturns, useCreateReturn } from "@/hooks/api/returns";
-import { useSale } from "@/hooks/api/sales";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationPrevious,
   PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { PrimaryActionButton } from "@/components/ui/primary-action-button";
+import { useCreateReturn, useReturns } from "@/hooks/api/returns";
+import { useSale } from "@/hooks/api/sales";
+import { Return } from "@/types";
+import { Plus, Search } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PageHeader } from "@/components/ui/page-header";
+import { toast } from "sonner";
 
 export default function ReturnsPage() {
   const { t } = useTranslation(["returns", "common"]);
@@ -46,15 +45,37 @@ export default function ReturnsPage() {
 
   const { data: saleDetails } = useSale(selectedSaleId || "");
 
+  // Raw backend shapes
+  type RawReturnLine = {
+    saleLineId: string;
+    quantity: number | string;
+    refundAmount: number | string;
+    product?: { name?: string; sku?: string };
+  };
+
+  type RawReturn = {
+    id: string;
+    saleId: string;
+    invoiceNo?: string;
+    createdAt: string;
+    refundTotal: number | string;
+    reason: string;
+    status: string;
+    processedBy: string;
+    sale?: { invoiceNo?: string };
+    customer?: { name?: string };
+    lines?: RawReturnLine[];
+  };
+
   // Map API response to UI model
   const returns: Return[] = (returnsData?.data || []).map(
-    (ret: any): Return => ({
+    (ret: RawReturn): Return => ({
       id: ret.id,
       saleId: ret.saleId,
       invoiceNo: ret.invoiceNo || ret.sale?.invoiceNo || "N/A",
       date: ret.createdAt,
       // Map items from return lines
-      items: (ret.lines || []).map((line: any) => ({
+      items: (ret.lines || []).map((line: RawReturnLine) => ({
         id: line.saleLineId,
         name: line.product?.name || t("form.unknownProduct", "Unknown Product"),
         quantity: Number(line.quantity),
@@ -73,7 +94,7 @@ export default function ReturnsPage() {
       reason: ret.reason,
       // Backend returns "PENDING", frontend expects "Pending" (Case mapping)
       status: (ret.status.charAt(0).toUpperCase() +
-        ret.status.slice(1).toLowerCase()) as any,
+        ret.status.slice(1).toLowerCase()) as Return["status"],
       processedBy: ret.processedBy,
       customerName:
         ret.customer?.name || t("form.walkInCustomer", "Walk-in Customer"),
@@ -120,6 +141,7 @@ export default function ReturnsPage() {
 
   const handleUpdateReturn = (data: Partial<Return>) => {
     // Update not implemented in backend yet (only Create).
+    console.info(data);
     toast.info(
       t("validation.updateComingSoon", "Update return feature coming soon"),
     );
@@ -159,7 +181,7 @@ export default function ReturnsPage() {
             <Input
               type="search"
               placeholder={t("searchPlaceholder", "Search returns...")}
-              className="pl-8 w-[250px]"
+              className="pl-8 w-62.5"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

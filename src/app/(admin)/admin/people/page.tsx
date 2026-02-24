@@ -3,10 +3,10 @@
 import { CustomersTab } from "@/components/people/CustomersTab";
 import { UsersTab } from "@/components/people/UsersTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/ui/page-header";
+import { useTranslation } from "react-i18next";
 
 export default function PeoplePage() {
   const { t } = useTranslation("common");

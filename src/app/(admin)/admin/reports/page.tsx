@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { DateRange } from "react-day-picker";
-import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 import { PaymentMethodsList } from "@/components/reports/PaymentMethodsList";
 import { ProductPerformanceTable } from "@/components/reports/ProductPerformanceTable";
@@ -11,9 +11,9 @@ import { RevenueTrendChart } from "@/components/reports/RevenueTrendChart";
 import { SalesByCategoryChart } from "@/components/reports/SalesByCategoryChart";
 import { SalesTransactionsTable } from "@/components/reports/SalesTransactionsTable";
 import { StatsCards } from "@/components/reports/StatsCards";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Pagination,
   PaginationContent,
@@ -21,7 +21,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -34,7 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocationStore } from "@/features/locations/store";
 import { useLocations } from "@/hooks/api/locations";
 import {
   useReportsPaymentMethods,
@@ -45,7 +45,7 @@ import {
   useReportsTopCategories,
 } from "@/hooks/api/reports";
 import { ReportsService } from "@/lib/services/backend/reports.service";
-import { useLocationStore } from "@/features/locations/store";
+import { cn } from "@/lib/utils";
 
 export default function ReportsPage() {
   const { currentLocation } = useLocationStore();
