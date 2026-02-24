@@ -24,9 +24,13 @@
       "return": "Return",
       "status": "Status",
       "invoice": "Invoice",
-      "actions": "Actions"
+      "actions": "Actions",
+      "customer": "Customer",
+      "totalItems": "Items",
+      "totalAmount": "Total"
     },
-    "empty": "No sales records found"
+    "empty": "No sales records found",
+    "walkInCustomer": "Walk-in Customer"
   },
   "invoice_modal": {
     "title": "Invoice Details",
@@ -64,7 +68,12 @@
   "status": {
     "completed": "Completed",
     "pending": "Pending",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "returned": "Returned",
+    "COMPLETED": "Completed",
+    "PENDING": "Pending",
+    "CANCELLED": "Cancelled",
+    "RETURNED": "Returned"
   },
   "returns": {
     "validation": {
@@ -73,5 +82,16 @@
       "success": "Return processed successfully.",
       "failure": "Failed to process return. Please try again."
     }
+  },
+  "drawer": {
+    "customer": "Customer",
+    "items": "Order Items",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "tax": "Tax",
+    "total": "Total Paid",
+    "paymentMethod": "Payment:",
+    "viewInvoice": "Invoice",
+    "processReturn": "Return"
   }
 }

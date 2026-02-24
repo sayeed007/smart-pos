@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ServerImage } from "@/components/ui/server-image";
+import { SaleDetailsDrawer } from "@/components/sales/SaleDetailsDrawer";
 import {
   Table,
   TableBody,
@@ -28,32 +28,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useLocationStore } from "@/features/locations/store";
-import { useCategories } from "@/hooks/api/categories";
 import { useCreateReturn } from "@/hooks/api/returns";
 import { useSales, useSalesSummary } from "@/hooks/api/sales";
 import { cn } from "@/lib/utils";
 import { Sale } from "@/types";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
-import {
-  ArrowRightLeft,
-  Calendar as CalendarIcon,
-  FileText,
-  Loader2,
-  Package,
-} from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-// Mock mapping if categories aren't populated in items
-const CATEGORY_MAP: Record<string, string> = {
-  "1": "Dresses",
-  "2": "Tops",
-  "3": "Bottoms",
-  "4": "Outerwear",
-  "5": "Accessories",
-};
 
 export default function SalesHistoryPage() {
   const { t } = useTranslation("sales");
@@ -76,6 +60,7 @@ export default function SalesHistoryPage() {
   const [page, setPage] = useState(1);
   const [returnSale, setReturnSale] = useState<Sale | null>(null);
   const [viewSale, setViewSale] = useState<Sale | null>(null);
+  const [drawerSale, setDrawerSale] = useState<Sale | null>(null);
 
   // Format dates for API
   const dateParams = useMemo(() => {
@@ -98,8 +83,6 @@ export default function SalesHistoryPage() {
     locationId,
   });
   const createReturnMutation = useCreateReturn();
-
-  const { data: categories } = useCategories();
 
   const handleViewInvoice = (saleId: string) => {
     const sale = sales?.data?.find((s) => s.id === saleId);
@@ -165,35 +148,32 @@ export default function SalesHistoryPage() {
     );
   };
 
-  // Flatten sales to items for the table view (matching reference)
-  const soldItems = useMemo(() => {
-    console.log(sales);
-    // Check if sales exists and has data property (paginated response)
+  // Transform sales to order-level display data instead of flattening items.
+  const displayedSales = useMemo(() => {
     const salesList = sales?.data || [];
     if (!Array.isArray(salesList)) return [];
 
-    // Create a flat list of sold items
-    return salesList.flatMap((sale) =>
-      (sale.lines || []).map((item) => ({
-        id: `${sale.id}-${item.id || Math.random()}`,
-        saleId: sale.id, // Added for return action
-        invoiceNo: sale.invoiceNo,
-        productName: item.name,
-        categoryName:
-          categories?.find((c) => c.id === item.product?.categoryId)?.name ||
-          CATEGORY_MAP[item.product?.categoryId || ""] ||
-          "General",
-        price: Number(item.unitPrice), // Unit price
-        image: item.product?.imageUrl,
+    return salesList.map((sale) => {
+      const totalItems =
+        sale.lines?.reduce(
+          (sum, line) => sum + (Number(line.quantity) || 0),
+          0,
+        ) || 0;
+
+      return {
+        // Expose both simple mapped elements and the full raw sale for the Drawer
+        ...sale,
+        customerName:
+          sale.customer?.name || t("table.walkInCustomer", "Walk-in Customer"),
+        totalItems,
+        totalAmount: Number(sale.total) || 0,
         time: sale.completedAt
           ? format(new Date(sale.completedAt), "hh:mm a")
           : "",
         paymentMethod: sale.payments?.[0]?.method || "CASH",
-        status: sale.status,
-        date: sale.completedAt,
-      })),
-    );
-  }, [sales, categories]);
+      };
+    });
+  }, [sales, t]);
 
   if (salesLoading || summaryLoading) {
     return (
@@ -321,13 +301,13 @@ export default function SalesHistoryPage() {
                     {t("table.headers.invoiceNo")}
                   </TableHead>
                   <TableHead className="text-primary">
-                    {t("table.headers.product")}
+                    {t("table.headers.customer", "Customer")}
                   </TableHead>
                   <TableHead className="text-primary">
-                    {t("table.headers.category")}
+                    {t("table.headers.totalItems", "Items")}
                   </TableHead>
                   <TableHead className="text-primary">
-                    {t("table.headers.price")}
+                    {t("table.headers.totalAmount", "Total")}
                   </TableHead>
                   <TableHead className="text-primary">
                     {t("table.headers.time")}
@@ -335,19 +315,16 @@ export default function SalesHistoryPage() {
                   <TableHead className="text-primary">
                     {t("table.headers.payment")}
                   </TableHead>
-                  <TableHead className="w-20 text-center text-primary">
-                    {t("table.headers.return")}
-                  </TableHead>
                   <TableHead className="w-25 text-center text-primary">
                     {t("table.headers.status")}
                   </TableHead>
                   <TableHead className="w-20 text-center pr-6 text-primary">
-                    {t("table.headers.invoice")}
+                    {t("table.headers.actions", "Actions")}
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {soldItems.length === 0 ? (
+                {displayedSales.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={10}
@@ -357,67 +334,39 @@ export default function SalesHistoryPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  soldItems.map((item, index) => (
+                  displayedSales.map((sale, index) => (
                     <TableRow
-                      key={item.id}
+                      key={sale.id}
                       className="border-sidebar-border p-2 odd:bg-card even:bg-muted hover:bg-muted/60 transition-colors"
                     >
                       <TableCell className="pl-6 py-4 typo-medium-14 text-foreground">
                         {index + 1}
                       </TableCell>
                       <TableCell className="typo-bold-14 text-foreground tracking-tight">
-                        {item.invoiceNo}
+                        {sale.invoiceNo}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0 border border-border">
-                            {item.image ? (
-                              <ServerImage
-                                src={item.image}
-                                alt={item.productName}
-                                width={40}
-                                height={40}
-                                className="object-cover"
-                              />
-                            ) : (
-                              <Package className="w-5 h-5 text-muted-foreground" />
-                            )}
-                          </div>
-                          <div className="flex flex-col align-center">
-                            <p className="typo-semibold-14 text-foreground">
-                              {item.productName}
-                            </p>
-                          </div>
-                        </div>
+                      <TableCell className="typo-medium-14 text-foreground">
+                        {sale.customerName}
                       </TableCell>
                       <TableCell className="text-muted-foreground typo-regular-14">
-                        {item.categoryName}
+                        {sale.totalItems}{" "}
+                        {sale.totalItems === 1 ? "item" : "items"}
                       </TableCell>
                       <TableCell className="typo-bold-14 text-foreground">
-                        ${item.price?.toFixed(2)}
+                        ${sale.totalAmount.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-muted-foreground typo-regular-12">
-                        {item.time}
+                        {sale.time}
                       </TableCell>
                       <TableCell>
                         <span className="typo-medium-14 text-foreground">
-                          {item.paymentMethod}
+                          {sale.paymentMethod}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-orange-400 hover:text-orange-500 hover:bg-orange-50"
-                          onClick={() => handleReturnClick(item.saleId)}
-                        >
-                          <ArrowRightLeft className="h-4 w-4" />
-                        </Button>
                       </TableCell>
                       <TableCell className="text-center">
                         <span className="inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 text-emerald-500 typo-medium-12">
                           {t(
-                            `status.${(item.status || "completed").toLowerCase()}`,
+                            `status.${(sale.status || "completed").toLowerCase()}`,
                           )}
                         </span>
                       </TableCell>
@@ -425,10 +374,10 @@ export default function SalesHistoryPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
-                          onClick={() => handleViewInvoice(item.saleId)}
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
+                          onClick={() => setDrawerSale(sale)}
                         >
-                          <FileText className="h-4 w-4" />
+                          <Settings className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -500,6 +449,14 @@ export default function SalesHistoryPage() {
           </PaginationContent>
         </Pagination>
       </div>
+
+      <SaleDetailsDrawer
+        sale={drawerSale}
+        isOpen={!!drawerSale}
+        onClose={() => setDrawerSale(null)}
+        onReturn={handleReturnClick}
+        onViewInvoice={handleViewInvoice}
+      />
     </div>
   );
 }

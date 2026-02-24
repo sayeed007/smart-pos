@@ -24,9 +24,13 @@
       "return": "ফেরত",
       "status": "অবস্থা",
       "invoice": "চালান",
-      "actions": "কর্ম"
+      "actions": "কর্ম",
+      "customer": "গ্রাহক",
+      "totalItems": "মোট আইটেম",
+      "totalAmount": "মোট পরিমাণ"
     },
-    "empty": "কোনো বিক্রয় রেকর্ড পাওয়া যায়নি"
+    "empty": "কোনো বিক্রয় রেকর্ড পাওয়া যায়নি",
+    "walkInCustomer": "সাধারণ গ্রাহক"
   },
   "invoice_modal": {
     "title": "চালানের বিবরণ",
@@ -64,7 +68,12 @@
   "status": {
     "completed": "সম্পন্ন",
     "pending": "অপেক্ষমাণ",
-    "cancelled": "বাতিল"
+    "cancelled": "বাতিল",
+    "returned": "ফেরত",
+    "COMPLETED": "সম্পন্ন",
+    "PENDING": "অপেক্ষমাণ",
+    "CANCELLED": "বাতিল",
+    "RETURNED": "ফেরত"
   },
   "returns": {
     "validation": {
@@ -73,5 +82,16 @@
       "success": "Return processed successfully.",
       "failure": "Failed to process return. Please try again."
     }
+  },
+  "drawer": {
+    "customer": "গ্রাহক",
+    "items": "মোট আইটেম",
+    "subtotal": "উপমোট",
+    "discount": "ছাড়",
+    "tax": "কর",
+    "total": "মোট পরিমাণ",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "viewInvoice": "চালান দেখুন",
+    "processReturn": "রিটার্ন প্রক্রিয়া করুন"
   }
 }

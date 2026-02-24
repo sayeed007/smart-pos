@@ -95,5 +95,6 @@
   "common": {
     "cancel": "বাতিল করুন"
   },
-  "creating": "তৈরি করা হচ্ছে"
+  "creating": "তৈরি করা হচ্ছে",
+  "unknown_date": "অজানা তারিখ"
 }
