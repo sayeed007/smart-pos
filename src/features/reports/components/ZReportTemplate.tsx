@@ -1,6 +1,7 @@
 import { useSettingsStore } from "@/features/settings/store";
 import { format } from "date-fns";
 import { CashShift } from "@/lib/db";
+import { ServerImage } from "@/components/ui/server-image";
 
 interface ZReportProps {
   shift: CashShift;
@@ -53,6 +54,17 @@ export function ZReportTemplate({
       `}</style>
 
       <div className="text-center mb-4 border-b border-black border-dashed pb-2">
+        {settings.storeLogoUrl && (
+          <div className="mb-2 flex justify-center">
+            <ServerImage
+              src={settings.storeLogoUrl}
+              alt={settings.storeName || "Store Logo"}
+              width={72}
+              height={72}
+              className="h-auto max-h-16 w-auto object-contain"
+            />
+          </div>
+        )}
         <h1 className="uppercase typo-bold-18">Z-REPORT</h1>
         <h2 className="text-md typo-bold-14">{settings.storeName}</h2>
         <p className="typo-regular-12">

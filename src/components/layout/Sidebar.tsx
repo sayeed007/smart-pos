@@ -8,9 +8,11 @@ import { ThemeSelector } from "@/components/theme/ThemeSelector";
 import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
+import { ServerImage } from "@/components/ui/server-image";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { LocationSelector } from "@/components/location/LocationSelector";
+import { useSettingsStore } from "@/features/settings/store";
 
 interface NavItem {
   name: string;
@@ -38,6 +40,7 @@ export function Sidebar({
   const { user, logout } = useAuth();
   const router = useRouter();
   const { instance } = useInstance();
+  const { storeLogoUrl, storeName } = useSettingsStore();
   const { t } = useTranslation("common");
 
   const handlePageChange = (path: string) => {
@@ -48,7 +51,7 @@ export function Sidebar({
   return (
     <div
       className={cn(
-        "flex flex-col h-full bg-card border-r border-sidebar-border shadow-sm transition-all duration-300 overflow-hidden",
+        "flex flex-col h-full bg-card border-r border-sidebar-border shadow-sm transition-all duration-300",
         collapsed ? "w-20" : "w-full",
       )}
     >
@@ -64,18 +67,28 @@ export function Sidebar({
             collapsed ? "flex-col gap-2" : "gap-0",
           )}
         >
-          <Image
-            src={instance.logoUrl}
-            alt={instance.companyName}
-            width={48}
-            height={48}
-            className={"object-contain transition-all w-16 h-16"}
-          />
+          {storeLogoUrl ? (
+            <ServerImage
+              src={storeLogoUrl}
+              alt={storeName || instance.companyName || "POS logo"}
+              width={48}
+              height={48}
+              className="object-contain transition-all w-16 h-16"
+            />
+          ) : (
+            <Image
+              src={instance.logoUrl || "/tafuri_pos_logo_transparent.png"}
+              alt={instance.companyName || "POS logo"}
+              width={48}
+              height={48}
+              className="object-contain transition-all w-16 h-16"
+            />
+          )}
 
           {!collapsed && (
             <div className="flex-1 min-w-0 animate-in fade-in duration-300">
               <h1 className="typo-semibold-14 text-foreground whitespace-nowrap mb-1">
-                {instance.companyName}
+                {storeName || instance.companyName}
               </h1>
               <p className="typo-regular-11 text-muted-foreground uppercase whitespace-nowrap">
                 {title} {t("panel")}

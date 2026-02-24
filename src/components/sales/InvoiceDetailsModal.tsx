@@ -14,6 +14,7 @@ import { Printer } from "lucide-react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore } from "@/features/settings/store";
+import { ServerImage } from "@/components/ui/server-image";
 
 interface InvoiceDetailsModalProps {
   isOpen: boolean;
@@ -64,9 +65,23 @@ export function InvoiceDetailsModal({
                 </p>
               </div>
               <div className="text-right space-y-1 typo-regular-14">
+                {settings.storeLogoUrl && (
+                  <div className="mb-2 flex justify-end">
+                    <ServerImage
+                      src={settings.storeLogoUrl}
+                      alt={settings.storeName || "Store Logo"}
+                      width={72}
+                      height={72}
+                      className="h-auto max-h-16 w-auto object-contain"
+                    />
+                  </div>
+                )}
                 <h2 className="text-foreground typo-semibold-14">
                   {settings.storeName || "Aura POS Store"}
                 </h2>
+                {settings.storeTagline && (
+                  <p className="text-muted-foreground">{settings.storeTagline}</p>
+                )}
                 <p className="text-muted-foreground whitespace-pre-wrap">
                   {settings.storeAddress ||
                     "123 Fashion Street\nNew York, NY 10001"}

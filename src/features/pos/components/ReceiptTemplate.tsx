@@ -1,14 +1,37 @@
 import { useSettingsStore } from "@/features/settings/store";
 import { Sale } from "@/types";
 import { format } from "date-fns";
+import { ServerImage } from "@/components/ui/server-image";
 
 interface ReceiptTemplateProps {
   sale: Sale;
   reprint?: boolean;
 }
 
+type ReceiptLine = {
+  id?: string;
+  name: string;
+  quantity: number;
+  unitPrice?: number;
+  sellingPrice?: number;
+};
+
 export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
   const settings = useSettingsStore();
+  const receiptLines: ReceiptLine[] = (sale.lines || sale.items || []).map(
+    (item) => ({
+      id: item.id,
+      name: item.name,
+      quantity: Number(item.quantity) || 0,
+      unitPrice:
+        typeof item.unitPrice === "number" ? item.unitPrice : undefined,
+      sellingPrice:
+        "sellingPrice" in item &&
+        typeof (item as { sellingPrice?: unknown }).sellingPrice === "number"
+          ? (item as { sellingPrice: number }).sellingPrice
+          : undefined,
+    }),
+  );
 
   // Build a proper receipt date from the sale data
   const receiptDate = (() => {
@@ -52,7 +75,21 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
       `}</style>
 
       <div className="text-center mb-4">
+        {settings.storeLogoUrl && (
+          <div className="mb-2 flex justify-center">
+            <ServerImage
+              src={settings.storeLogoUrl}
+              alt={settings.storeName || "Store Logo"}
+              width={84}
+              height={84}
+              className="h-auto max-h-20 w-auto object-contain"
+            />
+          </div>
+        )}
         <h1 className="uppercase typo-bold-18">{settings.storeName}</h1>
+        {settings.storeTagline && (
+          <p className="typo-regular-12">{settings.storeTagline}</p>
+        )}
         <p className="typo-regular-12">{settings.storeAddress}</p>
         <p className="typo-regular-12">{settings.storePhone}</p>
         {settings.storeEmail && (
@@ -78,7 +115,7 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
           <span className="w-1/6 text-center">Qty</span>
           <span className="w-1/3 text-right">Total</span>
         </div>
-        {(sale.lines || sale.items || []).map((item: any, idx) => (
+        {receiptLines.map((item, idx) => (
           <div key={idx} className="flex justify-between mb-1 typo-regular-12">
             <span className="w-1/2 text-left truncate">{item.name}</span>
             <span className="w-1/6 text-center">{item.quantity}</span>
