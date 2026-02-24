@@ -37,7 +37,7 @@ export function DeleteButton({
         className,
       )}
     >
-      <Trash2 size={size === "sm" ? 14 : 16} />
+      <Trash2 size={size === "sm" ? 14 : 16} color="red" />
     </Button>
   );
 }
