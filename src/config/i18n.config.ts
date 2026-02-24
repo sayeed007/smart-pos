@@ -29,27 +29,27 @@ export const supportedLanguages: LanguageConfig[] = [
     dir: "ltr",
     enabled: true,
   },
-  {
-    code: "ar",
-    name: "Arabic",
-    nativeName: "العربية",
-    dir: "rtl",
-    enabled: true,
-  },
-  {
-    code: "es",
-    name: "Spanish",
-    nativeName: "Español",
-    dir: "ltr",
-    enabled: false,
-  },
-  {
-    code: "fr",
-    name: "French",
-    nativeName: "Français",
-    dir: "ltr",
-    enabled: false,
-  },
+  // {
+  //   code: "ar",
+  //   name: "Arabic",
+  //   nativeName: "العربية",
+  //   dir: "rtl",
+  //   enabled: true,
+  // },
+  // {
+  //   code: "es",
+  //   name: "Spanish",
+  //   nativeName: "Español",
+  //   dir: "ltr",
+  //   enabled: false,
+  // },
+  // {
+  //   code: "fr",
+  //   name: "French",
+  //   nativeName: "Français",
+  //   dir: "ltr",
+  //   enabled: false,
+  // },
 ];
 
 /**

@@ -4,9 +4,19 @@
   "search": "Search",
   "tabs": {
     "general": "General",
-    "pricing": "Pricing Strategy"
+    "pricing": "Pricing Strategy",
+    "locations": "Locations",
+    "auditLogs": "Audit Logs"
   },
   "sections": {
+    "branding": {
+      "title": "Branding",
+      "logo": "Company Logo",
+      "logoPlaceholder": "No logo",
+      "uploadLogo": "Upload Logo",
+      "removeLogo": "Remove Logo",
+      "tagline": "Tagline"
+    },
     "store": {
       "title": "Store Settings",
       "name": "Store Name",
@@ -39,7 +49,14 @@
     }
   },
   "toasts": {
-    "success": "Settings saved successfully"
+    "success": "Settings saved successfully",
+    "failure": "Failed to save settings. Please try again."
+  },
+  "validation": {
+    "currencyCode": "Currency code must be 3 letters.",
+    "taxRate": "Tax rate must be a valid non-negative number.",
+    "logoFormat": "Only PNG, JPEG, and WebP logo files are allowed.",
+    "logoSize": "Logo file must be under 5MB."
   },
   "actions": {
     "save": "Save Settings"

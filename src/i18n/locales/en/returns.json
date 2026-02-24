@@ -7,6 +7,9 @@
   "deleteDescription": "Are you sure you want to delete return #{{invoiceNo}}?",
   "deleteButton": "Delete",
   "page": "Page {{current}} of {{total}}",
+  "cards": {
+    "returns": "Returns"
+  },
   "validation": {
     "invalidData": "Invalid return data",
     "success": "Return processed successfully",

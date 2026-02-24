@@ -65,5 +65,13 @@
     "completed": "Completed",
     "pending": "Pending",
     "cancelled": "Cancelled"
+  },
+  "returns": {
+    "validation": {
+      "invalidData": "Invalid return data.",
+      "successRestocked": "Items returned and restocked to inventory.",
+      "success": "Return processed successfully.",
+      "failure": "Failed to process return. Please try again."
+    }
   }
 }

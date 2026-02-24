@@ -167,6 +167,7 @@ export default function SalesHistoryPage() {
 
   // Flatten sales to items for the table view (matching reference)
   const soldItems = useMemo(() => {
+    console.log(sales);
     // Check if sales exists and has data property (paginated response)
     const salesList = sales?.data || [];
     if (!Array.isArray(salesList)) return [];

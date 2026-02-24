@@ -65,5 +65,13 @@
     "completed": "সম্পন্ন",
     "pending": "অপেক্ষমাণ",
     "cancelled": "বাতিল"
+  },
+  "returns": {
+    "validation": {
+      "invalidData": "Invalid return data.",
+      "successRestocked": "Items returned and restocked to inventory.",
+      "success": "Return processed successfully.",
+      "failure": "Failed to process return. Please try again."
+    }
   }
 }
