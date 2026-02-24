@@ -3,6 +3,7 @@
 import { clearStoredAuth, setStoredAuth } from "@/lib/auth-storage";
 import { User, UserRole } from "@/types";
 import { useRouter } from "next/navigation";
+import { useSettingsStore } from "@/features/settings/store";
 import {
   createContext,
   ReactNode,
@@ -20,12 +21,18 @@ interface AuthContextType {
 }
 
 type BackendRole = string | { name?: string | null } | null | undefined;
+type BackendRoleInput = BackendRole[] | BackendRole;
 
-export const mapBackendRoleToUiRole = (
-  backendRoles: BackendRole[] | undefined,
-  fallback?: UserRole,
-): UserRole => {
-  const normalized = (backendRoles ?? [])
+const normalizeBackendRoles = (
+  backendRoles: BackendRoleInput | undefined,
+): string[] => {
+  const roleList = Array.isArray(backendRoles)
+    ? backendRoles
+    : backendRoles
+      ? [backendRoles]
+      : [];
+
+  return roleList
     .map((role) => {
       if (typeof role === "string") return role;
       if (role && typeof role === "object" && typeof role.name === "string") {
@@ -33,12 +40,23 @@ export const mapBackendRoleToUiRole = (
       }
       return "";
     })
-    .filter(Boolean)
-    .map((role) => role.toLowerCase());
+    .map((role) => role.trim().toLowerCase())
+    .filter(Boolean);
+};
 
-  if (normalized.includes("admin")) return UserRole.ADMIN;
-  if (normalized.includes("manager")) return UserRole.MANAGER;
-  if (normalized.includes("cashier")) return UserRole.CASHIER;
+export const mapBackendRoleToUiRole = (
+  backendRoles: BackendRoleInput | undefined,
+  fallback?: UserRole,
+): UserRole => {
+  const normalized = normalizeBackendRoles(backendRoles);
+
+  if (normalized.some((role) => role.includes("admin"))) return UserRole.ADMIN;
+  if (normalized.some((role) => role.includes("manager"))) {
+    return UserRole.MANAGER;
+  }
+  if (normalized.some((role) => role.includes("cashier"))) {
+    return UserRole.CASHIER;
+  }
 
   return fallback ?? UserRole.CASHIER;
 };
@@ -75,9 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userData.role === UserRole.ADMIN ||
       userData.role === UserRole.MANAGER
     ) {
-      router.push("/admin/dashboard");
+      router.replace("/admin/dashboard");
     } else {
-      router.push("/cashier/pos");
+      router.replace("/cashier/pos");
     }
   };
 
@@ -85,7 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     clearStoredAuth();
     localStorage.removeItem("aura_user");
-    router.push("/login");
+    useSettingsStore.getState().resetSettings();
+    router.replace("/login");
   };
 
   return (
