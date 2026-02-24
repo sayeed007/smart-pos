@@ -20,15 +20,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-const PAGE_SIZE = 50;
+import { DataPagination } from "@/components/ui/pagination";
 
 function formatDateTime(value: string) {
   const parsed = new Date(value);
@@ -38,11 +30,12 @@ function formatDateTime(value: string) {
 
 export function AuditLogsTab() {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const { data, isLoading, isFetching, isError } = useAuditLogs({
     page,
-    limit: PAGE_SIZE,
+    limit: pageSize,
     search: search || undefined,
   });
   const logs = data?.data || [];
@@ -155,51 +148,20 @@ export function AuditLogsTab() {
           </Table>
         </div>
 
-        <div className="flex items-center justify-end border-t p-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (meta?.hasPreviousPage) {
-                      setPage((prev) => Math.max(1, prev - 1));
-                    }
-                  }}
-                  className={
-                    !meta?.hasPreviousPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-
-              <PaginationItem>
-                <span className="px-4 typo-medium-14 text-muted-foreground">
-                  Page {meta?.page || 1} of {meta?.totalPages || 1}
-                </span>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (meta?.hasNextPage) {
-                      setPage((prev) => prev + 1);
-                    }
-                  }}
-                  className={
-                    !meta?.hasNextPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        <DataPagination
+          page={meta?.page || 1}
+          totalPages={meta?.totalPages || 1}
+          totalItems={meta?.total}
+          hasPreviousPage={meta?.hasPreviousPage}
+          hasNextPage={meta?.hasNextPage}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          pageSizeOptions={[25, 50, 100]}
+          onPageSizeChange={(nextPageSize) => {
+            setPageSize(nextPageSize);
+            setPage(1);
+          }}
+        />
       </CardContent>
     </Card>
   );

@@ -79,6 +79,9 @@
   },
   "locations": "Locations",
   "page": "Page",
+  "goTo": "Go to",
+  "perPageSuffix": "/ page",
+  "totalItems": "Total {{count}} items",
   "checkout": {
     "cash": "Cash",
     "payWithCash": "Pay With Cash",

@@ -49,6 +49,7 @@ export function ProductsPageContent() {
   // Derived state
   const productList = productsData?.data || [];
   const pageCount = productsData?.meta?.totalPages || 1;
+  const totalItems = productsData?.meta?.total || productList.length;
 
   // We rely on backend filtering mostly, but if we have local list we use it.
   // Actually, search is now backend-side, so just use productList directly.
@@ -134,6 +135,7 @@ export function ProductsPageContent() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           pageCount={pageCount}
+          totalItems={totalItems}
           pagination={pagination}
           onPageChange={setPagination}
         />

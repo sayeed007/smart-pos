@@ -14,13 +14,7 @@ import { StatsCards } from "@/components/reports/StatsCards";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import {
   Popover,
   PopoverContent,
@@ -59,7 +53,9 @@ export default function ReportsPage() {
     currentLocation.id !== "default" ? currentLocation.id : "all",
   );
   const [salesPage, setSalesPage] = useState(1);
+  const [salesPageSize, setSalesPageSize] = useState(20);
   const [productsPage, setProductsPage] = useState(1);
+  const [productsPageSize, setProductsPageSize] = useState(20);
   const [exportingSales, setExportingSales] = useState(false);
   const [exportingProducts, setExportingProducts] = useState(false);
 
@@ -113,13 +109,13 @@ export default function ReportsPage() {
     endDate,
     locationId,
     page: salesPage,
-    limit: 20,
+    limit: salesPageSize,
   });
   const { data: productsResult, isLoading: productsLoading } =
     useReportsProducts({
       locationId,
       page: productsPage,
-      limit: 20,
+      limit: productsPageSize,
     });
 
   const isLoading =
@@ -292,52 +288,19 @@ export default function ReportsPage() {
             exporting={exportingSales}
             loading={salesLoading}
           />
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (salesResult?.meta.hasPreviousPage) {
-                      setSalesPage((page) => Math.max(1, page - 1));
-                    }
-                  }}
-                  className={
-                    salesResult?.meta.hasPreviousPage
-                      ? "cursor-pointer"
-                      : "pointer-events-none opacity-50"
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-muted-foreground px-4 typo-medium-14">
-                  Page {salesResult?.meta.page || 1} of{" "}
-                  {salesResult?.meta.totalPages || 1}
-                </span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (salesResult?.meta.hasNextPage) {
-                      setSalesPage((page) =>
-                        salesResult?.meta.totalPages
-                          ? Math.min(salesResult.meta.totalPages, page + 1)
-                          : page + 1,
-                      );
-                    }
-                  }}
-                  className={
-                    salesResult?.meta.hasNextPage
-                      ? "cursor-pointer"
-                      : "pointer-events-none opacity-50"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <DataPagination
+            page={salesResult?.meta.page || 1}
+            totalPages={salesResult?.meta.totalPages || 1}
+            totalItems={salesResult?.meta.total}
+            hasPreviousPage={salesResult?.meta.hasPreviousPage}
+            hasNextPage={salesResult?.meta.hasNextPage}
+            onPageChange={setSalesPage}
+            pageSize={salesPageSize}
+            onPageSizeChange={(nextPageSize) => {
+              setSalesPageSize(nextPageSize);
+              setSalesPage(1);
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="products">
@@ -347,52 +310,19 @@ export default function ReportsPage() {
             exporting={exportingProducts}
             loading={productsLoading}
           />
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (productsResult?.meta.hasPreviousPage) {
-                      setProductsPage((page) => Math.max(1, page - 1));
-                    }
-                  }}
-                  className={
-                    productsResult?.meta.hasPreviousPage
-                      ? "cursor-pointer"
-                      : "pointer-events-none opacity-50"
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-muted-foreground px-4 typo-medium-14">
-                  Page {productsResult?.meta.page || 1} of{" "}
-                  {productsResult?.meta.totalPages || 1}
-                </span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (productsResult?.meta.hasNextPage) {
-                      setProductsPage((page) =>
-                        productsResult?.meta.totalPages
-                          ? Math.min(productsResult.meta.totalPages, page + 1)
-                          : page + 1,
-                      );
-                    }
-                  }}
-                  className={
-                    productsResult?.meta.hasNextPage
-                      ? "cursor-pointer"
-                      : "pointer-events-none opacity-50"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <DataPagination
+            page={productsResult?.meta.page || 1}
+            totalPages={productsResult?.meta.totalPages || 1}
+            totalItems={productsResult?.meta.total}
+            hasPreviousPage={productsResult?.meta.hasPreviousPage}
+            hasNextPage={productsResult?.meta.hasNextPage}
+            onPageChange={setProductsPage}
+            pageSize={productsPageSize}
+            onPageSizeChange={(nextPageSize) => {
+              setProductsPageSize(nextPageSize);
+              setProductsPage(1);
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="payment">

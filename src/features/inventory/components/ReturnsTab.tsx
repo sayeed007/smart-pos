@@ -6,13 +6,7 @@ import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { useCreateReturn, useReturns } from "@/hooks/api/returns";
 import { useSale } from "@/hooks/api/sales";
@@ -25,7 +19,7 @@ import { toast } from "sonner";
 export function ReturnsTab({ locationId }: { locationId: string }) {
   const { t } = useTranslation(["returns", "common"]);
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
 
   const queryParams = {
@@ -206,51 +200,22 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
         />
 
         <div className="flex items-center justify-end space-x-2 py-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (page > 1) setPage(page - 1);
-                  }}
-                  className={
-                    page <= 1
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-
-              <PaginationItem>
-                <span className="text-muted-foreground px-4 typo-medium-14">
-                  {t("page", {
-                    current: returnsData?.meta?.page || 1,
-                    total: returnsData?.meta?.totalPages || 1,
-                  })}
-                </span>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const totalPages = Math.ceil(
-                      (returnsData?.meta.total || 0) / pageSize,
-                    );
-                    if (page < totalPages) setPage(page + 1);
-                  }}
-                  className={
-                    page >= Math.ceil((returnsData?.meta.total || 0) / pageSize)
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <DataPagination
+            page={returnsData?.meta?.page || page}
+            totalPages={
+              returnsData?.meta?.totalPages ||
+              Math.max(1, Math.ceil((returnsData?.meta?.total || 0) / pageSize))
+            }
+            totalItems={returnsData?.meta?.total || 0}
+            hasPreviousPage={returnsData?.meta?.hasPreviousPage}
+            hasNextPage={returnsData?.meta?.hasNextPage}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(nextPageSize) => {
+              setPageSize(nextPageSize);
+              setPage(1);
+            }}
+          />
         </div>
       </CardContent>
 

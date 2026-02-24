@@ -5,13 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import {
   Popover,
   PopoverContent,
@@ -60,6 +54,7 @@ export function InventoryLedger({
     to: new Date(),
   });
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const handleDateChange = (val: DateRange | undefined) => {
     setDate(val);
@@ -75,7 +70,7 @@ export function InventoryLedger({
 
   // Fetch transactions from API for selected location
   const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useAllInventoryTransactions(locationId, page, 10, startDate, endDate);
+    useAllInventoryTransactions(locationId, page, pageSize, startDate, endDate);
 
   const transactions: InventoryTransaction[] = Array.isArray(
     transactionsData?.data,
@@ -322,49 +317,19 @@ export function InventoryLedger({
 
             {/* Pagination Controls */}
             {meta && (
-              <div className="flex items-center justify-end space-x-2 py-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e: React.MouseEvent) => {
-                          e.preventDefault();
-                          if (meta.hasPreviousPage) {
-                            setPage((p) => Math.max(1, p - 1));
-                          }
-                        }}
-                        className={
-                          !meta.hasPreviousPage
-                            ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
-                        }
-                      />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <span className="text-muted-foreground px-4 typo-medium-14">
-                        Page {meta.page} of {meta.totalPages}
-                      </span>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e: React.MouseEvent) => {
-                          e.preventDefault();
-                          if (meta.hasNextPage) {
-                            setPage((p) => p + 1);
-                          }
-                        }}
-                        className={
-                          !meta.hasNextPage
-                            ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
+              <DataPagination
+                page={meta.page}
+                totalPages={meta.totalPages}
+                totalItems={meta.total}
+                hasPreviousPage={meta.hasPreviousPage}
+                hasNextPage={meta.hasNextPage}
+                onPageChange={setPage}
+                pageSize={pageSize}
+                onPageSizeChange={(nextPageSize) => {
+                  setPageSize(nextPageSize);
+                  setPage(1);
+                }}
+              />
             )}
           </>
         )}

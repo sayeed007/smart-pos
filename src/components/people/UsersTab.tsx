@@ -28,13 +28,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 
 import { PageHeader } from "@/components/ui/page-header";
 import { useTranslation } from "react-i18next";
@@ -47,11 +41,12 @@ export function UsersTab() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: usersData, isLoading } = useUsers({
     search: debouncedSearch,
     page,
-    limit: 10,
+    limit: pageSize,
   });
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
@@ -276,52 +271,19 @@ export function UsersTab() {
 
       {/* Pagination Controls */}
       {meta && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    if (meta.hasPreviousPage) {
-                      setPage((p) => Math.max(1, p - 1));
-                    }
-                  }}
-                  className={
-                    !meta.hasPreviousPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-muted-foreground px-4 typo-medium-14">
-                  {t("common:page", "Page {{current}} of {{total}}", {
-                    current: meta.page,
-                    total: meta.totalPages,
-                  })}
-                </span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    if (meta.hasNextPage) {
-                      setPage((p) => p + 1);
-                    }
-                  }}
-                  className={
-                    !meta.hasNextPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        <DataPagination
+          page={meta.page}
+          totalPages={meta.totalPages}
+          totalItems={meta.total}
+          hasPreviousPage={meta.hasPreviousPage}
+          hasNextPage={meta.hasNextPage}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageSizeChange={(nextPageSize) => {
+            setPageSize(nextPageSize);
+            setPage(1);
+          }}
+        />
       )}
 
       <UserFormDialog

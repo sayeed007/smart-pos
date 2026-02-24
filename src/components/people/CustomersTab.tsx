@@ -19,13 +19,7 @@ import { getErrorMessage } from "@/lib/errors";
 import { CustomerFormDialog } from "@/components/customers/CustomerFormDialog";
 import { CustomerFormValues } from "@/lib/validations/customer";
 import { useDebounce } from "use-debounce";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import { PageHeader } from "@/components/ui/page-header";
 
 export function CustomersTab() {
@@ -39,6 +33,7 @@ export function CustomersTab() {
     null,
   );
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const { t } = useTranslation("customers");
 
   // ... imports
@@ -47,7 +42,7 @@ export function CustomersTab() {
   const { data: customersData, isLoading } = useCustomers({
     search: debouncedSearch,
     page,
-    limit: 10,
+    limit: pageSize,
   });
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
@@ -128,49 +123,19 @@ export function CustomersTab() {
 
       {/* Pagination Controls */}
       {meta && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    if (meta.hasPreviousPage) {
-                      setPage((p) => Math.max(1, p - 1));
-                    }
-                  }}
-                  className={
-                    !meta.hasPreviousPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <span className="text-muted-foreground px-4 typo-medium-14">
-                  Page {meta.page} of {meta.totalPages}
-                </span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    if (meta.hasNextPage) {
-                      setPage((p) => p + 1);
-                    }
-                  }}
-                  className={
-                    !meta.hasNextPage
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        <DataPagination
+          page={meta.page}
+          totalPages={meta.totalPages}
+          totalItems={meta.total}
+          hasPreviousPage={meta.hasPreviousPage}
+          hasNextPage={meta.hasNextPage}
+          onPageChange={setPage}
+          pageSize={pageSize}
+          onPageSizeChange={(nextPageSize) => {
+            setPageSize(nextPageSize);
+            setPage(1);
+          }}
+        />
       )}
 
       {/* Add/Edit Customer Dialog */}

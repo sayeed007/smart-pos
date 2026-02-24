@@ -6,13 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import {
   Popover,
   PopoverContent,
@@ -58,6 +52,7 @@ export default function SalesHistoryPage() {
     setPage(1);
   };
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [returnSale, setReturnSale] = useState<Sale | null>(null);
   const [viewSale, setViewSale] = useState<Sale | null>(null);
   const [drawerSale, setDrawerSale] = useState<Sale | null>(null);
@@ -70,9 +65,9 @@ export default function SalesHistoryPage() {
         ? endOfDay(date.to || date.from).toISOString()
         : undefined,
       page,
-      limit: 10,
+      limit: pageSize,
     };
-  }, [date, page]);
+  }, [date, page, pageSize]);
 
   const { data: sales, isLoading: salesLoading } = useSales({
     ...dateParams,
@@ -404,51 +399,19 @@ export default function SalesHistoryPage() {
       />
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-end space-x-2 p-4 pt-0">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  if (sales?.meta?.hasPreviousPage) {
-                    setPage((p) => Math.max(1, p - 1));
-                  }
-                }}
-                className={
-                  !sales?.meta?.hasPreviousPage
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-
-            <PaginationItem>
-              <span className="text-muted-foreground px-4 typo-medium-14">
-                Page {sales?.meta?.page || 1} of {sales?.meta?.totalPages || 1}
-              </span>
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  if (sales?.meta?.hasNextPage) {
-                    setPage((p) => p + 1);
-                  }
-                }}
-                className={
-                  !sales?.meta?.hasNextPage
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      <DataPagination
+        page={sales?.meta?.page || 1}
+        totalPages={sales?.meta?.totalPages || 1}
+        totalItems={sales?.meta?.total}
+        hasPreviousPage={sales?.meta?.hasPreviousPage}
+        hasNextPage={sales?.meta?.hasNextPage}
+        onPageChange={setPage}
+        pageSize={pageSize}
+        onPageSizeChange={(nextPageSize) => {
+          setPageSize(nextPageSize);
+          setPage(1);
+        }}
+      />
 
       <SaleDetailsDrawer
         sale={drawerSale}

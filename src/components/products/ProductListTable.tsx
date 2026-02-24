@@ -38,13 +38,7 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { DataPagination } from "@/components/ui/pagination";
 import {
   Dialog,
   DialogContent,
@@ -64,6 +58,7 @@ interface ProductListTableProps {
   onEdit: (product: Product) => void;
   onDelete?: (product: Product) => Promise<void> | void;
   pageCount: number;
+  totalItems?: number;
   pagination: { pageIndex: number; pageSize: number };
   onPageChange: (pagination: { pageIndex: number; pageSize: number }) => void;
 }
@@ -75,6 +70,7 @@ export function ProductListTable({
   onEdit,
   onDelete,
   pageCount,
+  totalItems,
   pagination,
   onPageChange,
 }: ProductListTableProps) {
@@ -658,48 +654,19 @@ export function ProductListTable({
       </Table>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-end space-x-2 p-4 pt-0">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  if (table.getCanPreviousPage()) table.previousPage();
-                }}
-                className={
-                  !table.getCanPreviousPage()
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-
-            {/* Simple Page Indicator for now to avoid logic complexity without a helper, or we can iterate */}
-            <PaginationItem>
-              <span className="text-muted-foreground px-4 typo-medium-14">
-                Page {pagination.pageIndex + 1} of {pageCount}
-              </span>
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  if (table.getCanNextPage()) table.nextPage();
-                }}
-                className={
-                  !table.getCanNextPage()
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      <DataPagination
+        page={pagination.pageIndex + 1}
+        totalPages={Math.max(1, pageCount)}
+        totalItems={totalItems}
+        hasPreviousPage={table.getCanPreviousPage()}
+        hasNextPage={table.getCanNextPage()}
+        onPageChange={(nextPage) => table.setPageIndex(nextPage - 1)}
+        pageSize={pagination.pageSize}
+        onPageSizeChange={(nextPageSize) => {
+          table.setPageSize(nextPageSize);
+          table.setPageIndex(0);
+        }}
+      />
 
       <Dialog open={printOpen} onOpenChange={setPrintOpen}>
         <DialogContent className="sm:max-w-lg">

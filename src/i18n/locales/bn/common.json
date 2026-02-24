@@ -79,6 +79,9 @@
   },
   "locations": "অবস্থানসমূহ",
   "page": "পৃষ্ঠা",
+  "goTo": "যান",
+  "perPageSuffix": "/ পৃষ্ঠা",
+  "totalItems": "মোট {{count}} আইটেম",
   "checkout": {
     "cash": "নগদ",
     "payWithCash": "নগদে পেমেন্ট করুন",
