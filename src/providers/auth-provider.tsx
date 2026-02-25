@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     clearStoredAuth();
-    localStorage.removeItem("aura_user");
+    localStorage.removeItem("tafuri_user");
     useSettingsStore.getState().resetSettings();
     router.replace("/login");
   };
