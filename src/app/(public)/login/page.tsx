@@ -16,6 +16,7 @@ import { mapBackendRoleToUiRole, useAuth } from "@/providers/auth-provider";
 import { User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Smartphone } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -237,6 +238,15 @@ export default function LoginPage() {
 
           <p className="text-center text-gray-300 uppercase tracking-widest typo-bold-10">
             Protected by Tafuri Security
+          </p>
+          <p className="text-center typo-regular-11 text-gray-500">
+            Platform super admin?{" "}
+            <Link
+              href="/platform"
+              className="text-[#f87171] underline underline-offset-2"
+            >
+              Open onboarding console
+            </Link>
           </p>
           {isDev && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 typo-regular-11">
