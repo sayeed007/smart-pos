@@ -359,11 +359,24 @@ export default function SalesHistoryPage() {
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-emerald-50 text-emerald-500 typo-medium-12">
-                          {t(
-                            `status.${(sale.status || "completed").toLowerCase()}`,
-                          )}
-                        </span>
+                        {(() => {
+                          const s = (sale.status || "COMPLETED").toUpperCase();
+                          const colorMap: Record<string, string> = {
+                            COMPLETED: "bg-emerald-50 text-emerald-600",
+                            RETURNED: "bg-red-50 text-red-500",
+                            PARTIALLY_RETURNED: "bg-orange-50 text-orange-500",
+                            VOIDED: "bg-gray-100 text-gray-500",
+                          };
+                          const cls =
+                            colorMap[s] || "bg-muted text-muted-foreground";
+                          return (
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full typo-medium-12 ${cls}`}
+                            >
+                              {t(`status.${s}`, s)}
+                            </span>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell className="text-center pr-6">
                         <Button

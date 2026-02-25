@@ -124,7 +124,9 @@ export function CategoryFormModal({
                     <FormControl>
                       <>
                         {field.value ? (
-                          <span className="mr-2 typo-regular-24">{field.value}</span>
+                          <span className="mr-2 typo-regular-24">
+                            {field.value}
+                          </span>
                         ) : (
                           <span className="text-muted-foreground">
                             {t("placeholders.selectIcon", "Select an icon")}
@@ -135,7 +137,7 @@ export function CategoryFormModal({
                             field.onChange(emojiData.emoji)
                           }
                           width="100%"
-                          height={300}
+                          height={400}
                           theme={theme === "dark" ? Theme.DARK : Theme.LIGHT}
                         />
                       </>

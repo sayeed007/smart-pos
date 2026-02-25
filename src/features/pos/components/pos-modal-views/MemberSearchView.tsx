@@ -10,6 +10,7 @@ import { Customer } from "@/types";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errors";
 import { useTranslation } from "react-i18next";
+import { CustomersService } from "@/lib/services/backend/customers.service";
 
 interface MemberSearchViewProps {
   onSelect: (customer: Customer) => void;
@@ -66,18 +67,29 @@ export function MemberSearchView({
         );
         return;
       }
-      const id = `cust-${Date.now()}`;
-      const customer: Customer = {
-        id,
+
+      // Create customer in backend first to get a real UUID
+      const created = await CustomersService.create({
         name: newCustomer.name,
         phone: newCustomer.phone,
-        email: newCustomer.email || "",
+        email: newCustomer.email || undefined,
+      });
+
+      // Build the local Customer object using the real backend ID
+      const customer: Customer = {
+        id: created.id,
+        name: created.name,
+        phone: created.phone || newCustomer.phone,
+        email: created.email || newCustomer.email || "",
         totalSpent: 0,
         loyaltyPoints: 0,
         tierId: "tier-bronze",
         history: [],
       };
-      await db.customers.add(customer);
+
+      // Persist to local IndexedDB for offline look-up
+      await db.customers.put(customer);
+
       onSelect(customer);
       toast.success(t("customer.createdSuccess", "Customer Created"));
     } catch (error) {

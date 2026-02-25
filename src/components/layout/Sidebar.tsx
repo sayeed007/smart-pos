@@ -9,7 +9,8 @@ import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { ServerImage } from "@/components/ui/server-image";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { LocationSelector } from "@/components/location/LocationSelector";
 import { useSettingsStore } from "@/features/settings/store";
@@ -38,15 +39,9 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const router = useRouter();
   const { instance } = useInstance();
   const { storeLogoUrl, storeName } = useSettingsStore();
   const { t } = useTranslation("common");
-
-  const handlePageChange = (path: string) => {
-    router.push(path);
-    if (onClose) onClose();
-  };
 
   return (
     <div
@@ -128,20 +123,20 @@ export function Sidebar({
         {items.map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (
-            <Button
+            <Link
               key={item.path}
-              variant="ghost"
-              onClick={() => handlePageChange(item.path)}
+              href={item.path}
+              onClick={onClose}
+              title={collapsed ? item.name : undefined}
               className={cn(
-                "w-full justify-start",
+                "flex items-center w-full transition-colors rounded-md",
                 collapsed
-                  ? "justify-center w-12 h-12 mx-auto rounded-md"
-                  : "gap-3 px-4 py-3 rounded-md mx-2",
+                  ? "justify-center w-12 h-12 mx-auto"
+                  : "gap-3 px-4 py-3 mx-2",
                 isActive
                   ? "bg-primary/10 text-primary shadow-sm typo-bold-14"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground typo-medium-14",
               )}
-              title={collapsed ? item.name : undefined}
             >
               <span
                 className={cn(
@@ -161,7 +156,7 @@ export function Sidebar({
               {!collapsed && isActive && (
                 <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full" />
               )}
-            </Button>
+            </Link>
           );
         })}
       </nav>

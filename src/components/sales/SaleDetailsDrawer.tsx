@@ -40,10 +40,12 @@ export function SaleDetailsDrawer({
         return "bg-emerald-50 text-emerald-500 border-emerald-200";
       case "RETURNED":
         return "bg-red-50 text-red-500 border-red-200";
+      case "PARTIALLY_RETURNED":
+        return "bg-orange-50 text-orange-500 border-orange-200";
       case "VOIDED":
         return "bg-gray-100 text-gray-500 border-gray-200";
       default:
-        return "";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
@@ -200,7 +202,10 @@ export function SaleDetailsDrawer({
               onClose();
               onReturn(sale.id);
             }}
-            disabled={sale.status?.toUpperCase() === "RETURNED"}
+            disabled={
+              sale.status?.toUpperCase() === "RETURNED" ||
+              sale.status?.toUpperCase() === "VOIDED"
+            }
           >
             <ArrowRightLeft className="w-4 h-4 mr-2" />
             {t("drawer.processReturn", "Return")}
@@ -210,4 +215,3 @@ export function SaleDetailsDrawer({
     </Sheet>
   );
 }
-

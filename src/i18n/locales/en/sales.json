@@ -70,10 +70,14 @@
     "pending": "Pending",
     "cancelled": "Cancelled",
     "returned": "Returned",
+    "partially_returned": "Partial Return",
+    "voided": "Voided",
     "COMPLETED": "Completed",
     "PENDING": "Pending",
     "CANCELLED": "Cancelled",
-    "RETURNED": "Returned"
+    "RETURNED": "Returned",
+    "PARTIALLY_RETURNED": "Partial Return",
+    "VOIDED": "Voided"
   },
   "returns": {
     "validation": {

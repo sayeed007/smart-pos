@@ -70,10 +70,14 @@
     "pending": "অপেক্ষমাণ",
     "cancelled": "বাতিল",
     "returned": "ফেরত",
+    "partially_returned": "আংশিক ফেরত",
+    "voided": "বাতিলকৃত",
     "COMPLETED": "সম্পন্ন",
     "PENDING": "অপেক্ষমাণ",
     "CANCELLED": "বাতিল",
-    "RETURNED": "ফেরত"
+    "RETURNED": "ফেরত",
+    "PARTIALLY_RETURNED": "আংশিক ফেরত",
+    "VOIDED": "বাতিলকৃত"
   },
   "returns": {
     "validation": {
