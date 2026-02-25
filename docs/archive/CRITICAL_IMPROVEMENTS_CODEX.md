@@ -1,7 +1,7 @@
 # CRITICAL_IMPROVEMENTS_CODEX (Senior PM + Architect)
 
 Date: 2026-02-11
-Scope: Aura POS (Next.js). Frontend-first now, but aligned with enterprise-grade backend and market readiness.
+Scope: Tafuri POS (Next.js). Frontend-first now, but aligned with enterprise-grade backend and market readiness.
 Audience: Founders, PM, Engineering, Design.
 
 ## 0) Executive Summary

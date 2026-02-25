@@ -1,4 +1,4 @@
-# Aura Web Smoke Test
+# Tafuri Web Smoke Test
 Last updated: 2026-02-20
 
 ## Pre-Reqs

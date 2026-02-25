@@ -1,7 +1,7 @@
-# Aura Web - Frontend Architecture and System Guide
+# Tafuri Web - Frontend Architecture and System Guide
 
 ## Purpose and responsibilities
-Aura Web is the web UI for Aura POS. It owns the user experience, client-side state, offline persistence, and communication with the backend API. It does not enforce business rules that must be authoritative (pricing, inventory, permissions, accounting); those live in the backend.
+Tafuri Web is the web UI for Tafuri POS. It owns the user experience, client-side state, offline persistence, and communication with the backend API. It does not enforce business rules that must be authoritative (pricing, inventory, permissions, accounting); those live in the backend.
 
 ## Tech stack
 - Next.js App Router with React and TypeScript

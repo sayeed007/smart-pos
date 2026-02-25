@@ -1,8 +1,8 @@
-# Aura Web Project Overview
+# Tafuri Web Project Overview
 Last updated: 2026-02-20
 
 ## Purpose
-Aura Web is the Next.js frontend for the Aura POS platform. It provides:
+Tafuri Web is the Next.js frontend for the Tafuri POS platform. It provides:
 - Admin operations (catalog, inventory, reports, settings).
 - Cashier POS experience (fast checkout, split payments, suspended sales).
 - Multi-tenant, location-aware workflows.

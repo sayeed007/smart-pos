@@ -182,7 +182,7 @@ export function ReceiptTemplate({ sale, reprint }: ReceiptTemplateProps) {
 
       <div className="text-center typo-regular-12">
         <p className="whitespace-pre-wrap">{settings.receiptFooter}</p>
-        <p className="mt-2 typo-regular-10">Powered by Aura POS</p>
+        <p className="mt-2 typo-regular-10">Powered by Tafuri POS</p>
       </div>
 
       {/* Cut line visual (optional) */}

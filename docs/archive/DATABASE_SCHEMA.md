@@ -1,4 +1,4 @@
-# Aura POS — PostgreSQL Database Schema
+# Tafuri POS — PostgreSQL Database Schema
 
 ## Architecture Principles
 

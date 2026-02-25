@@ -1,7 +1,7 @@
 # Codebase Findings (Frontend Focus)
 
 Date: 2026-02-11
-Project: Aura POS (Next.js)
+Project: Tafuri POS (Next.js)
 Scope: Route map, feature coverage, frontend readiness, gaps to market readiness
 
 ## 1) Route Map and Current Behavior

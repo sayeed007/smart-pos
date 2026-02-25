@@ -36,7 +36,7 @@ const DEFAULT_SETTINGS: Omit<
   taxRate: 10,
   currencySymbol: "$",
 
-  receiptHeader: "Welcome to Aura POS",
+  receiptHeader: "Welcome to Tafuri POS",
   receiptFooter: "Thank you! Visit again.",
   paperWidth: "80mm",
 };

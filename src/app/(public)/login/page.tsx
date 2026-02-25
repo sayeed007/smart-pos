@@ -39,7 +39,7 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: isDev ? devAdminEmail || "admin@aura-demo.com" : "",
+      email: isDev ? devAdminEmail || "admin@tafuri-demo.com" : "",
       password: isDev ? devAdminPassword || "SecureP@ss123" : "",
     },
   });
@@ -49,7 +49,7 @@ export default function LoginPage() {
       {
         email: values.email,
         password: values.password,
-        deviceInfo: "aura-web",
+        deviceInfo: "tafuri-web",
       },
       {
         onSuccess: (userData) => {
@@ -68,7 +68,9 @@ export default function LoginPage() {
               name?: string;
               email?: string;
               tenantId?: string;
-              roles?: Array<string | { name?: string | null } | null | undefined>;
+              roles?: Array<
+                string | { name?: string | null } | null | undefined
+              >;
               role?: string | { name?: string | null } | null | undefined;
             };
           };
@@ -123,7 +125,7 @@ export default function LoginPage() {
             <Smartphone size={48} className="text-white drop-shadow-md" />
           </div>
           <h1 className="mb-4 tracking-tight drop-shadow-lg typo-bold-60">
-            Aura POS
+            Tafuri POS
           </h1>
           <p className="text-red-100 max-w-md mx-auto leading-relaxed typo-medium-20">
             The next generation retail platform for seamless commerce and
@@ -234,7 +236,7 @@ export default function LoginPage() {
           </Form>
 
           <p className="text-center text-gray-300 uppercase tracking-widest typo-bold-10">
-            Protected by Aura Security
+            Protected by Tafuri Security
           </p>
           {isDev && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 typo-regular-11">
@@ -244,12 +246,12 @@ export default function LoginPage() {
               <div className="mt-2 space-y-1">
                 <p>
                   <span className="typo-semibold-14">Admin:</span>{" "}
-                  {devAdminEmail || "admin@aura-demo.com"} /{" "}
+                  {devAdminEmail || "admin@tafuri-demo.com"} /{" "}
                   {devAdminPassword || "SecureP@ss123"}
                 </p>
                 <p>
                   <span className="typo-semibold-14">Cashier:</span>{" "}
-                  {devCashierEmail || "cashier@aura-demo.com"} /{" "}
+                  {devCashierEmail || "cashier@tafuri-demo.com"} /{" "}
                   {devCashierPassword || "Cashier@123!"}
                 </p>
               </div>

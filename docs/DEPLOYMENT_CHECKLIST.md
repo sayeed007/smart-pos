@@ -1,4 +1,4 @@
-# Aura Web Deployment Checklist
+# Tafuri Web Deployment Checklist
 Last updated: 2026-02-20
 
 ## Build

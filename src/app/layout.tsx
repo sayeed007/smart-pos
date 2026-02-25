@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aura POS",
+  title: "Tafuri POS",
   description: "Advanced Point of Sale System",
 };
 

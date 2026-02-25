@@ -1,4 +1,4 @@
-# Aura Web Status
+# Tafuri Web Status
 Last updated: 2026-02-20
 
 ## Summary

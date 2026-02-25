@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initializeAuth = () => {
-      const storedUser = localStorage.getItem("aura_user");
+      const storedUser = localStorage.getItem("tafuri_user");
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser));
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (userData: User, tenantId: string) => {
     setStoredAuth({ tenantId });
     setUser(userData);
-    localStorage.setItem("aura_user", JSON.stringify(userData));
+    localStorage.setItem("tafuri_user", JSON.stringify(userData));
 
     if (
       userData.role === UserRole.ADMIN ||

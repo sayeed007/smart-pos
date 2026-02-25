@@ -71,7 +71,7 @@ export interface InventoryLevel {
   updatedAt?: string;
 }
 
-const db = new Dexie("AuraPOSDB") as Dexie & {
+const db = new Dexie("tafuriPOSDB") as Dexie & {
   products: EntityTable<Product, "id">;
   inventoryTransactions: EntityTable<InventoryTransaction, "id">;
   salesQueue: EntityTable<SaleQueueItem, "id">;

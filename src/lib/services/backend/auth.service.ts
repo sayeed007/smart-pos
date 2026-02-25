@@ -33,7 +33,7 @@ export async function refreshTokenApi(
     ApiEnvelope<Omit<LoginResponseDto, "user">>
   >("/auth/refresh", {
     refreshToken,
-    deviceInfo: "aura-web",
+    deviceInfo: "tafuri-web",
   });
   return unwrapEnvelope(response.data);
 }

@@ -1,6 +1,6 @@
-const ACCESS_TOKEN_KEY = "aura_access_token";
-const REFRESH_TOKEN_KEY = "aura_refresh_token";
-const TENANT_ID_KEY = "aura_tenant_id";
+const ACCESS_TOKEN_KEY = "tafuri_access_token";
+const REFRESH_TOKEN_KEY = "tafuri_refresh_token";
+const TENANT_ID_KEY = "tafuri_tenant_id";
 
 export interface StoredAuth {
   accessToken: string | null;

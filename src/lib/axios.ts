@@ -103,7 +103,7 @@ backendApi.interceptors.response.use(
       const csrfToken = getCookieValue("csrfToken");
       await axios.post(
         `${BACKEND_API_URL}/auth/refresh`,
-        { deviceInfo: "aura-web" },
+        { deviceInfo: "tafuri-web" },
         {
           headers: {
             "Content-Type": "application/json",
@@ -131,7 +131,7 @@ backendApi.interceptors.response.use(
       processQueue(refreshError, null);
       isRefreshing = false;
       clearStoredAuth();
-      localStorage.removeItem("aura_user");
+      localStorage.removeItem("tafuri_user");
       window.location.href = "/login";
       return Promise.reject(refreshError);
     }

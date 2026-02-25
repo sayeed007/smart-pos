@@ -88,7 +88,7 @@ export function useCustomTheme() {
  * Apply theme variables to document root
  */
 function applyThemeVariables(config: ThemeConfig) {
-  const styleId = "aura-theme-vars";
+  const styleId = "tafuri-theme-vars";
   let styleEl = document.getElementById(styleId) as HTMLStyleElement;
 
   if (!styleEl) {

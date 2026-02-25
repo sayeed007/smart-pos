@@ -77,17 +77,19 @@ export function InvoiceDetailsModal({
                   </div>
                 )}
                 <h2 className="text-foreground typo-semibold-14">
-                  {settings.storeName || "Aura POS Store"}
+                  {settings.storeName || "Tafuri POS Store"}
                 </h2>
                 {settings.storeTagline && (
-                  <p className="text-muted-foreground">{settings.storeTagline}</p>
+                  <p className="text-muted-foreground">
+                    {settings.storeTagline}
+                  </p>
                 )}
                 <p className="text-muted-foreground whitespace-pre-wrap">
                   {settings.storeAddress ||
                     "123 Fashion Street\nNew York, NY 10001"}
                 </p>
                 <p className="text-muted-foreground">
-                  {settings.storeEmail || "support@aurapos.com"}
+                  {settings.storeEmail || "support@tafuripos.com"}
                 </p>
                 {settings.storePhone && (
                   <p className="text-muted-foreground">{settings.storePhone}</p>
@@ -236,7 +238,7 @@ export function InvoiceDetailsModal({
             <div className="pt-8 text-center text-muted-foreground print:mt-12 typo-regular-12">
               <p>
                 {settings.receiptFooter ||
-                  `${t("invoice_modal.generatedBy")} ${settings.storeName || "Aura POS"}`}
+                  `${t("invoice_modal.generatedBy")} ${settings.storeName || "Tafuri POS"}`}
               </p>
               <p className="mt-1 opacity-70">{new Date().toLocaleString()}</p>
             </div>
