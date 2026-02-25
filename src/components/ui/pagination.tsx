@@ -209,18 +209,31 @@ function DataPagination({
   const [isDesktop, setIsDesktop] = React.useState(false);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    type LegacyMediaQueryList = MediaQueryList & {
+      addListener?: (listener: (event: MediaQueryListEvent) => void) => void;
+      removeListener?: (listener: (event: MediaQueryListEvent) => void) => void;
+    };
+
+    const mediaQuery = window.matchMedia(
+      "(min-width: 1024px)",
+    ) as LegacyMediaQueryList;
 
     const updateMedia = () => setIsDesktop(mediaQuery.matches);
     updateMedia();
 
-    if ("addEventListener" in mediaQuery) {
+    if (typeof mediaQuery.addEventListener === "function") {
       mediaQuery.addEventListener("change", updateMedia);
       return () => mediaQuery.removeEventListener("change", updateMedia);
     }
 
-    mediaQuery.addListener(updateMedia);
-    return () => mediaQuery.removeListener(updateMedia);
+    if (typeof mediaQuery.addListener === "function") {
+      mediaQuery.addListener(updateMedia);
+      return () => {
+        mediaQuery.removeListener?.(updateMedia);
+      };
+    }
+
+    return () => {};
   }, []);
 
   const computedOptions = React.useMemo(() => {
