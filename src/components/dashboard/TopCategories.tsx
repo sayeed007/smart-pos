@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { PieChart } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useSettingsStore } from "@/features/settings/store";
 import { cn } from "@/lib/utils";
 
 interface TopCategoryData {
@@ -19,6 +20,7 @@ interface TopCategoriesProps {
 
 export function TopCategories({ data, className }: TopCategoriesProps) {
   const { t } = useTranslation("dashboard");
+  const settings = useSettingsStore();
 
   // Predefined color palette for categories
   const COLORS = [
@@ -73,7 +75,7 @@ export function TopCategories({ data, className }: TopCategoriesProps) {
                   {category.name}
                 </span>
                 <span className="typo-bold-14 text-foreground">
-                  ${category.value.toLocaleString()}
+                  {settings.currencySymbol} {category.value.toLocaleString()}
                 </span>
               </div>
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">

@@ -18,6 +18,7 @@ import {
 import { getErrorMessage } from "@/lib/errors";
 import { CreateOfferDto } from "@/lib/services/backend/offers.service";
 import { Offer } from "@/types";
+import { useSettingsStore } from "@/features/settings/store";
 import {
   Archive,
   DollarSign,
@@ -35,6 +36,7 @@ import { toast } from "sonner";
 
 export default function OffersPage() {
   const { t } = useTranslation(["offers", "common"]);
+  const settings = useSettingsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [offerToDelete, setOfferToDelete] = useState<string | null>(null);
@@ -133,7 +135,7 @@ export default function OffersPage() {
           ? "Free"
           : rule.discountType === "percent"
             ? `${rule.discountValue ?? 0}% off`
-            : `$${rule.discountValue ?? 0} off`;
+            : `${settings.currencySymbol} ${rule.discountValue ?? 0} off`;
       return `Buy ${rule.buyQty} Get ${rule.getQty} (${discountLabel})`;
     }
     if (offer.type === "bundle") {
@@ -141,11 +143,12 @@ export default function OffersPage() {
         offer.rule && "bundle" in offer.rule ? offer.rule.bundle : undefined;
       if (!rule) return "Bundle";
       if (rule.pricingType === "fixed_price") {
-        return `Bundle $${rule.price ?? 0}`;
+        return `Bundle ${settings.currencySymbol} ${rule.price ?? 0}`;
       }
       return `Bundle ${rule.percent ?? 0}% off`;
     }
-    if (offer.type === "fixed") return `$${offer.value}`;
+    if (offer.type === "fixed")
+      return `${settings.currencySymbol} ${offer.value}`;
     return `${offer.value}%`;
   };
 

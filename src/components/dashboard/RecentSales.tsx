@@ -9,6 +9,7 @@ import { ServerImage } from "@/components/ui/server-image";
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useSettingsStore } from "@/features/settings/store";
 
 interface RecentSalesProps {
   sales: Sale[];
@@ -16,6 +17,7 @@ interface RecentSalesProps {
 
 export function RecentSales({ sales }: RecentSalesProps) {
   const { t } = useTranslation("dashboard");
+  const settings = useSettingsStore();
 
   const displaySales = useMemo(() => {
     return sales ? sales.slice(0, 4) : [];
@@ -79,7 +81,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
               </div>
               <div className="text-right space-y-1">
                 <p className="typo-bold-14 text-foreground">
-                  ${Number(sale.total || 0).toFixed(2)}
+                  {settings.currencySymbol} {Number(sale.total || 0).toFixed(2)}
                 </p>
                 <p className="typo-medium-12 text-green-500">
                   {sale.status || "Completed"}

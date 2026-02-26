@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { CreditCard } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useSettingsStore } from "@/features/settings/store";
 
 interface PaymentMethodStats {
   method: string;
@@ -18,6 +19,7 @@ interface PaymentMethodsProps {
 
 export function PaymentMethods({ data }: PaymentMethodsProps) {
   const { t } = useTranslation("dashboard");
+  const settings = useSettingsStore();
 
   // Aggregate actual sales or use dummy data
   const paymentStats = useMemo(() => {
@@ -54,7 +56,7 @@ export function PaymentMethods({ data }: PaymentMethodsProps) {
                 {t(method.name.toLowerCase().replace(" ", "."), method.name)}
               </span>
               <span className="typo-bold-16 text-foreground">
-                $
+                {settings.currencySymbol}{" "}
                 {method.value.toLocaleString(undefined, {
                   minimumFractionDigits: 1,
                   maximumFractionDigits: 1,

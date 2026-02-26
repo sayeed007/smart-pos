@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { useSettingsStore } from "@/features/settings/store";
 
 interface RevenueChartProps {
   data?: Array<{ date: string; revenue: number }>;
@@ -20,6 +21,8 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data = [], className }: RevenueChartProps) {
   const { t } = useTranslation("dashboard");
+  const settings = useSettingsStore();
+
   // Format date for display on X axis
   const formatTickDate = (dateString: unknown) => {
     if (!dateString || typeof dateString !== "string") return "";
@@ -110,7 +113,7 @@ export function RevenueChart({ data = [], className }: RevenueChartProps) {
                 fontSize: "12px",
               }}
               formatter={(value: number | undefined) => [
-                `$${Number(value || 0).toFixed(2)}`,
+                `${settings.currencySymbol} ${Number(value || 0).toFixed(2)}`,
                 t("charts.revenueOverview"),
               ]}
             />

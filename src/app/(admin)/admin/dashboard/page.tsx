@@ -113,7 +113,7 @@ export default function DashboardPage() {
     let value = "0";
 
     if (stat.key === "totalSales") {
-      value = `${settings.currencySymbol}${(stats?.totalRevenue || 0).toFixed(2)}`;
+      value = `${settings.currencySymbol} ${(stats?.totalRevenue || 0).toFixed(2)}`;
     } else if (stat.key === "totalProducts") {
       value = (stats?.totalProducts || 0).toString();
     } else if (stat.key === "lowStock") {

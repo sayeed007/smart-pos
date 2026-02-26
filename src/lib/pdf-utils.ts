@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import JsBarcode from "jsbarcode";
+import { useSettingsStore } from "@/features/settings/store";
 
 export interface ProductLabel {
   name: string;
@@ -60,9 +61,15 @@ export const generateBarcodesPDF = (
 
     // Price
     if (label.price !== undefined) {
-      doc.text(`$${label.price.toFixed(2)}`, x + labelWidth - 2, y + 9, {
-        align: "right",
-      });
+      const currencySymbol = useSettingsStore.getState().currencySymbol;
+      doc.text(
+        `${currencySymbol} ${label.price.toFixed(2)}`,
+        x + labelWidth - 2,
+        y + 9,
+        {
+          align: "right",
+        },
+      );
     }
 
     doc.setTextColor(0);

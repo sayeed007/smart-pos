@@ -20,17 +20,19 @@ import {
   YAxis,
 } from "recharts";
 
+import { useSettingsStore } from "@/features/settings/store";
+
 export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
-  const trendData = data || [];
+  const settings = useSettingsStore();
 
   const chartData = useMemo(() => {
     // Map backend 'revenue' to 'total' expected by chart, or just use 'revenue'
-    if (!trendData) return [];
-    return trendData.map((d) => ({
+    if (!data) return [];
+    return data.map((d) => ({
       date: d.date,
       total: d.revenue,
     }));
-  }, [trendData]);
+  }, [data]);
 
   return (
     <Card className="rounded-xl border-0 shadow-sm">
@@ -57,12 +59,12 @@ export function RevenueTrendChart({ data }: RevenueTrendChartProps) {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `${settings.currencySymbol} ${value}`}
               />
               <Tooltip
                 labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                formatter={(value: any) => [
-                  `$${Number(value).toFixed(2)}`,
+                formatter={(value: number | undefined) => [
+                  `${settings.currencySymbol} ${Number(value || 0).toFixed(2)}`,
                   "Revenue",
                 ]}
               />

@@ -50,6 +50,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { generateBarcodesPDF } from "@/lib/pdf-utils";
+import { useSettingsStore } from "@/features/settings/store";
 
 interface ProductListTableProps {
   products: Product[];
@@ -75,6 +76,7 @@ export function ProductListTable({
   onPageChange,
 }: ProductListTableProps) {
   const { t } = useTranslation("products");
+  const settings = useSettingsStore();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [printOpen, setPrintOpen] = useState(false);
   const [printProduct, setPrintProduct] = useState<Product | null>(null);
@@ -365,10 +367,10 @@ export function ProductListTable({
                 const min = Math.min(...prices);
                 const max = Math.max(...prices);
                 return min === max
-                  ? `$${min.toFixed(2)}`
-                  : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+                  ? `${settings.currencySymbol} ${min.toFixed(2)}`
+                  : `${settings.currencySymbol} ${min.toFixed(2)} - ${settings.currencySymbol} ${max.toFixed(2)}`;
               })()
-            : `$${product.sellingPrice?.toFixed(2) || "0.00"}`;
+            : `${settings.currencySymbol} ${product.sellingPrice?.toFixed(2) || "0.00"}`;
 
         return <div className="text-foreground typo-bold-14">{content}</div>;
       },
@@ -482,7 +484,7 @@ export function ProductListTable({
                 className="p-3 bg-popover border-border shadow-lg"
                 sideOffset={8}
               >
-                <div className="space-y-2 min-w-[180px]">
+                <div className="space-y-2 min-w-45">
                   <p className="text-foreground border-b border-border pb-1.5 mb-2 typo-semibold-12">
                     Stock by Location
                   </p>
