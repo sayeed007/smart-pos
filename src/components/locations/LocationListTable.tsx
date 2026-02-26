@@ -31,14 +31,14 @@ export function LocationListTable({
   const { t } = useTranslation("locations");
 
   return (
-    <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
+    <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
           <Loader2 className="animate-spin text-muted-foreground/50" />
         </div>
       ) : (
         <Table>
-          <TableHeader className="bg-muted border-0">
+          <TableHeader className="bg-muted/50 border-0">
             <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
               <TableHead className="w-75">
                 {t("headers.name", "Name")}
