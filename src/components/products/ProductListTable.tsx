@@ -21,6 +21,7 @@ import {
 import { ServerImage } from "@/components/ui/server-image";
 import { DeleteButton } from "@/components/ui/delete-button";
 import { ProductDeleteDialog } from "@/components/products/ProductDeleteDialog";
+import { PrintBarcodeDialog } from "@/components/products/PrintBarcodeDialog";
 import { Category, Product } from "@/types";
 import { useTranslation } from "react-i18next";
 import {
@@ -39,16 +40,6 @@ import {
 } from "@tanstack/react-table";
 
 import { DataPagination } from "@/components/ui/pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PrimaryActionButton } from "@/components/ui/primary-action-button";
 import { generateBarcodesPDF } from "@/lib/pdf-utils";
 import { useSettingsStore } from "@/features/settings/store";
 
@@ -230,6 +221,19 @@ export function ProductListTable({
   // Columns Definition
   const columns: ColumnDef<Product>[] = [
     {
+      id: "sn",
+      header: "#",
+      cell: ({ row, table }) => {
+        // Calculate continuous serial number across pages
+        const pagination = table.getState().pagination;
+        return (
+          <span className="text-muted-foreground typo-regular-14">
+            {pagination.pageIndex * pagination.pageSize + row.index + 1}
+          </span>
+        );
+      },
+    },
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -301,7 +305,7 @@ export function ProductListTable({
                   className="p-3 bg-popover border-border shadow-lg"
                   sideOffset={8}
                 >
-                  <div className="space-y-2 min-w-[160px]">
+                  <div className="space-y-2 min-w-40">
                     <p className="text-foreground border-b border-border pb-1.5 mb-2 typo-semibold-12">
                       Variant SKUs
                     </p>
@@ -575,6 +579,7 @@ export function ProductListTable({
     },
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: products,
     columns,
@@ -670,145 +675,21 @@ export function ProductListTable({
         }}
       />
 
-      <Dialog open={printOpen} onOpenChange={setPrintOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Print Barcodes</DialogTitle>
-          </DialogHeader>
-
-          {printProduct ? (
-            printProduct.type === "variable" ? (
-              <div className="space-y-3">
-                {(printProduct.variants || []).length === 0 && (
-                  <p className="text-muted-foreground typo-regular-14">
-                    No variants available.
-                  </p>
-                )}
-                {(printProduct.variants || []).length > 0 && (
-                  <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        checked={selectAllState}
-                        disabled={variantSelectionStats.selectableCount === 0}
-                        onCheckedChange={(checked) =>
-                          handleSelectAllVariants(checked === true)
-                        }
-                      />
-                      <span className="text-muted-foreground typo-regular-14">
-                        Select all
-                      </span>
-                    </div>
-                    <span className="text-muted-foreground typo-regular-12">
-                      {variantSelectionStats.selectedCount}/
-                      {variantSelectionStats.selectableCount} selected
-                    </span>
-                  </div>
-                )}
-                {(printProduct.variants || []).map((variant) => {
-                  const selection = variantSelections[variant.id];
-                  const barcode = resolveBarcode(
-                    variant.barcode,
-                    variant.barcodes,
-                  );
-                  return (
-                    <div
-                      key={variant.id}
-                      className="flex items-center gap-3 rounded-lg border border-border p-3"
-                    >
-                      <Checkbox
-                        checked={selection?.checked || false}
-                        disabled={selection?.disabled}
-                        onCheckedChange={(checked) =>
-                          setVariantSelections((prev) => ({
-                            ...prev,
-                            [variant.id]: {
-                              checked: checked === true,
-                              qty: prev[variant.id]?.qty || 1,
-                              disabled: prev[variant.id]?.disabled || false,
-                            },
-                          }))
-                        }
-                      />
-                      <div className="flex-1">
-                        <p className="typo-semibold-14">{variant.name}</p>
-                        <p className="text-muted-foreground typo-regular-12">
-                          {variant.sku || "-"} - {barcode || "No barcode"}
-                        </p>
-                      </div>
-                      <Input
-                        type="number"
-                        min={1}
-                        className="w-20"
-                        value={selection?.qty || 1}
-                        disabled={selection?.disabled || false}
-                        onChange={(e) =>
-                          setVariantSelections((prev) => ({
-                            ...prev,
-                            [variant.id]: {
-                              checked: prev[variant.id]?.checked ?? true,
-                              qty: Math.max(
-                                1,
-                                Math.floor(Number(e.target.value) || 1),
-                              ),
-                              disabled: prev[variant.id]?.disabled || false,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="rounded-lg border border-border p-3">
-                  <p className="typo-semibold-14">{printProduct.name}</p>
-                  <p className="text-muted-foreground typo-regular-12">
-                    {printProduct.sku || "-"} -{" "}
-                    {resolveBarcode(
-                      printProduct.barcode,
-                      printProduct.barcodes,
-                    ) || "No barcode"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground typo-regular-14">
-                    Copies
-                  </span>
-                  <Input
-                    type="number"
-                    min={1}
-                    className="w-24"
-                    value={simpleQty}
-                    onChange={(e) =>
-                      setSimpleQty(
-                        Math.max(1, Math.floor(Number(e.target.value) || 1)),
-                      )
-                    }
-                  />
-                </div>
-                {!resolveBarcode(
-                  printProduct.barcode,
-                  printProduct.barcodes,
-                ) && (
-                  <p className="text-destructive typo-regular-12">
-                    No barcode available for this product.
-                  </p>
-                )}
-              </div>
-            )
-          ) : null}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPrintOpen(false)}>
-              Cancel
-            </Button>
-            <PrimaryActionButton onClick={handlePrint} disabled={!canPrint}>
-              Print
-            </PrimaryActionButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PrintBarcodeDialog
+        open={printOpen}
+        onOpenChange={setPrintOpen}
+        product={printProduct}
+        variantSelections={variantSelections}
+        setVariantSelections={setVariantSelections}
+        simpleQty={simpleQty}
+        setSimpleQty={setSimpleQty}
+        selectAllState={selectAllState}
+        variantSelectionStats={variantSelectionStats}
+        handleSelectAllVariants={handleSelectAllVariants}
+        canPrint={canPrint}
+        handlePrint={handlePrint}
+        resolveBarcode={resolveBarcode}
+      />
     </div>
   );
 }

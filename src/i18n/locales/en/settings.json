@@ -37,7 +37,12 @@
       "title": "Currency & Tax",
       "currencyCode": "Currency Code",
       "currencySymbol": "Currency Symbol",
-      "defaultTaxRate": "Default Tax Rate (%)"
+      "defaultTaxRate": "Default Tax Rate (%)",
+      "taxEnabled": "Enable Tax",
+      "taxType": "Tax Type"
+    },
+    "loyalty": {
+      "title": "Customer & Loyalty Points"
     },
     "hardware": {
       "title": "Hardware Configuration",

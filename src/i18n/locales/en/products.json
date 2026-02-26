@@ -62,6 +62,17 @@
       "description": "No products found matching your search."
     }
   },
+  "printBarcode": {
+    "title": "Print Barcodes",
+    "noVariants": "No variants available.",
+    "selectAll": "Select all",
+    "selected": "{{count}}/{{total}} selected",
+    "noBarcode": "No barcode",
+    "copies": "Copies",
+    "missingBarcode": "No barcode available for this product.",
+    "cancel": "Cancel",
+    "print": "Print"
+  },
   "toasts": {
     "createSuccess": "Product created successfully",
     "updateSuccess": "Product updated successfully",

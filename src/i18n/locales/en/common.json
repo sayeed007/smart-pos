@@ -11,6 +11,9 @@
   "filter": "Filter",
   "clear": "Clear",
   "close": "Close",
+  "filters": {
+    "pickDate": "Pick a date range"
+  },
   "confirm": {
     "title": "Confirm Action",
     "description": "Are you sure you want to proceed?"

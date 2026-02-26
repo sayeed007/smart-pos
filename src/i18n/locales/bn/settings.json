@@ -29,7 +29,12 @@
       "title": "মুদ্রা ও কর",
       "currencyCode": "মুদ্রা কোড",
       "currencySymbol": "মুদ্রার প্রতীক",
-      "defaultTaxRate": "ডিফল্ট করের হার (%)"
+      "defaultTaxRate": "ডিফল্ট করের হার (%)",
+      "taxEnabled": "কর সক্ষম করুন",
+      "taxType": "করের ধরন"
+    },
+    "loyalty": {
+      "title": "গ্রাহক এবং লয়্যালটি পয়েন্ট"
     },
     "hardware": {
       "title": "হার্ডওয়্যার কনফিগারেশন",
