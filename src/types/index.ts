@@ -235,7 +235,14 @@ export interface InventoryTransaction {
   id: string;
   productId: string;
   variantId?: string;
-  type: "IN" | "OUT" | "ADJUST" | "TRANSFER" | "RETURN";
+  type:
+    | "IN"
+    | "OUT"
+    | "ADJUST"
+    | "TRANSFER_IN"
+    | "TRANSFER_OUT"
+    | "RETURN"
+    | "SALE";
   quantity: number;
   reason: string;
   referenceId?: string;

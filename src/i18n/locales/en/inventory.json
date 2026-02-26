@@ -25,7 +25,9 @@
     "in": "Stock In",
     "out": "Stock Out",
     "adjust": "Adjustment",
-    "transfer": "Transfer",
+    "transfer_in": "Transfer In",
+    "transfer_out": "Transfer Out",
+    "sale": "Sale",
     "return": "Return"
   },
   "filters": {

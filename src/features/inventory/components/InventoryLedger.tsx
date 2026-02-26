@@ -144,9 +144,21 @@ export function InventoryLedger({
             {t("transactionTypes.adjust")}
           </Badge>
         );
-      case "TRANSFER":
+      case "TRANSFER_IN":
         return (
-          <Badge variant="secondary">{t("transactionTypes.transfer")}</Badge>
+          <Badge variant="secondary">{t("transactionTypes.transfer_in")}</Badge>
+        );
+      case "TRANSFER_OUT":
+        return (
+          <Badge variant="secondary">
+            {t("transactionTypes.transfer_out")}
+          </Badge>
+        );
+      case "SALE":
+        return (
+          <Badge className="bg-purple-500 hover:bg-purple-600">
+            {t("transactionTypes.sale")}
+          </Badge>
         );
       case "RETURN":
         return (
@@ -189,9 +201,13 @@ export function InventoryLedger({
               <SelectItem value="ADJUST">
                 {t("transactionTypes.adjust")}
               </SelectItem>
-              <SelectItem value="TRANSFER">
-                {t("transactionTypes.transfer")}
+              <SelectItem value="TRANSFER_IN">
+                {t("transactionTypes.transfer_in")}
               </SelectItem>
+              <SelectItem value="TRANSFER_OUT">
+                {t("transactionTypes.transfer_out")}
+              </SelectItem>
+              <SelectItem value="SALE">{t("transactionTypes.sale")}</SelectItem>
               <SelectItem value="RETURN">
                 {t("transactionTypes.return")}
               </SelectItem>
