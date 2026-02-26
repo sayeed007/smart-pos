@@ -1,6 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface LoyaltyTier {
+  id: string;
+  name: string;
+  minPoints: number;
+  discountPercent: number;
+}
+
 export interface SettingsState {
   storeName: string;
   storeAddress: string;
@@ -14,6 +21,13 @@ export interface SettingsState {
   taxEnabled: boolean;
   taxRate: number;
   taxType: "INCLUSIVE" | "EXCLUSIVE";
+
+  // Loyalty Settings
+  loyaltyEnabled: boolean;
+  loyaltyEarnRate: number;
+  loyaltyPointsClaimable: boolean;
+  loyaltyRedemptionRate: number;
+  loyaltyTiers: LoyaltyTier[];
 
   receiptHeader: string;
   receiptFooter: string;
@@ -39,6 +53,12 @@ const DEFAULT_SETTINGS: Omit<
   taxEnabled: true,
   taxRate: 10,
   taxType: "EXCLUSIVE",
+
+  loyaltyEnabled: false,
+  loyaltyEarnRate: 100, // Spend 100 to get 1 point
+  loyaltyPointsClaimable: true,
+  loyaltyRedemptionRate: 1, // 1 point = $1
+  loyaltyTiers: [],
 
   receiptHeader: "Welcome to Tafuri POS",
   receiptFooter: "Thank you! Visit again.",

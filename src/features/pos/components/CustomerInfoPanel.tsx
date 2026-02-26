@@ -14,8 +14,10 @@ interface CustomerInfoPanelProps {
   redeemedPoints: number; // Points currently set to redeem
   setRedeemedPoints: (points: number) => void;
   currencySymbol: string;
-  redemptionRate: number; // Points per 1 unit of currency (e.g. 100 pts = $1)
-  className?: string; // Add className prop for flexibility
+  redemptionRate: number; // Points per 1 value (e.g., 100 pts = $1)
+  pointsClaimable: boolean;
+  tierName?: string;
+  className?: string;
 }
 
 export function CustomerInfoPanel({
@@ -26,19 +28,24 @@ export function CustomerInfoPanel({
   setRedeemedPoints,
   currencySymbol,
   redemptionRate,
+  pointsClaimable,
+  tierName,
   className,
 }: CustomerInfoPanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Calculate limits
-  const maxPointsBySubtotal = Math.ceil(subtotal * redemptionRate);
+  // Calculate limits based on (1 currency = X points)
+  const maxPointsBySubtotal =
+    redemptionRate > 0 ? Math.ceil(subtotal * redemptionRate) : 0;
   const maxRedeemablePoints = Math.min(
-    customer.loyaltyPoints,
+    customer.loyaltyPoints || 0,
     maxPointsBySubtotal,
   );
-  const maxRedeemableValue = maxRedeemablePoints / redemptionRate;
+  const maxRedeemableValue =
+    redemptionRate > 0 ? maxRedeemablePoints / redemptionRate : 0;
 
-  const currentRedemptionValue = redeemedPoints / redemptionRate;
+  const currentRedemptionValue =
+    redemptionRate > 0 ? redeemedPoints / redemptionRate : 0;
 
   // Local state for input
   const [customAmount, setCustomAmount] = useState<string>(
@@ -81,7 +88,7 @@ export function CustomerInfoPanel({
 
     setCustomAmount(val);
 
-    if (!isNaN(amount) && amount >= 0) {
+    if (!isNaN(amount) && amount >= 0 && redemptionRate > 0) {
       const points = Math.floor(amount * redemptionRate);
       // Double safety check
       const safePoints = Math.min(points, maxRedeemablePoints);
@@ -89,12 +96,6 @@ export function CustomerInfoPanel({
     } else {
       setRedeemedPoints(0);
     }
-  };
-
-  const getTierDisplay = (tierId?: string) => {
-    if (tierId === "tier-gold") return "Gold";
-    if (tierId === "tier-silver") return "Silver";
-    return "Bronze";
   };
 
   return (
@@ -109,28 +110,38 @@ export function CustomerInfoPanel({
         <div className="flex-1 min-w-0 pr-2">
           <p className="flex items-center gap-2 text-foreground truncate typo-semibold-14">
             {customer.name}
-            <Badge
-              variant="secondary"
-              className="px-1.5 py-0 uppercase tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0 typo-bold-10"
-            >
-              {getTierDisplay(customer.tierId)}
-            </Badge>
+            {tierName && (
+              <Badge
+                variant="secondary"
+                className="px-1.5 py-0 uppercase tracking-wider bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none shrink-0 typo-bold-10"
+              >
+                {tierName}
+              </Badge>
+            )}
           </p>
           <div className="mt-0.5 flex items-center gap-2 text-muted-foreground typo-regular-12">
             <span className="flex items-center gap-1 text-amber-600 typo-medium-14">
               <TicketPercent size={12} />
-              {customer.loyaltyPoints} pts
+              {customer.loyaltyPoints || 0} pts
             </span>
-            <span>&bull;</span>
-            <span className="text-foreground/70">
-              Value: {currencySymbol}
-              {(customer.loyaltyPoints / redemptionRate).toFixed(2)}
-            </span>
+            {pointsClaimable && (
+              <>
+                <span>&bull;</span>
+                <span className="text-foreground/70">
+                  Value: {currencySymbol}
+                  {redemptionRate > 0
+                    ? ((customer.loyaltyPoints || 0) / redemptionRate).toFixed(
+                        2,
+                      )
+                    : "0.00"}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {customer.loyaltyPoints > 0 && (
+          {pointsClaimable && customer.loyaltyPoints > 0 && (
             <div className="relative w-24">
               <span className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground typo-regular-12">
                 {currencySymbol}

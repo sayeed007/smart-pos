@@ -96,11 +96,30 @@ export function CartPanel({ offers }: CartPanelProps) {
     [cart, offers],
   );
 
-  // Points Logic
-  const redemptionRate = 100; // 100 pts = $1
-  const pointsDiscount = redeemedPoints / redemptionRate;
+  // Points and Tier Logic
+  let pointsDiscount = 0;
+  let vipDiscount = 0;
+  let tierName: string | undefined = undefined;
 
-  const discount = offerDiscount + pointsDiscount;
+  if (settings.loyaltyEnabled && customer) {
+    if (settings.loyaltyPointsClaimable) {
+      pointsDiscount = redeemedPoints / (settings.loyaltyRedemptionRate || 100);
+    } else {
+      const tiers = settings.loyaltyTiers || [];
+      const customerPoints = customer.loyaltyPoints || 0;
+
+      const eligibleTiers = tiers
+        .filter((t) => t.minPoints <= customerPoints)
+        .sort((a, b) => b.minPoints - a.minPoints);
+
+      if (eligibleTiers.length > 0) {
+        tierName = eligibleTiers[0].name;
+        vipDiscount = subtotal * (eligibleTiers[0].discountPercent / 100);
+      }
+    }
+  }
+
+  const discount = offerDiscount + pointsDiscount + vipDiscount;
 
   const taxBase = Math.max(0, subtotal - discount);
 
@@ -213,7 +232,9 @@ export function CartPanel({ offers }: CartPanelProps) {
               redeemedPoints={redeemedPoints}
               setRedeemedPoints={setRedeemedPoints}
               currencySymbol={settings.currencySymbol}
-              redemptionRate={redemptionRate}
+              redemptionRate={settings.loyaltyRedemptionRate || 100}
+              pointsClaimable={settings.loyaltyPointsClaimable}
+              tierName={tierName}
               className="animate-in fade-in slide-in-from-top-1"
             />
           ) : (
@@ -270,7 +291,17 @@ export function CartPanel({ offers }: CartPanelProps) {
             className="mb-2"
           />
           <div className="flex justify-between text-muted-foreground items-center">
-            <span className="typo-regular-14">{t("cart.discount")}</span>
+            <span className="typo-regular-14">
+              {t("cart.discount")}
+              {vipDiscount > 0 && (
+                <span className="ml-1 text-xs text-primary">
+                  ({tierName} VIP)
+                </span>
+              )}
+              {pointsDiscount > 0 && (
+                <span className="ml-1 text-xs text-primary">(Points)</span>
+              )}
+            </span>
             <span className="typo-semibold-14 text-foreground">
               {discount > 0
                 ? `-${settings.currencySymbol}${discount.toFixed(2)}`
@@ -300,19 +331,11 @@ export function CartPanel({ offers }: CartPanelProps) {
           </div>
         </div>
 
-        {customer && (
+        {settings.loyaltyEnabled && customer && (
           <div className="flex justify-end -mt-2 mb-3 text-muted-foreground typo-regular-12">
             <span className="flex items-center gap-1 text-emerald-600 typo-medium-14">
               <TicketPercent size={10} />+
-              {Math.floor(
-                total *
-                  (customer.tierId === "tier-gold"
-                    ? 2
-                    : customer.tierId === "tier-silver"
-                      ? 1.5
-                      : 1),
-              )}{" "}
-              pts
+              {Math.floor(total / (settings.loyaltyEarnRate || 100))} pts
             </span>
           </div>
         )}

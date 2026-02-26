@@ -1,6 +1,7 @@
 "use client";
 
 import { LocationsTab } from "@/components/location/LocationsTab";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,7 @@ import { useTenantProfile, useUpdateTenantProfile } from "@/hooks/api/tenants";
 import {
   DollarSign,
   FileText,
+  Gift,
   Loader2,
   Printer,
   Save,
@@ -52,6 +54,11 @@ type SettingsFormState = Pick<
   | "receiptHeader"
   | "receiptFooter"
   | "paperWidth"
+  | "loyaltyEnabled"
+  | "loyaltyEarnRate"
+  | "loyaltyPointsClaimable"
+  | "loyaltyRedemptionRate"
+  | "loyaltyTiers"
 >;
 
 export default function SettingsPage() {
@@ -88,6 +95,11 @@ export default function SettingsPage() {
     receiptHeader: storeSettings.receiptHeader,
     receiptFooter: storeSettings.receiptFooter,
     paperWidth: storeSettings.paperWidth,
+    loyaltyEnabled: storeSettings.loyaltyEnabled,
+    loyaltyEarnRate: storeSettings.loyaltyEarnRate,
+    loyaltyPointsClaimable: storeSettings.loyaltyPointsClaimable,
+    loyaltyRedemptionRate: storeSettings.loyaltyRedemptionRate,
+    loyaltyTiers: storeSettings.loyaltyTiers || [],
   });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string>("");
@@ -227,6 +239,11 @@ export default function SettingsPage() {
           receiptHeader: localSettings.receiptHeader,
           receiptFooter: localSettings.receiptFooter,
           paperWidth: localSettings.paperWidth,
+          loyaltyEnabled: localSettings.loyaltyEnabled,
+          loyaltyEarnRate: localSettings.loyaltyEarnRate,
+          loyaltyPointsClaimable: localSettings.loyaltyPointsClaimable,
+          loyaltyRedemptionRate: localSettings.loyaltyRedemptionRate,
+          loyaltyTiers: localSettings.loyaltyTiers,
         }),
       });
 
@@ -245,6 +262,11 @@ export default function SettingsPage() {
         receiptHeader: localSettings.receiptHeader,
         receiptFooter: localSettings.receiptFooter,
         paperWidth: localSettings.paperWidth,
+        loyaltyEnabled: localSettings.loyaltyEnabled,
+        loyaltyEarnRate: localSettings.loyaltyEarnRate,
+        loyaltyPointsClaimable: localSettings.loyaltyPointsClaimable,
+        loyaltyRedemptionRate: localSettings.loyaltyRedemptionRate,
+        loyaltyTiers: localSettings.loyaltyTiers,
       };
 
       updateSettingsStore(finalSettings);
@@ -293,6 +315,7 @@ export default function SettingsPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-6">
+                {/* BRANDING */}
                 <Card className="rounded-xl border border-sidebar-border shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-2 pb-2">
                     <Store className="h-5 w-5" />
@@ -372,6 +395,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
+                {/* STORE SETTINGS */}
                 <Card className="rounded-xl border border-sidebar-border shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-2 pb-2">
                     <Store className="h-5 w-5" />
@@ -435,6 +459,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
+                {/* RECEIPT DETAILS */}
                 <Card className="rounded-xl border border-sidebar-border shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-2 pb-2">
                     <FileText className="h-5 w-5" />
@@ -480,6 +505,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-6">
+                {/* CURRENCY AND TAX */}
                 <Card className="rounded-xl border border-sidebar-border shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-2 pb-2">
                     <DollarSign className="h-5 w-5" />
@@ -495,15 +521,17 @@ export default function SettingsPage() {
                           "Currency Code",
                         )}
                       </Label>
-                      <Input
+                      <select
                         id="currency"
+                        className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
                         value={localSettings.currency}
                         onChange={(e) =>
-                          handleChange("currency", e.target.value.toUpperCase())
+                          handleChange("currency", e.target.value)
                         }
-                        className="bg-muted/30"
-                        maxLength={3}
-                      />
+                      >
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="BDT">BDT - Bangladeshi Taka</option>
+                      </select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="symbol">
@@ -512,14 +540,17 @@ export default function SettingsPage() {
                           "Currency Symbol",
                         )}
                       </Label>
-                      <Input
+                      <select
                         id="symbol"
+                        className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
                         value={localSettings.currencySymbol}
                         onChange={(e) =>
                           handleChange("currencySymbol", e.target.value)
                         }
-                        className="bg-muted/30"
-                      />
+                      >
+                        <option value="$">$ (Dollar)</option>
+                        <option value="৳">৳ (Taka)</option>
+                      </select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="taxEnabled">
@@ -587,6 +618,7 @@ export default function SettingsPage() {
                   </CardContent>
                 </Card>
 
+                {/* PRINT SETTINGS */}
                 <Card className="rounded-xl border border-sidebar-border shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-2 pb-2">
                     <Printer className="h-5 w-5" />
@@ -636,6 +668,230 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
+          {/* CUSTOMER AND LOYALTY - FULL WIDTH */}
+          <div className="mt-6">
+            <Card className="rounded-xl border border-sidebar-border shadow-sm">
+              <CardHeader className="flex flex-row items-center gap-2 pb-2">
+                <Gift className="h-5 w-5" />
+                <CardTitle className="typo-bold-18">
+                  {t("sections.loyalty.title", "Customer & Loyalty Points")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="loyaltyEnabled">Enable Loyalty Program</Label>
+                  <select
+                    id="loyaltyEnabled"
+                    className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
+                    value={localSettings.loyaltyEnabled ? "true" : "false"}
+                    onChange={(e) => {
+                      handleChange("loyaltyEnabled", e.target.value === "true");
+                    }}
+                  >
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+
+                {localSettings.loyaltyEnabled && (
+                  <div className="space-y-4 border-l-2 border-primary/20 pl-4 py-2 mt-2">
+                    <div className="space-y-2">
+                      <Label>Points Earning Rate</Label>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span>Spend</span>
+                        <div className="relative max-w-24">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground mr-1">
+                            {localSettings.currencySymbol}
+                          </span>
+                          <Input
+                            type="number"
+                            className="pl-6 bg-muted/30"
+                            value={localSettings.loyaltyEarnRate}
+                            onChange={(e) =>
+                              handleChange(
+                                "loyaltyEarnRate",
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                        </div>
+                        <span>to earn 1 Point</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <Label htmlFor="loyaltyPointsClaimable">
+                        Points Reward Type
+                      </Label>
+                      <select
+                        id="loyaltyPointsClaimable"
+                        className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
+                        value={
+                          localSettings.loyaltyPointsClaimable
+                            ? "true"
+                            : "false"
+                        }
+                        onChange={(e) => {
+                          handleChange(
+                            "loyaltyPointsClaimable",
+                            e.target.value === "true",
+                          );
+                        }}
+                      >
+                        <option value="true">
+                          Claimable Cash (Redeem point for direct cash discount)
+                        </option>
+                        <option value="false">
+                          Tiered Rewards (Gold, Silver, Platinum VIP status)
+                        </option>
+                      </select>
+                    </div>
+
+                    {localSettings.loyaltyPointsClaimable ? (
+                      <div className="space-y-2 pt-2">
+                        <Label>Points Redemption Value</Label>
+                        <div className="flex items-center gap-3 text-sm">
+                          <span>Redeem 1 Point for</span>
+                          <div className="relative max-w-24">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground mr-1">
+                              {localSettings.currencySymbol}
+                            </span>
+                            <Input
+                              type="number"
+                              className="pl-6 bg-muted/30"
+                              value={localSettings.loyaltyRedemptionRate}
+                              onChange={(e) =>
+                                handleChange(
+                                  "loyaltyRedemptionRate",
+                                  Number(e.target.value),
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          At POS checkout, customers can redeem up to their
+                          point balance for a cash discount based on this value.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 pt-2">
+                        <div className="flex justify-between items-center">
+                          <Label>VIP Tiers</Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              handleChange("loyaltyTiers", [
+                                ...localSettings.loyaltyTiers,
+                                {
+                                  id: crypto.randomUUID(),
+                                  name: "New Tier",
+                                  minPoints: 1000,
+                                  discountPercent: 5,
+                                },
+                              ]);
+                            }}
+                          >
+                            Add Tier
+                          </Button>
+                        </div>
+                        {!localSettings.loyaltyTiers ||
+                        localSettings.loyaltyTiers.length === 0 ? (
+                          <p className="text-xs text-muted-foreground py-2 border rounded border-dashed text-center">
+                            No tiers configured. Customers will only collect
+                            display points.
+                          </p>
+                        ) : (
+                          <div className="space-y-3">
+                            {localSettings.loyaltyTiers.map((tier, index) => (
+                              <div
+                                key={tier.id || index}
+                                className="flex gap-2 items-center"
+                              >
+                                <Input
+                                  placeholder="Tier name (e.g. Gold)"
+                                  className="flex-1 bg-muted/30 h-9 shrink-0 text-sm"
+                                  value={tier.name}
+                                  onChange={(e) => {
+                                    const newTiers = [
+                                      ...localSettings.loyaltyTiers,
+                                    ];
+                                    newTiers[index] = {
+                                      ...newTiers[index],
+                                      name: e.target.value,
+                                    };
+                                    handleChange("loyaltyTiers", newTiers);
+                                  }}
+                                />
+                                <Input
+                                  type="number"
+                                  placeholder="Min Points"
+                                  className="w-24 bg-muted/30 h-9 shrink-0 text-sm"
+                                  value={tier.minPoints}
+                                  onChange={(e) => {
+                                    const newTiers = [
+                                      ...localSettings.loyaltyTiers,
+                                    ];
+                                    newTiers[index] = {
+                                      ...newTiers[index],
+                                      minPoints: Number(e.target.value),
+                                    };
+                                    handleChange("loyaltyTiers", newTiers);
+                                  }}
+                                />
+                                <div className="flex items-center w-24">
+                                  <Input
+                                    type="number"
+                                    placeholder="%"
+                                    className="bg-muted/30 h-9 shrink-0 text-sm"
+                                    value={tier.discountPercent}
+                                    onChange={(e) => {
+                                      const newTiers = [
+                                        ...localSettings.loyaltyTiers,
+                                      ];
+                                      newTiers[index] = {
+                                        ...newTiers[index],
+                                        discountPercent: Number(e.target.value),
+                                      };
+                                      handleChange("loyaltyTiers", newTiers);
+                                    }}
+                                  />
+                                  <span className="ml-1 text-xs text-muted-foreground">
+                                    % off
+                                  </span>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                                  onClick={() => {
+                                    const newTiers =
+                                      localSettings.loyaltyTiers.filter(
+                                        (_, i) => i !== index,
+                                      );
+                                    handleChange("loyaltyTiers", newTiers);
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                            <p className="text-[11px] text-muted-foreground mt-1">
+                              Customers automatically receive the discount of
+                              the highest tier they qualify for based on their
+                              lifetime points.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
           <div className="flex justify-end pt-4">
             <PrimaryActionButton

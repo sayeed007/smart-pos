@@ -32,6 +32,10 @@ const asBoolean = (value: unknown, fallback: boolean): boolean => {
 const asTaxType = (value: unknown, fallback: "INCLUSIVE" | "EXCLUSIVE") =>
   value === "INCLUSIVE" || value === "EXCLUSIVE" ? value : fallback;
 
+const asArray = <T>(value: unknown, fallback: T[]): T[] => {
+  return Array.isArray(value) ? value : fallback;
+};
+
 export function mapRemoteToLocalSettings(
   base: SettingsState,
   tenant?: TenantProfile,
@@ -55,6 +59,23 @@ export function mapRemoteToLocalSettings(
     receiptHeader: asString(remoteSettings?.receiptHeader, base.receiptHeader),
     receiptFooter: asString(remoteSettings?.receiptFooter, base.receiptFooter),
     paperWidth: asPaperWidth(remoteSettings?.paperWidth, base.paperWidth),
+    loyaltyEnabled: asBoolean(
+      remoteSettings?.loyaltyEnabled,
+      base.loyaltyEnabled,
+    ),
+    loyaltyEarnRate: asNumber(
+      remoteSettings?.loyaltyEarnRate,
+      base.loyaltyEarnRate,
+    ),
+    loyaltyPointsClaimable: asBoolean(
+      remoteSettings?.loyaltyPointsClaimable,
+      base.loyaltyPointsClaimable,
+    ),
+    loyaltyRedemptionRate: asNumber(
+      remoteSettings?.loyaltyRedemptionRate,
+      base.loyaltyRedemptionRate,
+    ),
+    loyaltyTiers: asArray(remoteSettings?.loyaltyTiers, base.loyaltyTiers),
   };
 
   return payload;
@@ -70,6 +91,11 @@ export function buildSettingsPayload(
     | "receiptHeader"
     | "receiptFooter"
     | "paperWidth"
+    | "loyaltyEnabled"
+    | "loyaltyEarnRate"
+    | "loyaltyPointsClaimable"
+    | "loyaltyRedemptionRate"
+    | "loyaltyTiers"
   >,
 ): SettingsMap {
   return {
@@ -80,5 +106,10 @@ export function buildSettingsPayload(
     receiptHeader: state.receiptHeader,
     receiptFooter: state.receiptFooter,
     paperWidth: state.paperWidth,
+    loyaltyEnabled: state.loyaltyEnabled,
+    loyaltyEarnRate: state.loyaltyEarnRate,
+    loyaltyPointsClaimable: state.loyaltyPointsClaimable,
+    loyaltyRedemptionRate: state.loyaltyRedemptionRate,
+    loyaltyTiers: state.loyaltyTiers,
   };
 }
