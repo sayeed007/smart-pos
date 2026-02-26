@@ -93,7 +93,9 @@ export default function InventoryPage() {
         <TabsList>
           <TabsTrigger value="ledger">{t("tabs.ledger")}</TabsTrigger>
           <TabsTrigger value="transfers">{t("tabs.transfers")}</TabsTrigger>
-          <TabsTrigger value="returns">Returns</TabsTrigger>
+          <TabsTrigger value="returns">
+            {t("tabs.returns", "Returns")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="ledger">

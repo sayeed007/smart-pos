@@ -18,7 +18,8 @@
   },
   "tabs": {
     "ledger": "Transaction Ledger",
-    "transfers": "Stock Transfers"
+    "transfers": "Stock Transfers",
+    "returns": "Returns"
   },
   "transactionTypes": {
     "in": "Stock In",

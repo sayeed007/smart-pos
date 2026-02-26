@@ -33,8 +33,9 @@ export function ReturnListTable({
   return (
     <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
       <Table>
-        <TableHeader className="bg-muted border-0">
+        <TableHeader className="bg-muted/50 border-0">
           <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
+            <TableHead>#</TableHead>
             <TableHead>{t("table.invoiceNo", "Invoice No")}</TableHead>
             <TableHead>{t("table.date", "Date")}</TableHead>
             <TableHead>{t("table.customer", "Customer")}</TableHead>
@@ -56,8 +57,11 @@ export function ReturnListTable({
               </TableCell>
             </TableRow>
           ) : (
-            returns?.map((ret) => (
+            returns?.map((ret, index) => (
               <TableRow key={ret.id}>
+                <TableCell className="text-muted-foreground typo-regular-14">
+                  {index + 1}
+                </TableCell>
                 <TableCell className="typo-medium-14">
                   {onInvoiceClick && ret.saleId ? (
                     <Button

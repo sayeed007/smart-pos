@@ -20,6 +20,7 @@ import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 import { ViewTransferDialog } from "./ViewTransferDialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function StockTransferList({
   locationId,
@@ -29,6 +30,7 @@ export function StockTransferList({
   onView?: (transfer: StockTransfer) => void;
 }) {
   const { t: translate } = useTranslation("inventory");
+
   const [selectedTransfer, setSelectedTransfer] =
     useState<StockTransfer | null>(null);
   const [date, setDate] = useState<DateRange | undefined>(() => {
@@ -66,32 +68,25 @@ export function StockTransferList({
 
   return (
     <>
-      <ViewTransferDialog
-        transfer={selectedTransfer}
-        open={!!selectedTransfer}
-        onOpenChange={(open) => !open && setSelectedTransfer(null)}
-        currentLocationId={locationId}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>{translate("cards.transferHistory")}</CardTitle>
 
-      <div className="space-y-4">
-        {/* Date Filter */}
-        <div className="flex items-center">
-          <DateRangePicker
-            date={date}
-            onDateChange={handleDateChange}
-            className="w-full sm:w-60"
-          />
-        </div>
-
-        <div className="border border-border rounded-lg bg-card overflow-hidden">
-          {transfers.length === 0 ? (
-            <div className="p-12 text-center text-muted-foreground bg-muted/10">
-              {translate("dialogs.transferList.noTransfers")}
-            </div>
-          ) : (
+          {/* Date Filter */}
+          <div className="flex items-center">
+            <DateRangePicker
+              date={date}
+              onDateChange={handleDateChange}
+              className="w-full sm:w-60"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-4">
             <Table>
-              <TableHeader className="bg-muted/50">
-                <TableRow>
+              <TableHeader className="bg-muted/50 border-0">
+                <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
+                  <TableHead>#</TableHead>
                   <TableHead>{translate("dialogs.transferList.ref")}</TableHead>
                   <TableHead>
                     {translate("dialogs.transferList.date")}
@@ -111,120 +106,145 @@ export function StockTransferList({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transfers.map((transfer) => {
-                  const isIncoming = transfer.toLocationId === locationId;
-                  return (
-                    <TableRow key={transfer.id}>
-                      <TableCell className="text-muted-foreground typo-regular-12">
-                        {transfer.id.slice(0, 8)}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(transfer.createdAt), "MMM dd, yyyy")}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 typo-regular-12">
-                          <span
-                            className={
-                              !isIncoming
-                                ? "typo-bold-14"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {transfer.fromLocation?.name ||
-                              transfer.fromLocationId}
-                          </span>
-                          <ArrowRight
-                            size={12}
-                            className="text-muted-foreground"
-                          />
-                          <span
-                            className={
-                              isIncoming
-                                ? "typo-bold-14"
-                                : "text-muted-foreground"
-                            }
-                          >
-                            {transfer.toLocation?.name || transfer.toLocationId}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            transfer.status === "RECEIVED"
-                              ? "default"
-                              : transfer.status === "CANCELLED"
-                                ? "destructive"
-                                : "secondary"
-                          }
-                          className="capitalize"
-                        >
-                          {transfer.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col max-w-50 typo-regular-12">
-                          {transfer.lines.slice(0, 2).map((line, idx) => (
-                            <span key={idx} className="truncate">
-                              {line.quantity} x{" "}
-                              {line.variant
-                                ? line.variant.name
-                                : line.product.name}
+                {transfers.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      {translate("dialogs.transferList.noTransfers")}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  transfers.map((transfer, index) => {
+                    const isIncoming = transfer.toLocationId === locationId;
+                    const sn = meta
+                      ? (meta.page - 1) * meta.limit + index + 1
+                      : index + 1;
+                    return (
+                      <TableRow key={transfer.id}>
+                        <TableCell className="text-muted-foreground typo-regular-14">
+                          {sn}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground typo-regular-12">
+                          {transfer.id.slice(0, 8)}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(transfer.createdAt), "MMM dd, yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 typo-regular-12">
+                            <span
+                              className={
+                                !isIncoming
+                                  ? "typo-bold-14"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {transfer.fromLocation?.name ||
+                                transfer.fromLocationId}
                             </span>
-                          ))}
-                          {transfer.lines.length > 2 && (
-                            <span className="text-muted-foreground typo-regular-10">
-                              +{transfer.lines.length - 2}{" "}
-                              {translate("common:more")}
+                            <ArrowRight
+                              size={12}
+                              className="text-muted-foreground"
+                            />
+                            <span
+                              className={
+                                isIncoming
+                                  ? "typo-bold-14"
+                                  : "text-muted-foreground"
+                              }
+                            >
+                              {transfer.toLocation?.name ||
+                                transfer.toLocationId}
                             </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => handleView(transfer)}
-                        >
-                          <Eye size={16} />
-                        </Button>
-                        {isIncoming && transfer.status === "SHIPPED" && (
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              transfer.status === "RECEIVED"
+                                ? "default"
+                                : transfer.status === "CANCELLED"
+                                  ? "destructive"
+                                  : "secondary"
+                            }
+                            className="capitalize"
+                          >
+                            {transfer.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col max-w-50 typo-regular-12">
+                            {transfer.lines.slice(0, 2).map((line, idx) => (
+                              <span key={idx} className="truncate">
+                                {line.quantity} x{" "}
+                                {line.variant
+                                  ? line.variant.name
+                                  : line.product.name}
+                              </span>
+                            ))}
+                            {transfer.lines.length > 2 && (
+                              <span className="text-muted-foreground typo-regular-10">
+                                +{transfer.lines.length - 2}{" "}
+                                {translate("common:more")}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
                           <Button
-                            size="sm"
-                            variant="default"
-                            className="ml-2 h-7 typo-regular-12"
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8"
                             onClick={() => handleView(transfer)}
                           >
-                            {translate("dialogs.transferList.receive")}
+                            <Eye size={16} />
                           </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          {isIncoming && transfer.status === "SHIPPED" && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              className="ml-2 h-7 typo-regular-12"
+                              onClick={() => handleView(transfer)}
+                            >
+                              {translate("dialogs.transferList.receive")}
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
               </TableBody>
             </Table>
-          )}
-        </div>
+          </div>
 
-        {/* Pagination Controls */}
-        {meta && (
-          <DataPagination
-            page={meta.page}
-            totalPages={meta.totalPages}
-            totalItems={meta.total}
-            hasPreviousPage={meta.hasPreviousPage}
-            hasNextPage={meta.hasNextPage}
-            onPageChange={setPage}
-            pageSize={pageSize}
-            onPageSizeChange={(nextPageSize) => {
-              setPageSize(nextPageSize);
-              setPage(1);
-            }}
-          />
-        )}
-      </div>
+          {/* Pagination Controls */}
+          {meta && (
+            <DataPagination
+              page={meta.page}
+              totalPages={meta.totalPages}
+              totalItems={meta.total}
+              hasPreviousPage={meta.hasPreviousPage}
+              hasNextPage={meta.hasNextPage}
+              onPageChange={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={(nextPageSize) => {
+                setPageSize(nextPageSize);
+                setPage(1);
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <ViewTransferDialog
+        transfer={selectedTransfer}
+        open={!!selectedTransfer}
+        onOpenChange={(open) => !open && setSelectedTransfer(null)}
+        currentLocationId={locationId}
+      />
     </>
   );
 }

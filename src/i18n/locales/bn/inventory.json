@@ -18,7 +18,8 @@
   },
   "tabs": {
     "ledger": "লেনদেন খতিয়ান",
-    "transfers": "স্টক ট্রান্সফার"
+    "transfers": "স্টক ট্রান্সফার",
+    "returns": "রিটার্নস"
   },
   "transactionTypes": {
     "in": "স্টক ইন",

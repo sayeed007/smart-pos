@@ -20,6 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAllInventoryTransactions } from "@/hooks/api/inventory";
 import { InventoryTransaction } from "@/types";
 import { format, startOfDay, endOfDay, startOfMonth } from "date-fns";
@@ -200,82 +206,110 @@ export function InventoryLedger({
           </div>
         ) : (
           <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("tableHeaders.dateTime")}</TableHead>
-                  <TableHead>{t("tableHeaders.type")}</TableHead>
-                  <TableHead>{t("tableHeaders.product")}</TableHead>
-                  <TableHead>{t("tableHeaders.location")}</TableHead>
-                  <TableHead>{t("tableHeaders.qty")}</TableHead>
-                  <TableHead>{t("tableHeaders.reasonRef")}</TableHead>
-                  <TableHead>{t("tableHeaders.user")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.length > 0 ? (
-                  filteredTransactions.map((tx) => {
-                    return (
-                      <TableRow key={tx.id}>
-                        <TableCell className="text-muted-foreground whitespace-nowrap typo-medium-12">
-                          {format(
-                            new Date(
-                              tx.createdAt || tx.timestamp || new Date(),
-                            ),
-                            "MMM dd, yyyy HH:mm",
-                          )}
-                        </TableCell>
-                        <TableCell>{getTypeBadge(tx.type)}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="typo-semibold-14">
-                              {tx.product?.name || t("messages.unknownProduct")}
-                            </span>
-                            <span className="text-muted-foreground typo-regular-12">
-                              {tx.product?.sku || "N/A"}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="typo-regular-14">
-                          {locationName}
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={
-                              tx.type === "IN" || tx.type === "RETURN"
-                                ? "text-green-600 typo-bold-14"
-                                : "text-red-600 typo-bold-14"
-                            }
-                          >
-                            {tx.type === "OUT" ? "-" : "+"}
-                            {Math.abs(tx.quantity)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col typo-regular-14">
-                            <span>{tx.reason}</span>
-                            {tx.referenceId && (
-                              <span className="text-muted-foreground typo-regular-12">
-                                {tx.referenceId}
-                              </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground typo-regular-14">
-                          {tx.performedBy}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      {t("messages.noTransactions")}
-                    </TableCell>
+            <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden  mb-4">
+              <Table>
+                <TableHeader className="bg-muted/50 border-0">
+                  <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
+                    <TableHead>#</TableHead>
+                    <TableHead>{t("tableHeaders.dateTime")}</TableHead>
+                    <TableHead>{t("tableHeaders.type")}</TableHead>
+                    <TableHead>{t("tableHeaders.product")}</TableHead>
+                    <TableHead>{t("tableHeaders.location")}</TableHead>
+                    <TableHead>{t("tableHeaders.qty")}</TableHead>
+                    <TableHead>{t("tableHeaders.reasonRef")}</TableHead>
+                    <TableHead>{t("tableHeaders.user")}</TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredTransactions.length > 0 ? (
+                    filteredTransactions.map((tx, index) => {
+                      const sn = meta
+                        ? (meta.page - 1) * meta.limit + index + 1
+                        : index + 1;
+                      return (
+                        <TableRow key={tx.id}>
+                          <TableCell className="text-muted-foreground typo-regular-14">
+                            {sn}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground whitespace-nowrap typo-medium-12">
+                            {format(
+                              new Date(
+                                tx.createdAt || tx.timestamp || new Date(),
+                              ),
+                              "MMM dd, yyyy HH:mm",
+                            )}
+                          </TableCell>
+                          <TableCell>{getTypeBadge(tx.type)}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="typo-semibold-14">
+                                {tx.product?.name ||
+                                  t("messages.unknownProduct")}
+                              </span>
+                              <span className="text-muted-foreground typo-regular-12">
+                                {tx.product?.sku || "N/A"}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="typo-regular-14">
+                            {locationName}
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={
+                                tx.type === "IN" || tx.type === "RETURN"
+                                  ? "text-green-600 typo-bold-14"
+                                  : "text-red-600 typo-bold-14"
+                              }
+                            >
+                              {tx.type === "OUT" ? "-" : "+"}
+                              {Math.abs(tx.quantity)}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex flex-col typo-regular-14 text-left max-w-50">
+                                    <span className="truncate">
+                                      {tx.reason}
+                                    </span>
+                                    {tx.referenceId && (
+                                      <span className="text-muted-foreground typo-regular-12 truncate">
+                                        {tx.referenceId}
+                                      </span>
+                                    )}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="flex flex-col gap-1 text-sm max-w-sm">
+                                    <span>{tx.reason}</span>
+                                    {tx.referenceId && (
+                                      <span className="text-muted-foreground">
+                                        Ref: {tx.referenceId}
+                                      </span>
+                                    )}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground typo-regular-14">
+                            {tx?.performer?.name || tx.performedBy || "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} className="h-24 text-center">
+                        {t("messages.noTransactions")}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
 
             {/* Pagination Controls */}
             {meta && (
