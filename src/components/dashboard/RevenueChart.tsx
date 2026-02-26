@@ -20,17 +20,23 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data = [], className }: RevenueChartProps) {
   const { t } = useTranslation("dashboard");
-
-  // Format date for display (e.g., "Mon", "Tue", etc.)
-  const formatDate = (dateString: string) => {
+  // Format date for display on X axis
+  const formatTickDate = (dateString: unknown) => {
+    if (!dateString || typeof dateString !== "string") return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", { weekday: "short" });
   };
 
-  const chartData = (data || [])?.map((item) => ({
-    ...item,
-    displayDate: formatDate(item.date),
-  }));
+  // Format date for tooltip
+  const formatTooltipDate = (dateString: unknown) => {
+    if (!dateString || typeof dateString !== "string") return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   return (
     <Card
@@ -53,7 +59,10 @@ export function RevenueChart({ data = [], className }: RevenueChartProps) {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
-          <AreaChart data={chartData}>
+          <AreaChart
+            data={data || []}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.09} />
@@ -62,12 +71,14 @@ export function RevenueChart({ data = [], className }: RevenueChartProps) {
             </defs>
             <CartesianGrid stroke="hsl(var(--border))" vertical={false} />
             <XAxis
-              dataKey="displayDate"
+              dataKey="date"
               stroke="hsl(var(--muted-foreground))"
               fontSize={12}
               tickLine={false}
               axisLine={false}
               dy={10}
+              tickFormatter={formatTickDate}
+              minTickGap={30}
             />
             <YAxis
               stroke="hsl(var(--muted-foreground))"
@@ -81,6 +92,7 @@ export function RevenueChart({ data = [], className }: RevenueChartProps) {
               domain={[0, "auto"]}
             />
             <Tooltip
+              labelFormatter={formatTooltipDate}
               cursor={{ stroke: "hsl(var(--sidebar-border))", strokeWidth: 1 }}
               contentStyle={{
                 borderRadius: "8px",
