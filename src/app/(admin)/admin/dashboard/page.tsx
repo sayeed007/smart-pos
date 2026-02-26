@@ -1,6 +1,4 @@
 "use client";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
@@ -9,15 +7,9 @@ import { PaymentMethods } from "@/components/dashboard/PaymentMethods";
 import { RecentSales } from "@/components/dashboard/RecentSales";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { TopCategories } from "@/components/dashboard/TopCategories";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { useLocationStore } from "@/features/locations/store";
 import { useSales } from "@/hooks/api/sales";
 import {
@@ -27,7 +19,7 @@ import {
   useRevenueChart,
   useTopCategories,
 } from "@/hooks/useDashboard";
-import { cn } from "@/lib/utils";
+import { startOfMonth } from "date-fns";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
@@ -75,8 +67,7 @@ export default function DashboardPage() {
 
   const [date, setDate] = useState<DateRange | undefined>(() => {
     const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 30);
+    const start = startOfMonth(end);
     return { from: start, to: end };
   });
 
@@ -142,42 +133,12 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader title={t("page.title")} description={t("page.subtitle")} />
         <div className="w-full sm:w-auto">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant="outline"
-                className={cn(
-                  "w-full sm:w-65 justify-start text-left bg-card typo-regular-14",
-                  !date && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>{t("filters.pickDate", "Pick a date range")}</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={setDate}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
+          <DateRangePicker
+            date={date}
+            onDateChange={setDate}
+            className="w-full sm:w-65"
+            align="end"
+          />
         </div>
       </div>
 

@@ -1,16 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DataPagination } from "@/components/ui/pagination";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import {
   Select,
   SelectContent,
@@ -27,10 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAllInventoryTransactions } from "@/hooks/api/inventory";
-import { cn } from "@/lib/utils";
 import { InventoryTransaction } from "@/types";
-import { format, startOfDay, endOfDay } from "date-fns";
-import { Calendar as CalendarIcon, Loader2, Search } from "lucide-react";
+import { format, startOfDay, endOfDay, startOfMonth } from "date-fns";
+import { Loader2, Search } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
@@ -47,11 +40,10 @@ export function InventoryLedger({
   const { t } = useTranslation("inventory");
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: startOfDay(
-      new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    ),
-    to: new Date(),
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    const end = new Date();
+    const start = startOfMonth(end);
+    return { from: start, to: end };
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -165,41 +157,11 @@ export function InventoryLedger({
         <CardTitle>{t("cards.transactions")}</CardTitle>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mt-2">
           {/* Date Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-60 justify-start text-left typo-regular-14",
-                  !date && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>{t("filters.pickDate")}</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={handleDateChange}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
+          <DateRangePicker
+            date={date}
+            onDateChange={handleDateChange}
+            className="w-full sm:w-60"
+          />
 
           <div className="relative flex-1 max-w-sm w-full">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

@@ -3,15 +3,10 @@
 import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { DataPagination } from "@/components/ui/pagination";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { SaleDetailsDrawer } from "@/components/sales/SaleDetailsDrawer";
 import {
   Table,
@@ -24,10 +19,9 @@ import {
 import { useLocationStore } from "@/features/locations/store";
 import { useCreateReturn } from "@/hooks/api/returns";
 import { useSales, useSalesSummary } from "@/hooks/api/sales";
-import { cn } from "@/lib/utils";
 import { Sale } from "@/types";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
-import { Calendar as CalendarIcon, Loader2, Settings } from "lucide-react";
+import { Loader2, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
@@ -185,42 +179,11 @@ export default function SalesHistoryPage() {
 
       {/* Date Filter - DateRangePicker */}
       <div className="flex items-center gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={"outline"}
-              className={cn(
-                "w-75 justify-start text-left bg-card typo-regular-14",
-                !date && "text-muted-foreground",
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  format(date.from, "LLL dd, y")
-                )
-              ) : (
-                <span>{t("filters.pickDate")}</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={handleDateChange}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
+        <DateRangePicker
+          date={date}
+          onDateChange={handleDateChange}
+          className="w-full sm:w-65"
+        />
       </div>
 
       {/* Stats Cards */}
