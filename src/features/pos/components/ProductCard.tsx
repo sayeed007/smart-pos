@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Product } from "@/types";
 import { ServerImage } from "@/components/ui/server-image";
+import { useLocationStore } from "@/features/locations/store";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +11,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onClick }: ProductCardProps) {
+  const { currentLocation } = useLocationStore();
+
+  const currentStock = currentLocation
+    ? (product.locationWiseStock?.find(
+        (s) => s.locationId === currentLocation.id,
+      )?.stock ?? 0)
+    : product.stockQuantity;
+
   return (
     <Card
       onClick={() => onClick(product)}
@@ -41,7 +50,7 @@ export function ProductCard({ product, onClick }: ProductCardProps) {
           ${product.sellingPrice.toFixed(2)}
         </div>
         <div className="typo-regular-12 text-muted-foreground">
-          Stock: {product.stockQuantity}
+          Stock: {currentStock}
         </div>
       </div>
     </Card>

@@ -30,7 +30,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   } = usePOSStore();
   const { t } = useTranslation("pos");
 
-  // Dedup categories just in case
+  // Dedupe categories just in case
   const uniqueCategories = Array.from(
     new Map(categories.map((item) => [item.id, item])).values(),
   );
@@ -109,6 +109,7 @@ export function ProductGrid({ products, categories }: ProductGridProps) {
   const estimateRowHeight = cardWidth + 120 + ROW_GAP; // 120px for text/price content + row gap
   const bottomSpacer = Math.max(48, Math.round(estimateRowHeight * 0.35));
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: rows,
     getScrollElement: () => parentRef.current,
