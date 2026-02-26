@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { useLocationStore } from "@/features/locations/store";
+import { useSettingsStore } from "@/features/settings/store";
 import { useSales } from "@/hooks/api/sales";
 import {
   useDashboardStats,
@@ -62,6 +63,7 @@ const STATS_CONFIG = [
 export default function DashboardPage() {
   const { t } = useTranslation("dashboard");
   const { currentLocation } = useLocationStore();
+  const settings = useSettingsStore();
   const locationId =
     currentLocation.id !== "default" ? currentLocation.id : undefined;
 
@@ -111,7 +113,7 @@ export default function DashboardPage() {
     let value = "0";
 
     if (stat.key === "totalSales") {
-      value = `$${(stats?.totalRevenue || 0).toFixed(2)}`;
+      value = `${settings.currencySymbol}${(stats?.totalRevenue || 0).toFixed(2)}`;
     } else if (stat.key === "totalProducts") {
       value = (stats?.totalProducts || 0).toString();
     } else if (stat.key === "lowStock") {
