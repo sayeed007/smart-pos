@@ -249,19 +249,21 @@ export default function ReportsPage() {
             onExport={handleExportSales}
             exporting={exportingSales}
             loading={salesLoading}
-          />
-          <DataPagination
-            page={salesResult?.meta.page || 1}
-            totalPages={salesResult?.meta.totalPages || 1}
-            totalItems={salesResult?.meta.total}
-            hasPreviousPage={salesResult?.meta.hasPreviousPage}
-            hasNextPage={salesResult?.meta.hasNextPage}
-            onPageChange={setSalesPage}
-            pageSize={salesPageSize}
-            onPageSizeChange={(nextPageSize) => {
-              setSalesPageSize(nextPageSize);
-              setSalesPage(1);
-            }}
+            pagination={
+              <DataPagination
+                page={salesResult?.meta.page || 1}
+                totalPages={salesResult?.meta.totalPages || 1}
+                totalItems={salesResult?.meta.total}
+                hasPreviousPage={salesResult?.meta.hasPreviousPage}
+                hasNextPage={salesResult?.meta.hasNextPage}
+                onPageChange={setSalesPage}
+                pageSize={salesPageSize}
+                onPageSizeChange={(nextPageSize) => {
+                  setSalesPageSize(nextPageSize);
+                  setSalesPage(1);
+                }}
+              />
+            }
           />
         </TabsContent>
 
@@ -271,19 +273,21 @@ export default function ReportsPage() {
             onExport={handleExportProducts}
             exporting={exportingProducts}
             loading={productsLoading}
-          />
-          <DataPagination
-            page={productsResult?.meta.page || 1}
-            totalPages={productsResult?.meta.totalPages || 1}
-            totalItems={productsResult?.meta.total}
-            hasPreviousPage={productsResult?.meta.hasPreviousPage}
-            hasNextPage={productsResult?.meta.hasNextPage}
-            onPageChange={setProductsPage}
-            pageSize={productsPageSize}
-            onPageSizeChange={(nextPageSize) => {
-              setProductsPageSize(nextPageSize);
-              setProductsPage(1);
-            }}
+            pagination={
+              <DataPagination
+                page={productsResult?.meta.page || 1}
+                totalPages={productsResult?.meta.totalPages || 1}
+                totalItems={productsResult?.meta.total}
+                hasPreviousPage={productsResult?.meta.hasPreviousPage}
+                hasNextPage={productsResult?.meta.hasNextPage}
+                onPageChange={setProductsPage}
+                pageSize={productsPageSize}
+                onPageSizeChange={(nextPageSize) => {
+                  setProductsPageSize(nextPageSize);
+                  setProductsPage(1);
+                }}
+              />
+            }
           />
         </TabsContent>
 

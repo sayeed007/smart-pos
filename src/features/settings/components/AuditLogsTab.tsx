@@ -81,11 +81,11 @@ export function AuditLogsTab() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
+      <CardContent>
+        <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
           <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
+            <TableHeader className="bg-muted/50 border-0">
+              <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
                 <TableHead>Date & Time</TableHead>
                 <TableHead>User Email</TableHead>
                 <TableHead>Action</TableHead>
@@ -148,20 +148,22 @@ export function AuditLogsTab() {
           </Table>
         </div>
 
-        <DataPagination
-          page={meta?.page || 1}
-          totalPages={meta?.totalPages || 1}
-          totalItems={meta?.total}
-          hasPreviousPage={meta?.hasPreviousPage}
-          hasNextPage={meta?.hasNextPage}
-          onPageChange={setPage}
-          pageSize={pageSize}
-          pageSizeOptions={[25, 50, 100]}
-          onPageSizeChange={(nextPageSize) => {
-            setPageSize(nextPageSize);
-            setPage(1);
-          }}
-        />
+        {meta && (
+          <DataPagination
+            page={meta?.page || 1}
+            totalPages={meta?.totalPages || 1}
+            totalItems={meta?.total}
+            hasPreviousPage={meta?.hasPreviousPage}
+            hasNextPage={meta?.hasNextPage}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            pageSizeOptions={[25, 50, 100]}
+            onPageSizeChange={(nextPageSize) => {
+              setPageSize(nextPageSize);
+              setPage(1);
+            }}
+          />
+        )}
       </CardContent>
     </Card>
   );

@@ -222,7 +222,7 @@ export function InventoryLedger({
           </div>
         ) : (
           <>
-            <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden  mb-4">
+            <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
               <Table>
                 <TableHeader className="bg-muted/50 border-0">
                   <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">

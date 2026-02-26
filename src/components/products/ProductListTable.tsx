@@ -611,54 +611,62 @@ export function ProductListTable({
   }
 
   return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader className="bg-muted border-0">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className="typo-semibold-14 border-b border-sidebar-border p-2"
-            >
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+    <>
+      <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
+        <Table>
+          <TableHeader className="bg-muted/50 border-0">
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className="border-sidebar-border p-2 odd:bg-card even:bg-muted hover:bg-muted/60 transition-colors"
+                key={headerGroup.id}
+                className="typo-semibold-14 border-b border-sidebar-border p-2"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                <div className="flex flex-col items-center gap-2 py-8 text-muted-foreground">
-                  <Search className="w-8 h-8 opacity-50" />
-                  <p>{t("page.noProducts.description")}</p>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="border-sidebar-border p-2 odd:bg-card even:bg-muted hover:bg-muted/60 transition-colors"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <div className="flex flex-col items-center gap-2 py-8 text-muted-foreground">
+                    <Search className="w-8 h-8 opacity-50" />
+                    <p>{t("page.noProducts.description")}</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Pagination Controls */}
       <DataPagination
@@ -690,6 +698,6 @@ export function ProductListTable({
         handlePrint={handlePrint}
         resolveBarcode={resolveBarcode}
       />
-    </div>
+    </>
   );
 }

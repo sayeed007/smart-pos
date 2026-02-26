@@ -127,19 +127,17 @@ export function ProductsPageContent() {
       <ProductFilterBar search={search} onSearchChange={setSearch} />
 
       {/* Product Table */}
-      <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden">
-        <ProductListTable
-          products={filteredProducts || []}
-          isLoading={isLoading}
-          categories={categories || []}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          pageCount={pageCount}
-          totalItems={totalItems}
-          pagination={pagination}
-          onPageChange={setPagination}
-        />
-      </div>
+      <ProductListTable
+        products={filteredProducts || []}
+        isLoading={isLoading}
+        categories={categories || []}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        pageCount={pageCount}
+        totalItems={totalItems}
+        pagination={pagination}
+        onPageChange={setPagination}
+      />
 
       {/* Add/Edit Product Modal */}
       <ProductFormModal

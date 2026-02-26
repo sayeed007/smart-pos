@@ -18,6 +18,7 @@ interface SalesTransactionsProps {
   onExport?: () => void;
   exporting?: boolean;
   loading?: boolean;
+  pagination?: React.ReactNode;
 }
 
 export function SalesTransactionsTable({
@@ -25,6 +26,7 @@ export function SalesTransactionsTable({
   onExport,
   exporting,
   loading,
+  pagination,
 }: SalesTransactionsProps) {
   const hasSales = Array.isArray(sales) && sales.length > 0;
 
@@ -41,55 +43,58 @@ export function SalesTransactionsTable({
         </Button>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Invoice</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Items</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Loading sales...
-                  </div>
-                </TableCell>
+        <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
+          <Table>
+            <TableHeader className="bg-muted/50 border-0">
+              <TableRow className="typo-semibold-14 border-b border-sidebar-border p-2">
+                <TableHead>Invoice</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Items</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead className="text-right">Total</TableHead>
               </TableRow>
-            ) : !hasSales ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No sales data available
-                </TableCell>
-              </TableRow>
-            ) : (
-              sales?.map((sale) => (
-                <TableRow key={sale.id}>
-                  <TableCell className="typo-medium-14">
-                    {sale.invoiceNo}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(
-                      sale.completedAt || sale.createdAt,
-                    ).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {sale.lines?.length || 0} items
-                  </TableCell>
-                  <TableCell>{sale.payments?.[0]?.method || "Cash"}</TableCell>
-                  <TableCell className="text-right typo-bold-14">
-                    ${Number(sale.total || 0).toFixed(2)}
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading sales...
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : !hasSales ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    No sales data available
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sales?.map((sale) => (
+                  <TableRow key={sale.id}>
+                    <TableCell className="typo-medium-14">
+                      {sale.invoiceNo}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(
+                        sale.completedAt || sale.createdAt,
+                      ).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{sale.lines?.length || 0} items</TableCell>
+                    <TableCell>
+                      {sale.payments?.[0]?.method || "Cash"}
+                    </TableCell>
+                    <TableCell className="text-right typo-bold-14">
+                      ${Number(sale.total || 0).toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        {pagination && pagination}
       </CardContent>
     </Card>
   );

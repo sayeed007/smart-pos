@@ -3,7 +3,7 @@
 import { ReturnFormModal } from "@/components/returns/ReturnFormModal";
 import { InvoiceDetailsModal } from "@/components/sales/InvoiceDetailsModal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { DataPagination } from "@/components/ui/pagination";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
@@ -242,13 +242,13 @@ export default function SalesHistoryPage() {
 
       {/* Recent Sales Table */}
       <Card className="border-none shadow-sm rounded-xl overflow-hidden bg-card">
-        <div className="px-6 pt-2">
-          <h2 className="text-foreground mb-4 typo-bold-18">
-            {t("table.title")}
-          </h2>
-        </div>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+        <CardHeader>
+          <CardTitle>
+            <h2 className="text-foreground typo-bold-18">{t("table.title")}</h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-card rounded-xl border border-sidebar-border shadow-sm overflow-hidden mb-2">
             <Table>
               <TableHeader className="bg-primary/5 border-t border-b">
                 <TableRow className="typo-semibold-14 border-b-0 p-2">
@@ -357,6 +357,21 @@ export default function SalesHistoryPage() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination Controls */}
+          <DataPagination
+            page={sales?.meta?.page || 1}
+            totalPages={sales?.meta?.totalPages || 1}
+            totalItems={sales?.meta?.total}
+            hasPreviousPage={sales?.meta?.hasPreviousPage}
+            hasNextPage={sales?.meta?.hasNextPage}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(nextPageSize) => {
+              setPageSize(nextPageSize);
+              setPage(1);
+            }}
+          />
         </CardContent>
       </Card>
 
@@ -372,21 +387,6 @@ export default function SalesHistoryPage() {
         isOpen={!!viewSale}
         onClose={() => setViewSale(null)}
         sale={viewSale}
-      />
-
-      {/* Pagination Controls */}
-      <DataPagination
-        page={sales?.meta?.page || 1}
-        totalPages={sales?.meta?.totalPages || 1}
-        totalItems={sales?.meta?.total}
-        hasPreviousPage={sales?.meta?.hasPreviousPage}
-        hasNextPage={sales?.meta?.hasNextPage}
-        onPageChange={setPage}
-        pageSize={pageSize}
-        onPageSizeChange={(nextPageSize) => {
-          setPageSize(nextPageSize);
-          setPage(1);
-        }}
       />
 
       <SaleDetailsDrawer

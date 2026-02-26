@@ -199,7 +199,7 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
           onInvoiceClick={handleInvoiceOpen}
         />
 
-        <div className="flex items-center justify-end space-x-2 py-4">
+        {returnsData?.meta && (
           <DataPagination
             page={returnsData?.meta?.page || page}
             totalPages={
@@ -216,7 +216,7 @@ export function ReturnsTab({ locationId }: { locationId: string }) {
               setPage(1);
             }}
           />
-        </div>
+        )}
       </CardContent>
 
       {isModalOpen && (
