@@ -45,7 +45,9 @@ type SettingsFormState = Pick<
   | "storeTagline"
   | "storeLogoUrl"
   | "currency"
+  | "taxEnabled"
   | "taxRate"
+  | "taxType"
   | "currencySymbol"
   | "receiptHeader"
   | "receiptFooter"
@@ -79,7 +81,9 @@ export default function SettingsPage() {
     storeTagline: storeSettings.storeTagline,
     storeLogoUrl: storeSettings.storeLogoUrl,
     currency: storeSettings.currency,
+    taxEnabled: storeSettings.taxEnabled,
     taxRate: storeSettings.taxRate,
+    taxType: storeSettings.taxType,
     currencySymbol: storeSettings.currencySymbol,
     receiptHeader: storeSettings.receiptHeader,
     receiptFooter: storeSettings.receiptFooter,
@@ -216,7 +220,9 @@ export default function SettingsPage() {
 
       await updateRemoteSettingsMutation.mutateAsync({
         settings: buildSettingsPayload({
+          taxEnabled: localSettings.taxEnabled,
           taxRate: localSettings.taxRate,
+          taxType: localSettings.taxType,
           currencySymbol: localSettings.currencySymbol,
           receiptHeader: localSettings.receiptHeader,
           receiptFooter: localSettings.receiptFooter,
@@ -232,7 +238,9 @@ export default function SettingsPage() {
         storeTagline: updatedTenant.tagline || localSettings.storeTagline,
         storeLogoUrl: updatedTenant.logoUrl || localSettings.storeLogoUrl,
         currency: updatedTenant.currency || normalizedCurrency,
+        taxEnabled: localSettings.taxEnabled,
         taxRate: localSettings.taxRate,
+        taxType: localSettings.taxType,
         currencySymbol: localSettings.currencySymbol,
         receiptHeader: localSettings.receiptHeader,
         receiptFooter: localSettings.receiptFooter,
@@ -514,22 +522,68 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="tax">
+                      <Label htmlFor="taxEnabled">
                         {t(
-                          "sections.currencyTax.defaultTaxRate",
-                          "Default Tax Rate (%)",
+                          "sections.currencyTax.taxEnabled",
+                          "Global Tax Enabled",
                         )}
                       </Label>
-                      <Input
-                        type="number"
-                        id="tax"
-                        value={localSettings.taxRate}
-                        onChange={(e) =>
-                          handleChange("taxRate", Number(e.target.value))
-                        }
-                        className="bg-muted/30"
-                      />
+                      <select
+                        id="taxEnabled"
+                        className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
+                        value={localSettings.taxEnabled ? "true" : "false"}
+                        onChange={(e) => {
+                          handleChange("taxEnabled", e.target.value === "true");
+                        }}
+                      >
+                        <option value="true">Yes</option>
+                        <option value="false">No (Tax Free)</option>
+                      </select>
                     </div>
+                    {localSettings.taxEnabled && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="tax">
+                            {t(
+                              "sections.currencyTax.defaultTaxRate",
+                              "Default Tax Rate (%)",
+                            )}
+                          </Label>
+                          <Input
+                            type="number"
+                            id="tax"
+                            value={localSettings.taxRate}
+                            onChange={(e) =>
+                              handleChange("taxRate", Number(e.target.value))
+                            }
+                            className="bg-muted/30"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="taxType">
+                            {t("sections.currencyTax.taxType", "Tax Type")}
+                          </Label>
+                          <select
+                            id="taxType"
+                            className="flex h-10 w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 typo-medium-14 bg-muted/30"
+                            value={localSettings.taxType}
+                            onChange={(e) => {
+                              handleChange(
+                                "taxType",
+                                e.target.value as "INCLUSIVE" | "EXCLUSIVE",
+                              );
+                            }}
+                          >
+                            <option value="EXCLUSIVE">
+                              Exclusive (Added to Subtotal)
+                            </option>
+                            <option value="INCLUSIVE">
+                              Inclusive (Included in Price)
+                            </option>
+                          </select>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 

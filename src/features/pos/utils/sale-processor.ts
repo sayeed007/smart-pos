@@ -33,6 +33,7 @@ export interface ProcessSalePayload {
   subtotal: number;
   discount: number;
   tax: number;
+  taxRate?: number;
   paymentMethod: string;
   payments?: { method: string; amount: number }[];
   locationId: string;
@@ -117,6 +118,7 @@ export async function processSale(
       customerId: payload.customerId || undefined,
       loyaltyPointsRedeemed: payload.loyaltyPointsRedeemed || 0,
       loyaltyDiscount: payload.loyaltyDiscount || 0,
+      globalTaxRate: payload.taxRate,
     };
 
     // 5. Call the backend API

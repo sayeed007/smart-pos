@@ -50,7 +50,7 @@ export function CartPanel({ offers }: CartPanelProps) {
   const settings = useSettingsStore();
   const { user } = useAuth();
   const { t } = useTranslation("pos");
-  const taxRate = settings.taxRate / 100; // e.g. 10 -> 0.10
+  const taxRate = settings.taxEnabled ? settings.taxRate / 100 : 0;
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.sellingPrice * item.quantity,
@@ -85,11 +85,7 @@ export function CartPanel({ offers }: CartPanelProps) {
   );
 
   // Calculate Auto-Discounts from Offers (Actual - taking exclusions into account)
-  const {
-    totalDiscount: offerDiscount,
-    appliedOffers,
-    lineDiscounts,
-  } = useMemo(
+  const { totalDiscount: offerDiscount, appliedOffers } = useMemo(
     () => calculateCartDiscounts(cart, activeOffers),
     [cart, activeOffers],
   );
@@ -107,8 +103,13 @@ export function CartPanel({ offers }: CartPanelProps) {
   const discount = offerDiscount + pointsDiscount;
 
   const taxBase = Math.max(0, subtotal - discount);
-  const tax = taxBase * taxRate;
-  const total = taxBase + tax;
+
+  const tax =
+    settings.taxType === "INCLUSIVE"
+      ? taxBase - taxBase / (1 + taxRate)
+      : taxBase * taxRate;
+
+  const total = settings.taxType === "INCLUSIVE" ? taxBase : taxBase + tax;
 
   const handleSuspend = async () => {
     if (cart.length === 0) return;

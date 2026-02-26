@@ -71,10 +71,15 @@ export function POSModals({ offers = [] }: POSModalsProps) {
   );
   const pointsDiscount = redeemedPoints / 100;
   const discount = offerDiscount + pointsDiscount;
-  const taxRate = settings.taxRate / 100;
+  const taxRate = settings.taxEnabled ? settings.taxRate / 100 : 0;
   const taxBase = Math.max(0, subtotal - discount);
-  const tax = taxBase * taxRate;
-  const total = taxBase + tax;
+
+  const tax =
+    settings.taxType === "INCLUSIVE"
+      ? taxBase - taxBase / (1 + taxRate)
+      : taxBase * taxRate;
+
+  const total = settings.taxType === "INCLUSIVE" ? taxBase : taxBase + tax;
 
   // ── State ─────────────────────────────────────────────────────────────────
 
@@ -104,6 +109,7 @@ export function POSModals({ offers = [] }: POSModalsProps) {
         subtotal,
         discount,
         tax,
+        taxRate: settings.taxEnabled ? settings.taxRate : undefined,
         paymentMethod: method,
         payments,
         locationId: currentLocation.id,

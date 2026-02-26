@@ -37,6 +37,7 @@ export interface CreateSaleDto {
   offlineId?: string;
   loyaltyPointsRedeemed?: number;
   loyaltyDiscount?: number;
+  globalTaxRate?: number;
   lines: SaleLineDto[];
   payments: SalePaymentDto[];
 }

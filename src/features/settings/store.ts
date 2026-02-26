@@ -10,8 +10,10 @@ export interface SettingsState {
   storeLogoUrl: string;
 
   currency: string;
-  taxRate: number;
   currencySymbol: string;
+  taxEnabled: boolean;
+  taxRate: number;
+  taxType: "INCLUSIVE" | "EXCLUSIVE";
 
   receiptHeader: string;
   receiptFooter: string;
@@ -33,8 +35,10 @@ const DEFAULT_SETTINGS: Omit<
   storeLogoUrl: "",
 
   currency: "USD",
-  taxRate: 10,
   currencySymbol: "$",
+  taxEnabled: true,
+  taxRate: 10,
+  taxType: "EXCLUSIVE",
 
   receiptHeader: "Welcome to Tafuri POS",
   receiptFooter: "Thank you! Visit again.",

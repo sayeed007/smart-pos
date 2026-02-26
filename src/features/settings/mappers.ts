@@ -22,6 +22,16 @@ const asNumber = (value: unknown, fallback: number): number => {
 const asPaperWidth = (value: unknown, fallback: "58mm" | "80mm") =>
   value === "58mm" || value === "80mm" ? value : fallback;
 
+const asBoolean = (value: unknown, fallback: boolean): boolean => {
+  if (typeof value === "boolean") return value;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+};
+
+const asTaxType = (value: unknown, fallback: "INCLUSIVE" | "EXCLUSIVE") =>
+  value === "INCLUSIVE" || value === "EXCLUSIVE" ? value : fallback;
+
 export function mapRemoteToLocalSettings(
   base: SettingsState,
   tenant?: TenantProfile,
@@ -35,7 +45,9 @@ export function mapRemoteToLocalSettings(
     storeTagline: tenant?.tagline ?? base.storeTagline,
     storeLogoUrl: tenant?.logoUrl ?? base.storeLogoUrl,
     currency: tenant?.currency ?? base.currency,
+    taxEnabled: asBoolean(remoteSettings?.taxEnabled, base.taxEnabled),
     taxRate: asNumber(remoteSettings?.taxRate, base.taxRate),
+    taxType: asTaxType(remoteSettings?.taxType, base.taxType),
     currencySymbol: asString(
       remoteSettings?.currencySymbol,
       base.currencySymbol,
@@ -51,11 +63,19 @@ export function mapRemoteToLocalSettings(
 export function buildSettingsPayload(
   state: Pick<
     SettingsState,
-    "taxRate" | "currencySymbol" | "receiptHeader" | "receiptFooter" | "paperWidth"
+    | "taxEnabled"
+    | "taxRate"
+    | "taxType"
+    | "currencySymbol"
+    | "receiptHeader"
+    | "receiptFooter"
+    | "paperWidth"
   >,
 ): SettingsMap {
   return {
+    taxEnabled: state.taxEnabled,
     taxRate: state.taxRate,
+    taxType: state.taxType,
     currencySymbol: state.currencySymbol,
     receiptHeader: state.receiptHeader,
     receiptFooter: state.receiptFooter,
