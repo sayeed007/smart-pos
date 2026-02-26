@@ -752,23 +752,21 @@ export default function SettingsPage() {
                       <div className="space-y-2 pt-2">
                         <Label>Points Redemption Value</Label>
                         <div className="flex items-center gap-3 text-sm">
-                          <span>Redeem 1 Point for</span>
-                          <div className="relative max-w-24">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground mr-1">
-                              {localSettings.currencySymbol}
-                            </span>
-                            <Input
-                              type="number"
-                              className="pl-6 bg-muted/30"
-                              value={localSettings.loyaltyRedemptionRate}
-                              onChange={(e) =>
-                                handleChange(
-                                  "loyaltyRedemptionRate",
-                                  Number(e.target.value),
-                                )
-                              }
-                            />
-                          </div>
+                          <span>Redeem</span>
+                          <Input
+                            type="number"
+                            className="w-24 bg-muted/30"
+                            value={localSettings.loyaltyRedemptionRate}
+                            onChange={(e) =>
+                              handleChange(
+                                "loyaltyRedemptionRate",
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                          <span>
+                            Points for {localSettings.currencySymbol}1
+                          </span>
                         </div>
                         <p className="text-xs text-muted-foreground">
                           At POS checkout, customers can redeem up to their
