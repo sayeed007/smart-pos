@@ -254,7 +254,12 @@ export const updateLocalStock = async (
 
         // If quantity is positive but type implies reduction, negate it.
         // If quantity is already negative (e.g. from StockAdjustment), trust it.
-        if (change > 0 && (tx.type === "OUT" || tx.type === "TRANSFER")) {
+        if (
+          change > 0 &&
+          (tx.type === "OUT" ||
+            tx.type === "TRANSFER_OUT" ||
+            tx.type === "SALE")
+        ) {
           change = -change;
         }
 

@@ -15,6 +15,8 @@ export function useAllInventoryTransactions(
   limit: number = 100,
   startDate?: string,
   endDate?: string,
+  search?: string,
+  type?: string,
 ) {
   return useQuery({
     queryKey: [
@@ -26,6 +28,8 @@ export function useAllInventoryTransactions(
       limit,
       startDate,
       endDate,
+      search,
+      type,
     ],
     queryFn: () =>
       InventoryService.getAllTransactions(
@@ -34,6 +38,8 @@ export function useAllInventoryTransactions(
         limit,
         startDate,
         endDate,
+        search,
+        type,
       ),
     enabled: !!locationId,
   });

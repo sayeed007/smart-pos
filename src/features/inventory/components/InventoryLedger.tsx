@@ -31,6 +31,7 @@ import { InventoryTransaction } from "@/types";
 import { format, startOfDay, endOfDay, startOfMonth } from "date-fns";
 import { Loader2, Search } from "lucide-react";
 import { useState } from "react";
+import { useDebounce } from "use-debounce";
 import { DateRange } from "react-day-picker";
 import { useTranslation } from "react-i18next";
 
@@ -66,9 +67,19 @@ export function InventoryLedger({
     ? endOfDay(date.to || date.from).toISOString()
     : undefined;
 
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+
   // Fetch transactions from API for selected location
   const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useAllInventoryTransactions(locationId, page, pageSize, startDate, endDate);
+    useAllInventoryTransactions(
+      locationId,
+      page,
+      pageSize,
+      startDate,
+      endDate,
+      debouncedSearch,
+      typeFilter === "all" ? undefined : typeFilter,
+    );
 
   const transactions: InventoryTransaction[] = Array.isArray(
     transactionsData?.data,
@@ -108,18 +119,7 @@ export function InventoryLedger({
     | PaginatedMeta
     | undefined;
 
-  // Filter Logic (Client-side search/filter still applies to the fetched page, but ideally should be backend)
-  // Since we are moving to backend pagination, client-side filtering only filters the current page.
-  // Ideally, search and type filter should also be passed to backend, but the backend endpoint
-  // doesn't support them yet based on my previous read.
-  // For now, I will keep client-side filtering on the current page data.
-  const filteredTransactions = transactions?.filter((tx) => {
-    const searchString =
-      `${tx.product?.name || ""} ${tx.product?.sku || ""} ${tx.reason} ${tx.referenceId}`.toLowerCase();
-    const matchesSearch = searchString.includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === "all" || tx.type === typeFilter;
-    return matchesSearch && matchesType;
-  });
+  // Client-side filtering removed: backend endpoint now supports 'search' and 'type' natively.
 
   const getTypeBadge = (type: InventoryTransaction["type"]) => {
     switch (type) {
@@ -237,85 +237,87 @@ export function InventoryLedger({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTransactions.length > 0 ? (
-                    filteredTransactions.map((tx, index) => {
-                      const sn = meta
-                        ? (meta.page - 1) * meta.limit + index + 1
-                        : index + 1;
-                      return (
-                        <TableRow key={tx.id}>
-                          <TableCell className="text-muted-foreground typo-regular-14">
-                            {sn}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground whitespace-nowrap typo-medium-12">
-                            {format(
-                              new Date(
-                                tx.createdAt || tx.timestamp || new Date(),
-                              ),
-                              "MMM dd, yyyy HH:mm",
-                            )}
-                          </TableCell>
-                          <TableCell>{getTypeBadge(tx.type)}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-col">
-                              <span className="typo-semibold-14">
-                                {tx.product?.name ||
-                                  t("messages.unknownProduct")}
+                  {transactions.length > 0 ? (
+                    transactions.map(
+                      (tx: InventoryTransaction, index: number) => {
+                        const sn = meta
+                          ? (meta.page - 1) * meta.limit + index + 1
+                          : index + 1;
+                        return (
+                          <TableRow key={tx.id}>
+                            <TableCell className="text-muted-foreground typo-regular-14">
+                              {sn}
+                            </TableCell>
+                            <TableCell className="text-muted-foreground whitespace-nowrap typo-medium-12">
+                              {format(
+                                new Date(
+                                  tx.createdAt || tx.timestamp || new Date(),
+                                ),
+                                "MMM dd, yyyy HH:mm",
+                              )}
+                            </TableCell>
+                            <TableCell>{getTypeBadge(tx.type)}</TableCell>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="typo-semibold-14">
+                                  {tx.product?.name ||
+                                    t("messages.unknownProduct")}
+                                </span>
+                                <span className="text-muted-foreground typo-regular-12">
+                                  {tx.product?.sku || "N/A"}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="typo-regular-14">
+                              {locationName}
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                className={
+                                  tx.type === "IN" || tx.type === "RETURN"
+                                    ? "text-green-600 typo-bold-14"
+                                    : "text-red-600 typo-bold-14"
+                                }
+                              >
+                                {tx.type === "OUT" ? "-" : "+"}
+                                {Math.abs(tx.quantity)}
                               </span>
-                              <span className="text-muted-foreground typo-regular-12">
-                                {tx.product?.sku || "N/A"}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="typo-regular-14">
-                            {locationName}
-                          </TableCell>
-                          <TableCell>
-                            <span
-                              className={
-                                tx.type === "IN" || tx.type === "RETURN"
-                                  ? "text-green-600 typo-bold-14"
-                                  : "text-red-600 typo-bold-14"
-                              }
-                            >
-                              {tx.type === "OUT" ? "-" : "+"}
-                              {Math.abs(tx.quantity)}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="flex flex-col typo-regular-14 text-left max-w-50">
-                                    <span className="truncate">
-                                      {tx.reason}
-                                    </span>
-                                    {tx.referenceId && (
-                                      <span className="text-muted-foreground typo-regular-12 truncate">
-                                        {tx.referenceId}
+                            </TableCell>
+                            <TableCell>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex flex-col typo-regular-14 text-left max-w-50">
+                                      <span className="truncate">
+                                        {tx.reason}
                                       </span>
-                                    )}
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <div className="flex flex-col gap-1 text-sm max-w-sm">
-                                    <span>{tx.reason}</span>
-                                    {tx.referenceId && (
-                                      <span className="text-muted-foreground">
-                                        Ref: {tx.referenceId}
-                                      </span>
-                                    )}
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground typo-regular-14">
-                            {tx?.performer?.name || tx.performedBy || "N/A"}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
+                                      {tx.referenceId && (
+                                        <span className="text-muted-foreground typo-regular-12 truncate">
+                                          {tx.referenceId}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="flex flex-col gap-1 text-sm max-w-sm">
+                                      <span>{tx.reason}</span>
+                                      {tx.referenceId && (
+                                        <span className="text-muted-foreground">
+                                          Ref: {tx.referenceId}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground typo-regular-14">
+                              {tx?.performer?.name || tx.performedBy || "N/A"}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      },
+                    )
                   ) : (
                     <TableRow>
                       <TableCell colSpan={7} className="h-24 text-center">

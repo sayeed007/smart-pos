@@ -24,6 +24,8 @@ export class InventoryService {
     limit: number = 100,
     startDate?: string,
     endDate?: string,
+    search?: string,
+    type?: string,
   ) {
     const params = new URLSearchParams({
       locationId,
@@ -31,6 +33,8 @@ export class InventoryService {
       limit: limit.toString(),
       ...(startDate && { startDate }),
       ...(endDate && { endDate }),
+      ...(search && { search }),
+      ...(type && { type }),
     });
 
     const response = await backendApi.get<
